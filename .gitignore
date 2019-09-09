@@ -1,0 +1,5 @@
+/Data/
+/Templates/dist/
+/Templates/build/
+/Templates/*.pyc
+Thumbs.db
