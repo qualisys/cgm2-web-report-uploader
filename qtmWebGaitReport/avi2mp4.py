@@ -39,7 +39,6 @@ class AviToMp4:
             outputFileNames.append(outputFileName)
         return outputFileNames
         
-if __name__ == "__main__":
-    a = AviToMp4(workingDirectory)
-    b = a.convertAviToMp4()
+#a = AviToMp4(workingDirectory)
+#b = a.convertAviToMp4()
 

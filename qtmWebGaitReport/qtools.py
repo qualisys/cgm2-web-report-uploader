@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import btk
+from pyCGM2 import btk
 import signalMapping
 from os import listdir, path
 import numpy as np

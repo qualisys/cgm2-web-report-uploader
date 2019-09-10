@@ -76,9 +76,8 @@ class EMG:
       window = np.ones(windowSize)/float(windowSize)
       return np.sqrt(np.convolve(sig2, window, 'valid'))
 
-if __name__ == "__main__":
-    a = EMG(workingDirectory)
-    b = a.calculateProcessedEMG(1000,1,1,10,6,100)
+#a = EMG(workingDirectory)
+#b = a.calculateProcessedEMG(1000,1,1,10,6,100)
 
 #import matplotlib.pyplot as plt
 #plt.plot(b["Right Gastrocnemius"]["Walk01"])

@@ -1,5 +1,0 @@
-{
-    "baseUrl" : "https://report.qualisys.com",
-    "clientId" : "Replace this text with you QTM User Name.",
-    "token" : "Replace this text with your Report Center Upload Token. Contact support@qualisys.com if you require a token."
-}

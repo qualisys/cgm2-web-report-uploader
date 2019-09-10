@@ -13,7 +13,7 @@ import c3dValidation
 class Measurements:
     def __init__(self,workingDirectory):
         self.workingDirectory = workingDirectory
-        
+
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
@@ -30,29 +30,30 @@ class Measurements:
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
             frameRate = self.getValueFromXMLSystem("Capture","MeasuredFrameRate")
             originalDuration = self.getValueFromXMLSystem("Capture","FramesCaptured") / frameRate
-            creationDateTimeStr = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["CREATIONDATEANDTIME"]
+            creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["CREATIONDATEANDTIME"]
             creationDate = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
             creationTime = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
-            
-            if "DIAGNOSIS" in self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0]):
-                diagnosis = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["DIAGNOSIS"]
-            else:
-                diagnosis = ""
-                
-            patientName = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["NAME"]
-            bodyHeight = float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
-            bodyWeight = float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
-            
+
+            # if "DIAGNOSIS" in self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0]):
+            #     diagnosis = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["DIAGNOSIS"]
+            # else:
+            #     diagnosis = ""
+            diagnosis =""
+
+            patientName = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["NAME"]
+            bodyHeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
+            bodyWeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+
             videoObj = avi2mp4.AviToMp4(self.workingDirectory)
             videoFilenames = videoObj.getMp4Filenames(True)
-            
+
             for videoFilename in videoFilenames:
                 videoName = videoFilename.replace('.mp4', '')
                 resources.append({
                     			"type": "video",
                     			"name": videoName,
                     			"src": videoFilename})
-            
+
             fields = [{      "id": "Creation date",
                              "value": creationDate,
                              "type": "text"},
@@ -77,7 +78,7 @@ class Measurements:
                              "value": bodyWeight,
                              "type": "text"},
                             ]
-            
+
             info.append({"duration": val,
                          "startOffset": startOffset,
                          "originalDuration": originalDuration,
@@ -87,7 +88,7 @@ class Measurements:
                          "resources": resources
                          })
         return info
-    
+
     def getValueFromXMLSystem(self, defList, param):
         filename = glob(self.workingDirectory + "*.system")[0]
         tree = ET.parse(filename)
@@ -114,9 +115,7 @@ class Measurements:
             settings[key] = value
         return settings
 
-if __name__ == "__main__":
-    a = Measurements(workingDirectory)
-
+#a = Measurements(workingDirectory)
 #creationDate = a.getSettingsFromTextfile(glob(workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
 ##dd = datetime.strptime(str(creationDate),"%Y-%m-%d %H:%M:%S")
 ##ddd = datetime.strftime(dd, '%y,%m,%d,%H,%M,%S')

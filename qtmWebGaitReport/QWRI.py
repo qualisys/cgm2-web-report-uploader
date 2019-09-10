@@ -16,7 +16,7 @@ class App:
 
         self.entry = Entry(self.labelframe, textvariable=self.folder, state="readonly", width=80)
         self.entry.pack(side=LEFT, padx=5, pady=5)
-        
+
         self.setPathButton = Button(self.labelframe, text="Browse...", command=self.setPath)
         self.setPathButton.pack(side=LEFT, padx=5, pady=5)
 
@@ -25,22 +25,25 @@ class App:
 
         self.processButton = Button(self.frame, text="Create report", command=self.processAndUpload)
         self.processButton.pack(side=BOTTOM,padx=5, pady=5)
-                 
+
     def setPath(self):
         directory = tkFileDialog.askdirectory()
         self.folder.set(directory)
-        
+
     def callback(self, name, index, mode):
         if self.folder.get():
             self.processButton.config(state='normal')
         else:
             self.processButton.config(state='disabled')
-    
+
     def processAndUpload(self):
-        workingDirectory = str(self.folder.get())
-        workingDirectory = workingDirectory.replace('/','\\')
-        workingDirectory = workingDirectory + '\\'
-        
+        # workingDirectory = str(self.folder.get())
+        # workingDirectory = workingDirectory.replace('/','\\')
+        # workingDirectory = workingDirectory + '\\'
+
+        workingDirectory = "C:\\Users\\HLS501\\Documents\\Programming\\API\\pyCGM2\\pyCGM2-Qualisys\\Data\WebReport\\"
+
+
         processing = parserUploader.ParserUploader(workingDirectory)
         processing.Upload()
 
@@ -49,7 +52,3 @@ if __name__=="__main__":
     root.title("Qualisys Gait Report - C3D import")
     app = App(root)
     root.mainloop()
-    
-
-
-

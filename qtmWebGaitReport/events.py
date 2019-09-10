@@ -128,6 +128,5 @@ class Events:
 #                print (eventType,measurementName,GRFSignalName,out)
             return out
         
-if __name__ == "__main__":
-    a =  Events(workingDirectory)
-    b = a.calculateEvents()
+#a =  Events(workingDirectory)
+#b = a.calculateEvents()
