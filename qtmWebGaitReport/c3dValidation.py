@@ -37,7 +37,6 @@ class c3dValidation:
                 out = fileNames
         return out
             
-if __name__ == "__main__":
-    a = c3dValidation(workingDirectory)
-    b = a.getValidC3dList(True)
-
+#a = c3dValidation(workingDirectory)
+#b = a.getValidC3dList(True)
+#

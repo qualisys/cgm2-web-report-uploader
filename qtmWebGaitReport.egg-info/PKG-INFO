@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: qtmWebGaitReport
+Version: 0.0.1
+Summary: fork of the qtm web report uploader 
+Home-page: UNKNOWN
+Author: Fabien Leboeuf
+Author-email: fabien.leboeuf@gmail.com
+License: MIT License
+Description: UNKNOWN
+Keywords: gait,mocap
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Natural Language :: English

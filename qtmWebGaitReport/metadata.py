@@ -7,12 +7,12 @@ import xml.etree.cElementTree as ET
 from datetime import datetime
 import c3dValidation
 
-#workingDirectory = "E:\\Qualisys_repository\\Gait-Web-Importer\\Data\\myMess\\"
+#workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\myMess\\"
 
 class Metadata:
     def __init__(self,workingDirectory):
         self.workingDirectory = workingDirectory
-        
+
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
@@ -22,25 +22,26 @@ class Metadata:
             measurementName = measurementName.replace('.c3d','')
             info = []
 
-            type = self.getMetaValue(measurementName,"MANUFACTURER","COMPANY")
-            name =  self.getMetaValue(measurementName,"MANUFACTURER","SOFTWARE")
-            version =  self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
-            
-            creationDateTimeStr = self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
+            type = "UNSPECIFIED"#self.getMetaValue(measurementName,"MANUFACTURER","COMPANY")
+            name =  "UNSPECIFIED"#self.getMetaValue(measurementName,"MANUFACTURER","SOFTWARE")
+            version =  "UNSPECIFIED"#self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
+
+            creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
+
             creationDate = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
             creationTime = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
 
-            diagnosis = self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["DIAGNOSIS"]
-            patientName = self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
-            bodyHeight = float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
-            bodyWeight = float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
-            
+            diagnosis = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["DIAGNOSIS"]
+            patientName = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
+            bodyHeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
+            bodyWeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+
             generatedBy = [{
             			"type": ''.join(type),
             			"name": ''.join(name),
             			"version": ''.join(version)}
                         ]
-            
+
             fields = [{"id": "Creation date",
                        "value": creationDate,
                        "type": "text"},
@@ -65,18 +66,18 @@ class Metadata:
                         "value": bodyWeight,
                         "type": "text"},
                     ]
-            
+
             info = {"isUsingStandardUnits": True,
                      "generatedBy": generatedBy,
                      "customFields": fields}
 
         return info
-    
+
     def subjectInfo(self):
-        creationDateTimeStr = self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
+        creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
         id = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S"))
-        
-        patientName = self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
+
+        patientName = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
         subject = {
         		"id": id,
         		"displayName": patientName
@@ -89,7 +90,7 @@ class Metadata:
         		"subtype": "Plugin Gait"
                 }
         return project
-    
+
     def getValueFromXMLSystem(self, defList, param):
         filename = glob(self.workingDirectory + "*.system")[0]
         tree = ET.parse(filename)
@@ -103,18 +104,17 @@ class Metadata:
         return val
 
     def getSettingsFromTextfile(self,filename):
-        with open(filename) as file:
-            file = open(filename, 'r')
-            content = file.read()
-            lines = content.split("\n")
-            settings = {}
-    
-            for line in lines:
-              parts = line.split("=")
-              if len(parts) == 2:
-                key = str.strip(parts[0])
-                value = str.strip(parts[1])
-                settings[key] = value
+        file = open(filename, 'r')
+        content = file.read()
+        lines = content.split("\n")
+        settings = {}
+
+        for line in lines:
+          parts = line.split("=")
+          if len(parts) == 2:
+            key = str.strip(parts[0])
+            value = str.strip(parts[1])
+            settings[key] = value
         return settings
 
     def getMetaValue(self,measurementName,groupLabelName,scalarName):
@@ -131,7 +131,6 @@ class Metadata:
             scalarValue = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().ToDouble()
         return scalarValue
 
-if __name__ == "__main__":
-    a = Metadata(workingDirectory)
-    b = a.medatadaInfo()
-    #print b
+#a = Metadata(workingDirectory)
+#b = a.subjectInfo()
+#print b
