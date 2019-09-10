@@ -1,0 +1,6 @@
+recursive-include qtmWebGaitReport\Normatives *
+recursive-include qtmWebGaitReport\ffmeg *
+recursive-include qtmWebGaitReport\ffmeg\bin *
+recursive-include qtmWebGaitReport\ffmeg\doc *
+recursive-include qtmWebGaitReport\ffmeg\licenses *
+recursive-include qtmWebGaitReport\ffmeg\presets *
