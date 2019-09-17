@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import qtmWebGaitReport
 import qtools
 from os import path, getcwd
 import numpy as np
@@ -8,7 +8,7 @@ import scipy.signal
 import xml.etree.cElementTree as ET
 import c3dValidation
 
-workingDirectory = "E:\\Qualisys_repository\\Gait-Web-Importer\\Data\\Oxford\\"
+
 
 class MAP:
     def __init__(self,workingDirectory):
@@ -20,12 +20,14 @@ class MAP:
         self.fileNames = c3dValObj.getValidC3dList(False)
 
     def calculateGVS(self):
+
         mapSignalNames = ["Left Pelvic Angles","Left Hip Angles","Left Knee Angles","Left Ankle Angles","Left Foot Progression","Right Pelvic Angles","Right Hip Angles","Right Knee Angles","Right Ankle Angles","Right Foot Progression"]
         components = {'X','Y','Z'}
         measuredValuesNormalized = {}
         gvs = {}
         gvsLn = {}
-        tree = ET.parse(getcwd() + '\\gaitWebReport\\Normatives\\normatives.xml') #load normatives
+
+        tree = ET.parse(qtmWebGaitReport.GAIT_WEB_REPORT_PATH+"qtmWebGaitReport\\normatives\\normatives.xml") #load normatives
         xmlRoot = tree.getroot()
 
         for sigName in mapSignalNames:

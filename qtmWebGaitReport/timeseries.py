@@ -8,6 +8,12 @@ import metadata
 import c3dValidation
 
 #workingDirectory = "E:\\Qualisys_repository\\Gait-Web-Importer\\Data\\FAITest3\\"
+def _getSectionFromMd(md):
+    md_sections=list()
+    for i in range(0, md.GetChildNumber()):
+        md_sections.append(md.GetChild(i).GetLabel())
+    return md_sections
+
 
 class Timeseries:
     def __init__(self,workingDirectory):
@@ -23,6 +29,7 @@ class Timeseries:
         origLabelNames = list()
         origLabels = {}
 
+
         for filename in self.fileNames: #create list of signals. Make sure that missing signal in one of trial will not break it
             measurementName = path.basename(filename)
             measurementName = measurementName.replace('.c3d','')
@@ -30,6 +37,18 @@ class Timeseries:
             origLabelNamesSelected = list()
 
             acq = qtools.fileOpen(filename)
+            md = acq.GetMetaData()
+
+
+            if "PROCESSING" in _getSectionFromMd(md):
+                processingMd =  acq.GetMetaData().FindChild("PROCESSING").value()
+
+                if "Weight" in _getSectionFromMd(processingMd):
+                    mass = processingMd.FindChild("Weight").value().GetInfo().ToString()
+
+                elif "Bodymass" in _getSectionFromMd(processingMd):
+                    mass = processingMd.FindChild("Bodymass").value().GetInfo().ToString()
+
             noMarkers = range(acq.GetPointNumber())
 
             for number in noMarkers:
@@ -60,7 +79,7 @@ class Timeseries:
                             i = 1
                         elif component == "Z":
                             i = 2
-                        bodyMass = float(metaObj.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+                        bodyMass = float(mass[0])#float(metaObj.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
 
                         if "Moment" in ourSigName:
                             constant1 = bodyMass * 100 #10 is arbitrary to make curve look nice
