@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import qtools
+import os
 from os import path
 from glob import glob
 import xml.etree.cElementTree as ET
@@ -8,7 +9,19 @@ from datetime import datetime
 import avi2mp4
 import c3dValidation
 
+from datetime import datetime
+
 #workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\Oxford\\"
+
+def get_creation_date(file):
+    stat = os.stat(file)
+    try:
+        return stat.st_birthtime
+    except AttributeError:
+        # Nous sommes probablement sous Linux. Pas de moyen pour obtenir la date de création, que la dernière date de modification.
+        return stat.st_mtime
+    # Convertir Timestamp en datetime
+
 
 class Measurements:
     def __init__(self,workingDirectory):
@@ -28,11 +41,12 @@ class Measurements:
 
             val = acq.GetDuration()
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
-            frameRate = self.getValueFromXMLSystem("Capture","MeasuredFrameRate")
-            originalDuration = self.getValueFromXMLSystem("Capture","FramesCaptured") / frameRate
+            frameRate = acq.GetPointFrequency()#self.getValueFromXMLSystem("Capture","MeasuredFrameRate")
+            originalDuration = acq.GetDuration()#self.getValueFromXMLSystem("Capture","FramesCaptured") / frameRate
             creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["CREATIONDATEANDTIME"]
-            creationDate = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
-            creationTime = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
+            creation_date = datetime.fromtimestamp(get_creation_date(filename))
+            creationDate = str(creation_date.date())#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
+            creationTime = str(creation_date.time())#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
 
             # if "DIAGNOSIS" in self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0]):
             #     diagnosis = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["DIAGNOSIS"]
