@@ -1,5 +1,5 @@
 /Data/
-/Templates/dist/
-/Templates/build/
-/Templates/*.pyc
+/qtmWebGaitReport/dist/
+/qtmWebGaitReport/build/
+/qtmWebGaitReport/*.pyc
 Thumbs.db
