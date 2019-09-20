@@ -1,5 +1,4 @@
 /Data/
-/qtmWebGaitReport/dist/
-/qtmWebGaitReport/build/
-/qtmWebGaitReport/*.pyc
 Thumbs.db
+config.json
+*.pyc
