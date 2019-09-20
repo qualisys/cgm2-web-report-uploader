@@ -1,23 +1,42 @@
 # -*- coding: utf-8 -*-
 
 import qtools
+import os
 from os import path
 from glob import glob
 import xml.etree.cElementTree as ET
 from datetime import datetime
 import c3dValidation
 
-#workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\myMess\\"
+
+def get_creation_date(file):
+    stat = os.stat(file)
+    try:
+        return stat.st_birthtime
+    except AttributeError:
+        return stat.st_mtime
+
+
 
 class Metadata:
-    def __init__(self,workingDirectory):
+    def __init__(self,workingDirectory, modelledC3dfilenames,subjectMd,creationDate ):
         self.workingDirectory = workingDirectory
+        self.subjectMd  = subjectMd
+        self.modelledC3dfilenames = modelledC3dfilenames
+        self.creationDate = creationDate
 
-        c3dValObj = c3dValidation.c3dValidation(workingDirectory)
-        self.fileNames = c3dValObj.getValidC3dList(False)
+        c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
+        #self.fileNames = c3dValObj.getValidC3dList(False)
+        self.fileNames = []
+        for filename in self.modelledC3dfilenames:
+            self.fileNames.append(str(self.workingDirectory+filename))
+
+
 
     def medatadaInfo(self):
         for filename in self.fileNames:
+
+
             measurementName = path.basename(filename)
             measurementName = measurementName.replace('.c3d','')
             info = []
@@ -26,15 +45,12 @@ class Metadata:
             name =  "UNSPECIFIED"#self.getMetaValue(measurementName,"MANUFACTURER","SOFTWARE")
             version =  "UNSPECIFIED"#self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
 
-            creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
-
-            creationDate = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
-            creationTime = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
+            creation_date = datetime.fromtimestamp(get_creation_date(filename))
+            creationDate = str(creation_date.date())#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
+            creationTime = str(creation_date.time())#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
 
             diagnosis = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["DIAGNOSIS"]
             patientName = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
-            bodyHeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
-            bodyWeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
 
             generatedBy = [{
             			"type": ''.join(type),
@@ -51,19 +67,31 @@ class Metadata:
                         "type": "text"},
                         {
                         "id": "Diagnosis",
-                        "value": diagnosis,
+                        "value": self.subjectMd["diagnosis"],
                         "type": "text"},
                         {
                         "id": "Last name",
-                        "value": patientName,
+                        "value": self.subjectMd["patientName"],
                         "type": "text"},
                         {
                         "id": "Height",
-                        "value": bodyHeight,
+                        "value": self.subjectMd["bodyHeight"],
                         "type": "text"},
                         {
                         "id": "Weight",
-                        "value": bodyWeight,
+                        "value": self.subjectMd["bodyWeight"],
+                        "type": "text"},
+                        {
+                        "id": "Dob",
+                        "value": self.subjectMd["dob"],
+                        "type": "text"},
+                        {
+                        "id": "Sex",
+                        "value": self.subjectMd["sex"],
+                        "type": "text"},
+                        {
+                        "id": "Test condition",
+                        "value": self.subjectMd["test condition"],
                         "type": "text"},
                     ]
 
@@ -74,13 +102,13 @@ class Metadata:
         return info
 
     def subjectInfo(self):
-        creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
-        id = str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S"))
+        #creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
+        id = str(self.creationDate)#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S"))
 
-        patientName = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
+        patientName = self.subjectMd["patientName"]#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
         subject = {
         		"id": id,
-        		"displayName": patientName
+        		"displayName": patientName,
                 }
         return subject
 

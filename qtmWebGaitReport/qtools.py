@@ -51,7 +51,7 @@ def groupEvents(acq,measurementName,unit):
     eventTimesRHS = list()
     eventTimesLTO = list()
     eventTimesRTO = list()
-    
+
     noEvents = range(acq.GetEventNumber())
     frameRate = acq.GetPointFrequency()
 
@@ -61,17 +61,17 @@ def groupEvents(acq,measurementName,unit):
         eventFrame = event.GetFrame()
         eventFrameCropped = eventFrame - firstFrame
         eventTime = eventFrameCropped / frameRate
-        
+
         if unit == "time":
             eventUn = eventTime
         elif unit == "frames":
             eventUn = eventFrameCropped
-           
-        eventName = event.GetLabel() 
+
+        eventName = event.GetLabel()
         eventSide = event.GetContext() # return a string representing the Context
         eventLabelOrig = eventSide + " " + eventName
         eventLabel = renameSignal(signalMapping.eventNameMap,eventLabelOrig)
-        
+
         if eventLabel not in eventLabels:
             eventLabels.append(eventLabel)
 
@@ -96,15 +96,15 @@ def groupEvents(acq,measurementName,unit):
 def timeBetweenEvents(measurementName,events,event1,event2):
     a = events[measurementName + "_" + event1]
     b = events[measurementName + "_" + event2]
-    
+
     aa = np.sort(np.array(a))
     bb = np.sort(np.array(b))
-    
+
     n = np.argmax(bb > aa.item(0))
-    
+
     if n > 0:
         bb = np.delete(bb,n-1)
-        
+
     aaLen = np.size(aa)
     bbLen = np.size(bb)
     index = np.arange(bbLen, aaLen)
@@ -179,7 +179,7 @@ def prepSeriesExport(gvsScore ,measurementNames, signalName, precision, frameRat
 
 def getSeriesExport(gvsScore, measurementNames, sigName, dataType, precision, frameRate, path):
     out = {}
-    
+
     if sigName.startswith('Left'):
         sideSet = 'left'
     elif sigName.startswith('Right'):

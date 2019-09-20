@@ -16,14 +16,18 @@ def _getSectionFromMd(md):
 
 
 class Timeseries:
-    def __init__(self,workingDirectory):
+    def __init__(self,workingDirectory,modelledC3dfilenames):
         self.workingDirectory = workingDirectory
+        self.modelledC3dfilenames = modelledC3dfilenames
 
-        c3dValObj = c3dValidation.c3dValidation(workingDirectory)
-        self.fileNames = c3dValObj.getValidC3dList(False)
+        c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
+        #self.fileNames = c3dValObj.getValidC3dList(False)
+        self.fileNames = []
+        for filename in self.modelledC3dfilenames:
+            self.fileNames.append(str(self.workingDirectory+filename))
 
     def calculateTimeseries(self):
-        metaObj = metadata.Metadata(self.workingDirectory)
+        #metaObj = metadata.Metadata(self.workingDirectory)
         timeseries = dict()
         components = {'X','Y','Z'}
         origLabelNames = list()

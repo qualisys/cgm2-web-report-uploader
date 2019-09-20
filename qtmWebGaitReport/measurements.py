@@ -18,9 +18,8 @@ def get_creation_date(file):
     try:
         return stat.st_birthtime
     except AttributeError:
-        # Nous sommes probablement sous Linux. Pas de moyen pour obtenir la date de création, que la dernière date de modification.
         return stat.st_mtime
-    # Convertir Timestamp en datetime
+
 
 
 class Measurements:
