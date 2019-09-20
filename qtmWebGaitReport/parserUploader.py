@@ -17,15 +17,25 @@ from os import path, getcwd
 #templatesDirectory = os.getcwd()
 
 class ParserUploader:
-    def __init__(self,workingDirectory,configData):
+    def __init__(self,workingDirectory,configData,modelledC3dfilenames,subjectMd,sessionDate):
         self.workingDirectory = workingDirectory
         self.configData = configData
+        self.modelledC3dfilenames = modelledC3dfilenames
+        self.subjectMd = subjectMd
+        self.creationDate = sessionDate
+
 
 
     def createReportJson(self):
         c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
-        measurementNames = c3dValObj.getValidC3dList(True)
-        fileNames = c3dValObj.getValidC3dList(False)
+
+        measurementNames=[]
+        fileNames = []
+        for filename in self.modelledC3dfilenames:
+            measurementNames.append(str(filename[:-4]))
+            fileNames.append(str(self.workingDirectory+filename))
+        # measurementNames = c3dValObj.getValidC3dList(True)
+        # fileNames = c3dValObj.getValidC3dList(False)
         eventsDict = dict()
         null = None
 
@@ -37,7 +47,7 @@ class ParserUploader:
                 analogRate = acq.GetAnalogFrequency()
 
             #Timeseries
-            tsObj = timeseries.Timeseries(self.workingDirectory)
+            tsObj = timeseries.Timeseries(self.workingDirectory,self.modelledC3dfilenames)
             tseries = tsObj.calculateTimeseries()
             sigList = qtools.getKeyNameList(tseries)
 
@@ -115,7 +125,7 @@ class ParserUploader:
 
 
             # #MetaData
-            metaDataObj = metadata.Metadata(self.workingDirectory)
+            metaDataObj = metadata.Metadata(self.workingDirectory,self.modelledC3dfilenames, self.subjectMd,self.creationDate)
             md = metaDataObj.medatadaInfo()
             print "--------------------metadata OK--------------------------------"
 
@@ -186,7 +196,6 @@ class ParserUploader:
         #Upload
         reportData = self.createReportJson()
 
-
         if clientIdExists and baseUrlExists and tokenExists:
             if reportData:
                 baseUrl = self.configData["baseUrl"]
@@ -194,15 +203,16 @@ class ParserUploader:
                 # Get upload token
                 uploadToken = self.configData["token"]
                 headers = {'Authorization': 'Bearer ' + uploadToken}
-                import ipdb; ipdb.set_trace()
                 reportReq = requests.post(baseUrl + '/api/v2/report/', json=reportData, headers=headers)
                 reportResJson = reportReq.json()
                 newReportId = reportResJson['id']
+
                 resourceOutput = videoObj.getMp4Filenames(False)
 
                 for index, resource in enumerate(resourceOutput):
                     fileData = { 'file_' + `index`: open(resource,'rb') }
                     resourceReq = requests.post(baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
+                print "Report [%s] generated"%(str(newReportId))
             else:
                 print "Error: No c3d file found that has been processed with Plugin-Gait."
 
