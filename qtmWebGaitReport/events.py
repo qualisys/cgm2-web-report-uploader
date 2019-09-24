@@ -11,7 +11,7 @@ import numpy as np
 class Events:
     def __init__(self,workingDirectory):
         self.workingDirectory = workingDirectory
-        
+
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
@@ -23,7 +23,7 @@ class Events:
 
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
-            
+
 #            noMarkers = range(acq.GetPointNumber())
             measurementName = path.basename(filename)
             measurementName = measurementName.replace('.c3d','')
@@ -31,27 +31,27 @@ class Events:
             eventLabels[measurementName] = []
 
             frameRate = acq.GetPointFrequency()
-        
+
             noEvents = range(acq.GetEventNumber())
             eventTimesLHS = list()
             eventTimesRHS = list()
             eventTimesLTO = list()
             eventTimesRTO = list()
-        
+
             for number in noEvents:
                 firstFrame = acq.GetFirstFrame()
                 lastFrame = acq.GetLastFrame()
                 event = acq.GetEvent(number) # extract the event of the aquisition
                 eventFrame = event.GetFrame() - firstFrame
                 eventTime = eventFrame / frameRate
-                eventName = event.GetLabel() 
+                eventName = event.GetLabel()
                 eventSide = event.GetContext() # return a string representing the Context
                 eventLabelOrig = eventSide + " " + eventName
                 eventLabel = qtools.renameSignal(signalMapping.eventNameMap,eventLabelOrig)
-                
-                if eventLabel not in eventLabels[measurementName]:
+
+                if eventLabel not in eventLabels[measurementName] and eventLabel != 'None':
                     eventLabels[measurementName].append(eventLabel)
-        
+
                 if eventLabel == "LHS":
                     eventTimesLHS.append(eventTime)
                     eventsGroupped[measurementName + "_" + eventLabel] = eventTimesLHS
@@ -92,8 +92,8 @@ class Events:
                     "rate" : null
                     }
         return (eventData,eventLabels)
-    
-        
+
+
     def checkSignalExists(self,acq, measurementName, GRFSignalName):
         try:
             signal = acq.GetPoint(GRFSignalName)
@@ -103,7 +103,7 @@ class Events:
         else:
             out = True
         return out
-    
+
     def getOnOffEvent(self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType):
         out = []
         if self.checkSignalExists(acq, measurementName, GRFSignalName):
@@ -112,14 +112,14 @@ class Events:
             value = np.array(signal.GetValues()[:,2])
             frameCheckBefore = int(eventFrame - round(frameRate/10, 0))
             frameCheckAfter = int(eventFrame + round(frameRate/10, 0))
-            
+
             if value.shape[0] < frameCheckAfter:
                 frameCheckAfter = value.shape[0] - 1
-                
+
             if frameCheckBefore < 0:
                 frameCheckBefore = 0
 #            print (eventType,measurementName,GRFSignalName,frameCheckBefore,eventFrame,frameCheckAfter,eventTime)
-            
+
             if eventType == 'on' and value[frameCheckBefore] < 0.1 and value[frameCheckAfter] > 0.1:
                 out.append(eventTime)
 #                print (eventType,measurementName,GRFSignalName,out)
@@ -127,6 +127,6 @@ class Events:
                 out.append(eventTime)
 #                print (eventType,measurementName,GRFSignalName,out)
             return out
-        
+
 #a =  Events(workingDirectory)
 #b = a.calculateEvents()
