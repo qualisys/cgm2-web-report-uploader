@@ -12,7 +12,7 @@ import requests
 import c3dValidation
 import json
 from os import path, getcwd
-
+import webbrowser
 #workingDirectory = "C:\\Users\\HLS501\\Documents\\Programming\\API\\pyCGM2\\pyCGM2-Qualisys\\Data\WebReport\\"
 #templatesDirectory = os.getcwd()
 
@@ -213,6 +213,7 @@ class ParserUploader:
                     fileData = { 'file_' + `index`: open(resource,'rb') }
                     resourceReq = requests.post(baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
                 print "Report [%s] generated"%(str(newReportId))
+                webbrowser.open_new_tab(baseUrl + '/claim/' + newReportId)
             else:
                 print "Error: No c3d file found that has been processed with Plugin-Gait."
 
