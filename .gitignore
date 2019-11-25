@@ -1,4 +1,7 @@
 /Data/
+/Build/
+/dist/
+/qtmWebGaitReport.egg-info
 Thumbs.db
 config.json
 *.pyc
