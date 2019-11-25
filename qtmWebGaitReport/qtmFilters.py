@@ -12,7 +12,8 @@ class WebReportFilter(object):
             with open(qtmWebGaitReport.GAIT_WEB_REPORT_PATH + 'config.json') as jsonDataFile:
                 configData = json.load(jsonDataFile)
         else:
-            print "Config.json not found at " + os.getcwd()
+            raise Exception ("Config.json not found at " + qtmWebGaitReport.GAIT_WEB_REPORT_PATH)
+
 
 
         self.processing = parserUploader.ParserUploader(workingDirectory,
