@@ -1,2 +1,0 @@
-ffmpy>=0.2.2
-requests>=2.7.0
