@@ -7,16 +7,16 @@ from glob import glob
 import metadata
 import c3dValidation
 
-#workingDirectory = "E:\\Qualisys_repository\\Gait-Web-Importer\\Data\\FAITest3\\"
+
 def _getSectionFromMd(md):
-    md_sections=list()
+    md_sections = list()
     for i in range(0, md.GetChildNumber()):
         md_sections.append(md.GetChild(i).GetLabel())
     return md_sections
 
 
 class Timeseries:
-    def __init__(self,workingDirectory,modelledC3dfilenames):
+    def __init__(self, workingDirectory, modelledC3dfilenames):
         self.workingDirectory = workingDirectory
         self.modelledC3dfilenames = modelledC3dfilenames
 
@@ -24,34 +24,35 @@ class Timeseries:
         #self.fileNames = c3dValObj.getValidC3dList(False)
         self.fileNames = []
         for filename in self.modelledC3dfilenames:
-            self.fileNames.append(str(self.workingDirectory+filename))
+            self.fileNames.append(
+                str(path.join(self.workingDirectory, filename)))
 
     def calculateTimeseries(self):
         #metaObj = metadata.Metadata(self.workingDirectory)
         timeseries = dict()
-        components = {'X','Y','Z'}
+        components = {'X', 'Y', 'Z'}
         origLabelNames = list()
         origLabels = {}
 
-
-        for filename in self.fileNames: #create list of signals. Make sure that missing signal in one of trial will not break it
+        for filename in self.fileNames:  # create list of signals. Make sure that missing signal in one of trial will not break it
             measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d','')
+            measurementName = measurementName.replace('.c3d', '')
             origLabels[measurementName] = {}
             origLabelNamesSelected = list()
 
             acq = qtools.fileOpen(filename)
             md = acq.GetMetaData()
 
-
             if "PROCESSING" in _getSectionFromMd(md):
-                processingMd =  acq.GetMetaData().FindChild("PROCESSING").value()
+                processingMd = acq.GetMetaData().FindChild("PROCESSING").value()
 
                 if "Weight" in _getSectionFromMd(processingMd):
-                    mass = processingMd.FindChild("Weight").value().GetInfo().ToString()
+                    mass = processingMd.FindChild(
+                        "Weight").value().GetInfo().ToString()
 
                 elif "Bodymass" in _getSectionFromMd(processingMd):
-                    mass = processingMd.FindChild("Bodymass").value().GetInfo().ToString()
+                    mass = processingMd.FindChild(
+                        "Bodymass").value().GetInfo().ToString()
 
             noMarkers = range(acq.GetPointNumber())
 
@@ -67,7 +68,8 @@ class Timeseries:
 
         for origLabelNameSelected in origLabelNamesSelected:
             if signalMapping.sigNameMap.get(origLabelNameSelected) is not "":
-                ourSigName = signalMapping.sigNameMap.get(origLabelNameSelected)
+                ourSigName = signalMapping.sigNameMap.get(
+                    origLabelNameSelected)
 
                 for component in components:
                     timeseries[ourSigName + "_" + component] = {}
@@ -75,7 +77,7 @@ class Timeseries:
                     for filename in self.fileNames:
                         acq = qtools.fileOpen(filename)
                         measurementName = path.basename(filename)
-                        measurementName = measurementName.replace('.c3d','')
+                        measurementName = measurementName.replace('.c3d', '')
 
                         if component == "X":
                             i = 0
@@ -83,10 +85,11 @@ class Timeseries:
                             i = 1
                         elif component == "Z":
                             i = 2
-                        bodyMass = float(mass[0])#float(metaObj.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+                        # float(metaObj.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+                        bodyMass = float(mass[0])
 
                         if "Moment" in ourSigName:
-                            constant1 = bodyMass * 100 #10 is arbitrary to make curve look nice
+                            constant1 = bodyMass * 100  # 10 is arbitrary to make curve look nice
                         elif "GRF" in ourSigName:
                             if component == "X":
                                 i = 1
@@ -105,21 +108,15 @@ class Timeseries:
                             constant1 = 1
                             constant2 = 0
 
-                        if "Power" in ourSigName: #
+                        if "Power" in ourSigName:
                             i = 2
-
 
                         if origLabelNameSelected in origLabels[measurementName]:
                             marker = acq.GetPoint(origLabelNameSelected)
-                            values = (np.array(marker.GetValues()[:,i]) / constant1) + constant2
-                            timeseries[ourSigName + "_" + component][measurementName] = {}
-                            timeseries[ourSigName + "_" + component][measurementName] = values
+                            values = (np.array(marker.GetValues()[
+                                      :, i]) / constant1) + constant2
+                            timeseries[ourSigName + "_" +
+                                       component][measurementName] = {}
+                            timeseries[ourSigName + "_" +
+                                       component][measurementName] = values
         return timeseries
-
-#a = Timeseries(workingDirectory)
-#b = a.calculateTimeseries()
-##
-#import matplotlib.pyplot as plt
-#plt.plot(b["Left GRF_X"]["Walk01"])
-#plt.ylabel('some numbers')
-#plt.show()
