@@ -19,14 +19,18 @@ def loadJson(filePath):
     return dataDict
 
 
-testDataPath = os.path.join(os.getcwd(), "TestFiles", "ClinicalGaitExample")
-savedDataFilePath = os.path.join(testDataPath, "savedJsonData.json")
-processedDir = os.path.join(testDataPath, "processed")
 configData = loadConfigData(os.path.join(os.getcwd(),
                                          "TestFiles", 'example_config.json'))
 
 
-def prepare_parser():
+def get_paths(example_folder_name):
+    testDataPath = os.path.join(
+        os.getcwd(), "TestFiles", example_folder_name)
+    savedDataFilePath = os.path.join(testDataPath, "savedJsonData.json")
+    return testDataPath, savedDataFilePath
+
+
+def prepare_parser(testDataPath):
     # this code is mostly duplicate from the PAF modules template, possibly rework where the functionality goes
     sessionXMLfilename = "session.xml"
     # the + "\\" is because of the Util file in pyCGM2 to update it I would need make a pull request to the pyCGM2 library
@@ -53,15 +57,18 @@ def prepare_parser():
                    "gmfcs": sessionXML.find("Gross_Motor_Function_Classification").text,
                    "fms": sessionXML.find("Functional_Mobility_Scale").text}
     # initiate parser uploader
+    processedDir = os.path.join(testDataPath, "processed")
     parser = parserUploader.ParserUploader(processedDir,
                                            configData, modelledTrials,
                                            subjectInfo, sessionDate)
     return parser
 
 
+
 class TestClinicalGateExample():
     def testCreateReportJson(self):
-        parser = prepare_parser()
+        testDataPath, savedDataFilePath = get_paths("ClinicalGaitExample")
+        parser = prepare_parser(testDataPath)
         generatedReportJson = parser.createReportJson()
         loadedReportJson = loadJson(savedDataFilePath)
 
