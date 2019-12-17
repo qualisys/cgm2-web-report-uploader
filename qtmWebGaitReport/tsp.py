@@ -21,7 +21,7 @@ class TSP:
             workingDirectory + "\\", [path.basename(name)]).stpStats for name in self.fileNames}
 
     def stepTime(self, side):
-        stepTimes = self.getParamFromPyCGM2("stanceDuration", side)
+        stepTimes = self.getParamFromPyCGM2("stanceDuration", [side])
         return stepTimes
 
     def doubleLimbSupport(self):
@@ -129,8 +129,8 @@ class TSP:
             measurementName = path.basename(filename).replace('.c3d', '')
             vals = []
             for side in sides:
-                vals.append(self.perFilePyCGM2tspStats[measurementName][(
-                    parameterName, side)]["values"].tolist())
+                vals += self.perFilePyCGM2tspStats[measurementName][(
+                    parameterName, side)]["values"].tolist()
             params.append({"measurement": measurementName,
                            "values": vals})
         return params
