@@ -31,100 +31,101 @@ class ParserUploader:
         self.subjectMetadata = subjectMetadata
         self.creationDate = sessionDate
 
+    def getTimeseriesResults(self):
+        tsObj = timeseries.Timeseries(
+            self.workingDirectory, self.modelledC3dfilenames)
+        timeSeriesData = tsObj.calculateTimeseries()
+        timeseriesResults = []
+        for signalName, signalData in timeSeriesData.items():
+            timeseriesResults.append(qtools.getSeriesExport(signalData,
+                                                            signalName, "series", 4, self.frameRate, "LINK_MODEL_BASED/ORIGINAL"))
+        return timeseriesResults
+
+    def getGVSResults(self, mapProfile):
+        gvsScore = mapProfile.calculateGVS()[1]
+
+        gvs = []
+        for signalName, signalData in gvsScore.items():
+            gvs.append(qtools.getSeriesExport(
+                signalData,  signalName, "scalar", 4, self.null, "LINK_MODEL_BASED/ORIGINAL"))
+        return gvs
+
+    def getGPSResults(self, mapProfile):
+        gpsScoreLeft = mapProfile.calculateGPS()[0]
+        gpsScoreRight = mapProfile.calculateGPS()[1]
+        gpsScoreOverall = mapProfile.calculateGPS()[2]
+
+        gpsLeft = mapProfile.gpsExport(
+            gpsScoreLeft, "Left_GPS_ln_mean", self.frameRate)
+        gpsRight = mapProfile.gpsExport(
+            gpsScoreRight, "Right_GPS_ln_mean", self.frameRate)
+        gpsOverall = mapProfile.gpsExport(
+            gpsScoreOverall, "Overall_GPS_ln_mean", self.frameRate)
+        return gpsLeft + gpsRight + gpsOverall
+
+    def getEMGResults(self):
+        emgObj = emg.EMG(self.workingDirectory)
+        emgData = emgObj.calculateRawEMG()
+
+        emgExp = []
+        for signalName, signalData in emgData.items():
+            emgExp.append(qtools.getSeriesExport(
+                signalData, signalName, "series", 8, self.analogRate, "ANALOG/EMG_RAW_web"))
+        return emgExp
+
+    def getEvents(self):
+        eventsObj = events.Events(self.workingDirectory)
+        eventData = eventsObj.calculateEvents()[0]
+        eventLabels = eventsObj.calculateEvents()[1]
+
+        maxNumEvents = 0
+        maxEventList = []
+        for measurementName in self.measurementNames:
+            if measurementName in eventLabels.keys():
+                numEvents = len(eventLabels[measurementName])
+                if numEvents > maxNumEvents:
+                    maxEventList = eventLabels[measurementName]
+        eventsDict = {}
+        for label in maxEventList:
+            set = ""
+            if label.lower().startswith("l"):
+                set = "left"
+            else:
+                set = "right"
+
+            eventsDict[label] = {"id": label,
+                                    "set": set,
+                                    "data": qtools.setEventData(eventData, self.measurementNames, label)
+                                    }
+
+        ev = qtools.loadEvents(maxEventList, eventsDict)
+        return ev
+
     def createReportJson(self):
         c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
 
-        measurementNames = c3dValObj.getValidC3dList(True)
+        self.measurementNames = c3dValObj.getValidC3dList(True)
         fileNames = c3dValObj.getValidC3dList(False)
-        eventsDict = {}
-        null = None
+        self.null = None
 
         if fileNames != []:  # empty list means c3d does not contain Plugin-Gait created 'LAnkleAngles' or there are no events
-            frameRate, analogRate = getFrameAndAnalogRateFromC3D(fileNames[0])
+            self.frameRate, self.analogRate = getFrameAndAnalogRateFromC3D(
+                fileNames[0])
 
-            # Timeseries
-            tsObj = timeseries.Timeseries(
-                self.workingDirectory, self.modelledC3dfilenames)
-            timeSeriesData = tsObj.calculateTimeseries()
-
-            ts = []
-            for signalName, signalData  in timeSeriesData.items():
-                ts.append(qtools.getSeriesExport(signalData,
-                                                 signalName, "series", 4, frameRate, "LINK_MODEL_BASED/ORIGINAL"))
-
+            ts = self.getTimeseriesResults()
             print "--------------------Timeseries OK--------------------------------"
-            # GVS
             mapProfile = map2.MAP(self.workingDirectory)
-            gvsScore = mapProfile.calculateGVS()[1]
-            sigList = qtools.getKeyNameList(gvsScore)
-
-            gvs = []
-            for signalName, signalData in gvsScore.items():
-                gvs.append(qtools.getSeriesExport(
-                    signalData,  signalName, "scalar", 4, null, "LINK_MODEL_BASED/ORIGINAL"))
-
+            gvs = self.getGVSResults(mapProfile)
             print "--------------------GVS OK--------------------------------"
-
-            # GPS
-            gpsScoreLeft = mapProfile.calculateGPS()[0]
-            gpsScoreRight = mapProfile.calculateGPS()[1]
-            gpsScoreOverall = mapProfile.calculateGPS()[2]
-
-            gpsLeft = mapProfile.gpsExport(
-                gpsScoreLeft, "Left_GPS_ln_mean", frameRate)
-            gpsRight = mapProfile.gpsExport(
-                gpsScoreRight, "Right_GPS_ln_mean", frameRate)
-            gpsOverall = mapProfile.gpsExport(
-                gpsScoreOverall, "Overall_GPS_ln_mean", frameRate)
-            gps = gpsLeft + gpsRight + gpsOverall
-
+            gps = self.getGPSResults(mapProfile)
             print "--------------------GPS OK--------------------------------"
-
-            # EMG
-            emgObj = emg.EMG(self.workingDirectory)
-            emgData = emgObj.calculateRawEMG()
-
-            emgExp = []
-            for signalName, signalData in emgData.items():
-                emgExp.append(qtools.getSeriesExport(
-                    signalData, signalName, "series", 8, analogRate, "ANALOG/EMG_RAW_web"))
-
+            emgExp = self.getEMGResults()
             print "--------------------EMG--------------------------------"
 
             # Events
-    #        noMeasurements = range(len(measurementNames))
-            eventsObj = events.Events(self.workingDirectory)
-            eventData = eventsObj.calculateEvents()[0]
-            eventLabels = eventsObj.calculateEvents()[1]
-
-            maxNumEvents = 0
-            maxEventList = []
-            for measurementName in measurementNames:
-                if measurementName in eventLabels.keys():
-                    numEvents = len(eventLabels[measurementName])
-                    if numEvents > maxNumEvents:
-                        maxEventList = eventLabels[measurementName]
-
-            for label in maxEventList:
-                set = ""
-                if label.lower().startswith("l"):
-                    set = "left"
-                else:
-                    set = "right"
-
-                eventsDict[label] = {"id": label,
-                                     "set": set,
-                                     "data": qtools.setEventData(eventData, measurementNames, label)
-                                     }
-
-            ev = qtools.loadEvents(maxEventList, eventsDict)
+            ev = self.getEvents()
 
             print "--------------------events OK--------------------------------"
-            # root = {
-            #         "results": ts + gvs + gps + emgExp,
-            #         "events": ev,
-            #         "clientId": self.configData["clientId"],
-            #         }
 
             # #MetaData
             metaDataObj = metadata.Metadata(
@@ -143,8 +144,7 @@ class ParserUploader:
             tspObj = tsp.TSP(self.workingDirectory)
             tsparams = tspObj.export()
             print "--------------------TSP OK--------------------------------"
-            #
-            #
+
             # Measurements
             measObj = measurements.Measurements(self.workingDirectory)
             mea = measObj.measurementInfo()
