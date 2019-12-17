@@ -13,6 +13,7 @@ from datetime import datetime
 
 #workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\Oxford\\"
 
+
 def get_creation_date(file):
     stat = os.stat(file)
     try:
@@ -21,9 +22,8 @@ def get_creation_date(file):
         return stat.st_mtime
 
 
-
 class Measurements:
-    def __init__(self,workingDirectory):
+    def __init__(self, workingDirectory):
         self.workingDirectory = workingDirectory
 
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
@@ -35,27 +35,35 @@ class Measurements:
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
             measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d','')
+            measurementName = measurementName.replace('.c3d', '')
             resources = []
 
             val = acq.GetDuration()
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
-            frameRate = acq.GetPointFrequency()#self.getValueFromXMLSystem("Capture","MeasuredFrameRate")
-            originalDuration = acq.GetDuration()#self.getValueFromXMLSystem("Capture","FramesCaptured") / frameRate
-            creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["CREATIONDATEANDTIME"]
+            # self.getValueFromXMLSystem("Capture","MeasuredFrameRate")
+            frameRate = acq.GetPointFrequency()
+            # self.getValueFromXMLSystem("Capture","FramesCaptured") / frameRate
+            originalDuration = acq.GetDuration()
+            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["CREATIONDATEANDTIME"]
+            creationDateTimeStr = "2019,6,12,12,54,7"
             creation_date = datetime.fromtimestamp(get_creation_date(filename))
-            creationDate = str(creation_date.date())#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
-            creationTime = str(creation_date.time())#str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
+            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
+            creationDate = str(creation_date.date())
+            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
+            creationTime = str(creation_date.time())
 
             # if "DIAGNOSIS" in self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0]):
             #     diagnosis = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["DIAGNOSIS"]
             # else:
             #     diagnosis = ""
-            diagnosis =""
+            diagnosis = ""
 
-            patientName = "UNSPECIFIED"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["NAME"]
-            bodyHeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
-            bodyWeight = 0#float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["NAME"]
+            patientName = "UNSPECIFIED"
+            # float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
+            bodyHeight = 0
+            # float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
+            bodyWeight = 0
 
             videoObj = avi2mp4.AviToMp4(self.workingDirectory)
             videoFilenames = videoObj.getMp4Filenames(True)
@@ -63,34 +71,34 @@ class Measurements:
             for videoFilename in videoFilenames:
                 videoName = videoFilename.replace('.mp4', '')
                 resources.append({
-                    			"type": "video",
-                    			"name": videoName,
-                    			"src": videoFilename})
+                    "type": "video",
+                    "name": videoName,
+                    "src": videoFilename})
 
-            fields = [{      "id": "Creation date",
+            fields = [{"id": "Creation date",
                              "value": creationDate,
                              "type": "text"},
-                            {
-                             "id": "Creation time",
-                             "value": creationTime,
-                             "type": "text"},
-                            {
-                             "id": "Diagnosis",
-                             "value": diagnosis,
-                             "type": "text"},
-                            {
-                             "id": "Last name",
-                             "value": patientName,
-                             "type": "text"},
-                            {
-                             "id": "Height",
-                             "value": bodyHeight,
-                             "type": "text"},
-                            {
-                             "id": "Weight",
-                             "value": bodyWeight,
-                             "type": "text"},
-                            ]
+                      {
+                "id": "Creation time",
+                "value": creationTime,
+                "type": "text"},
+                {
+                "id": "Diagnosis",
+                "value": diagnosis,
+                "type": "text"},
+                {
+                "id": "Last name",
+                "value": patientName,
+                "type": "text"},
+                {
+                "id": "Height",
+                "value": bodyHeight,
+                "type": "text"},
+                {
+                "id": "Weight",
+                "value": bodyWeight,
+                "type": "text"},
+            ]
 
             info.append({"duration": val,
                          "startOffset": startOffset,
@@ -114,18 +122,18 @@ class Measurements:
                         val = float(kid.attrib["value"])
         return val
 
-    def getSettingsFromTextfile(self,filename):
+    def getSettingsFromTextfile(self, filename):
         file = open(filename, 'r')
         content = file.read()
         lines = content.split("\n")
         settings = {}
 
         for line in lines:
-          parts = line.split("=")
-          if len(parts) == 2:
-            key = str.strip(parts[0])
-            value = str.strip(parts[1])
-            settings[key] = value
+            parts = line.split("=")
+            if len(parts) == 2:
+                key = str.strip(parts[0])
+                value = str.strip(parts[1])
+                settings[key] = value
         return settings
 
 #a = Measurements(workingDirectory)
