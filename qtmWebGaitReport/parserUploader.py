@@ -15,6 +15,14 @@ from os import path, getcwd
 import webbrowser
 
 
+def getFrameAndAnalogRateFromC3D(filePath):
+    acq = qtools.fileOpen(filePath)
+
+    frameRate = acq.GetPointFrequency()
+    analogRate = acq.GetAnalogFrequency()
+    return frameRate, analogRate
+
+
 class ParserUploader:
     def __init__(self, workingDirectory, configData, modelledC3dfilenames, subjectMetadata, sessionDate):
         self.workingDirectory = workingDirectory
@@ -26,34 +34,23 @@ class ParserUploader:
     def createReportJson(self):
         c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
 
-        measurementNames = []
-        fileNames = []
-        for filename in self.modelledC3dfilenames:
-            measurementNames.append(str(filename[:-4]))
-            fileNames.append(
-                str(path.join(self.workingDirectory, filename)))
-        # measurementNames = c3dValObj.getValidC3dList(True)
-        # fileNames = c3dValObj.getValidC3dList(False)
-        eventsDict = dict()
+        measurementNames = c3dValObj.getValidC3dList(True)
+        fileNames = c3dValObj.getValidC3dList(False)
+        eventsDict = {}
         null = None
 
-        if fileNames:  # empty list means c3d does not contain Plugin-Gait created 'LAnkleAngles' or there are no events
-            for filename in fileNames:
-                acq = qtools.fileOpen(filename)
-
-                frameRate = acq.GetPointFrequency()
-                analogRate = acq.GetAnalogFrequency()
+        if fileNames != []:  # empty list means c3d does not contain Plugin-Gait created 'LAnkleAngles' or there are no events
+            frameRate, analogRate = getFrameAndAnalogRateFromC3D(fileNames[0])
 
             # Timeseries
             tsObj = timeseries.Timeseries(
                 self.workingDirectory, self.modelledC3dfilenames)
-            tseries = tsObj.calculateTimeseries()
-            sigList = qtools.getKeyNameList(tseries)
+            timeSeriesData = tsObj.calculateTimeseries()
 
-            ts = list()
-            for sig in sigList:
-                ts.append(qtools.getSeriesExport(tseries, measurementNames,
-                                                 sig, "series", 4, frameRate, "LINK_MODEL_BASED/ORIGINAL"))
+            ts = []
+            for signalName, signalData  in timeSeriesData.items():
+                ts.append(qtools.getSeriesExport(signalData,
+                                                 signalName, "series", 4, frameRate, "LINK_MODEL_BASED/ORIGINAL"))
 
             print "--------------------Timeseries OK--------------------------------"
             # GVS
@@ -61,10 +58,10 @@ class ParserUploader:
             gvsScore = mapProfile.calculateGVS()[1]
             sigList = qtools.getKeyNameList(gvsScore)
 
-            gvs = list()
-            for sig in sigList:
+            gvs = []
+            for signalName, signalData in gvsScore.items():
                 gvs.append(qtools.getSeriesExport(
-                    gvsScore, measurementNames, sig, "scalar", 4, null, "LINK_MODEL_BASED/ORIGINAL"))
+                    signalData,  signalName, "scalar", 4, null, "LINK_MODEL_BASED/ORIGINAL"))
 
             print "--------------------GVS OK--------------------------------"
 
@@ -86,12 +83,11 @@ class ParserUploader:
             # EMG
             emgObj = emg.EMG(self.workingDirectory)
             emgData = emgObj.calculateRawEMG()
-            sigList = qtools.getKeyNameList(emgData)
 
-            emgExp = list()
-            for sig in sigList:
+            emgExp = []
+            for signalName, signalData in emgData.items():
                 emgExp.append(qtools.getSeriesExport(
-                    emgData, measurementNames, sig, "series", 8, analogRate, "ANALOG/EMG_RAW_web"))
+                    signalData, signalName, "series", 8, analogRate, "ANALOG/EMG_RAW_web"))
 
             print "--------------------EMG--------------------------------"
 
@@ -102,10 +98,12 @@ class ParserUploader:
             eventLabels = eventsObj.calculateEvents()[1]
 
             maxNumEvents = 0
+            maxEventList = []
             for measurementName in measurementNames:
-                numEvents = len(eventLabels[measurementName])
-                if numEvents > maxNumEvents:
-                    maxEventList = eventLabels[measurementName]
+                if measurementName in eventLabels.keys():
+                    numEvents = len(eventLabels[measurementName])
+                    if numEvents > maxNumEvents:
+                        maxEventList = eventLabels[measurementName]
 
             for label in maxEventList:
                 set = ""
@@ -166,7 +164,7 @@ class ParserUploader:
 
             return root
         else:
-            root = []
+            root = {}
             return root
 
     def Upload(self):

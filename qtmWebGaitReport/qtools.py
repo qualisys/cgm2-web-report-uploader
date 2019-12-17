@@ -153,48 +153,35 @@ def rootMeanSquared(sig):
     rms = np.sqrt(mse)
     return rms
 
-def getKeyNameList(gvsScore):
-    f = list()
-    for k,v in gvsScore.iteritems():
-        f.append(k)
-    return f
+def getKeyNameList(dictionary):
+    return list(dictionary.keys())
 
-def getSeriesValuesExport(gvsScore, signalName, precision, frameRate):
-#    np.set_printoptions(suppress=True)
-    d = list()
-    for sigName, sigVal in gvsScore.iteritems():
-        if signalName == sigName:
-            for trialName, trialVal in sigVal.iteritems():
-                val = gvsScore[sigName][trialName]
-                val = np.round(val,precision).tolist()
-                if val is not "":
-                    d.append({"measurement": trialName,
-                         "values": val,
-                         "rate": frameRate})
-    return d
+def getSeriesValuesExport(signalData, signalName, precision, frameRate):
+    exportFormatData = []
+    for trialName, trialData in signalData.items():
+        trialData = np.round(trialData,precision).tolist()
+        if trialData is not "":
+            exportFormatData.append({"measurement": trialName,
+                    "values": trialData,
+                    "rate": frameRate})
+    return exportFormatData
 
-def prepSeriesExport(gvsScore ,measurementNames, signalName, precision, frameRate):
-    val = getSeriesValuesExport(gvsScore,signalName, precision, frameRate)
-    return val
+def getSeriesExport(signalData, signalName, dataType, precision, frameRate, path):
 
-def getSeriesExport(gvsScore, measurementNames, sigName, dataType, precision, frameRate, path):
-    out = {}
-
-    if sigName.startswith('Left'):
+    if signalName.startswith('Left'):
         sideSet = 'left'
-    elif sigName.startswith('Right'):
+    elif signalName.startswith('Right'):
         sideSet = 'right'
     else:
         sideSet = null
 
-    out = {
-       "id": sigName,
+    return {
+       "id": signalName,
        "type": dataType,
        "set": sideSet,
        "path": path,
-       "data": prepSeriesExport(gvsScore,measurementNames,sigName, precision, frameRate)
+       "data": getSeriesValuesExport(signalData,signalName, precision, frameRate)
        }
-    return out
 
 def isPointExist(acq,label):
     i = acq.GetPoints().Begin()
@@ -212,5 +199,4 @@ def isPointExist(acq,label):
         return False
 
 #a = getSeriesValuesExport(b, 'Left Ankle Angles_X', 4, 100)
-#c = prepSeriesExport(b ,('20141105-GBNNN-VDEF-16','20141105-GBNNN-VDEF-07'), 'Left Ankle Angles_X', 4, 100)
 #d = getSeriesExport(b ,('20141105-GBNNN-VDEF-16','20141105-GBNNN-VDEF-07'), 'Left Ankle Angles_X', 'series', 4, 100)
