@@ -64,7 +64,6 @@ def prepare_parser(testDataPath):
     return parser
 
 
-
 class TestClinicalGateExample():
     def testCreateReportJson(self):
         testDataPath, savedDataFilePath = get_paths("ClinicalGaitExample")
@@ -72,4 +71,8 @@ class TestClinicalGateExample():
         generatedReportJson = parser.createReportJson()
         loadedReportJson = loadJson(savedDataFilePath)
 
-        assert generatedReportJson == loadedReportJson, "generated report json differs from loaded one"
+        for key, val in generatedReportJson.items():
+            assert key in loadedReportJson.keys(
+            ), "{} not in loaded reoport json but exists in generated one".format(key)
+            assert val == loadedReportJson[key], "value for entry under key = {} differs from loaded vs generated".format(
+                key)
