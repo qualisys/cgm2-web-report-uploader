@@ -21,26 +21,30 @@ class TSP:
             workingDirectory + "\\", [path.basename(name)]).stpStats for name in self.fileNames}
 
     def stepTime(self, side):
-        stepTimes = self.getParamFromPyCGM2("stanceDuration", [side])
-        return stepTimes
+        # stepTimes = self.getParamFromPyCGM2("stepTime", [side])
+        # returns an empty list since the stepTime is not implemented in the pyCGM2 analysis
+        return []
 
-    def doubleLimbSupport(self):
-        leftDoubleSupport = []
-        rightDoubleSupport = []
+    @staticmethod
+    def calculateDoubleLimbSupportInSeconds(duration, percentage):
+        params = []
+        assert len(duration) == len(percentage), "duration and percantage inputs need to be of same length, but currently are len(duration)={} and len(percentage)={}".format(
+            len(duration), len(percentage))
+        for curDurations, curPercentages in zip(duration, percentage):
+            measurementName = curDurations["measurement"]
+            vals = np.array(curDurations["values"]) * \
+                np.array(curPercentages["values"])/100
+            params.append({"measurement": measurementName,
+                           "values": vals.tolist()})
+        return params
 
-        for filename in self.fileNames:
-            acq = qtools.fileOpen(filename)
-            measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
-            events = qtools.groupEvents(acq, measurementName, "time")
-
-            leftDoubleSupport.append({"measurement": measurementName,
-                                      "values": qtools.timeBetweenEvents(measurementName, events, "LHS", "RTO")
-                                      })
-            rightDoubleSupport.append({"measurement": measurementName,
-                                       "values": qtools.timeBetweenEvents(measurementName, events, "RHS", "LTO")
-                                       })
-        return (leftDoubleSupport, rightDoubleSupport)
+    def doubleLimbSupport(self, side):
+        duration = self.getParamFromPyCGM2("duration", [side])
+        doubleStancePercentage = self.getParamFromPyCGM2(
+            "doubleStance1", [side])
+        doubleStanceSeconds = TSP.calculateDoubleLimbSupportInSeconds(
+            duration, doubleStancePercentage)
+        return doubleStanceSeconds
 
     def strideTime(self):
         leftStrideTime = dict()
@@ -59,46 +63,9 @@ class TSP:
 
         return (leftStrideTime, rightStrideTime)
 
-    def stanceTimePct(self):
-        #        leftCycleTime = dict()
-        #        rightCycleTime = dict()
-        leftStanceTime = dict()
-        rightStanceTime = dict()
-        leftStanceTimePctD = dict()
-        rightStanceTimePctD = dict()
-        leftStanceTimePct = list()
-        rightStanceTimePct = list()
-
-        for filename in self.fileNames:
-            acq = qtools.fileOpen(filename)
-            measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
-            events = qtools.groupEvents(acq, measurementName, "time")
-
-#
-            leftStanceTime[measurementName] = qtools.timeBetweenEvents(
-                measurementName, events, "LHS", "LTO")
-            rightStanceTime[measurementName] = qtools.timeBetweenEvents(
-                measurementName, events, "RHS", "RTO")
-
-            left_stride_number = len(self.strideTime()[0][measurementName])
-            right_stride_number = len(self.strideTime()[1][measurementName])
-
-            # ISSUE FOUND OUT in native Code.
-            leftStanceTimePctD[measurementName] = list(np.array(
-                leftStanceTime[measurementName][0:left_stride_number]) / np.array(self.strideTime()[0][measurementName]) * 100)
-            rightStanceTimePctD[measurementName] = list(np.array(
-                rightStanceTime[measurementName][0:right_stride_number]) / np.array(self.strideTime()[1][measurementName]) * 100)
-#
-
-            leftStanceTimePct.append({"measurement": measurementName,
-                                      "values": leftStanceTimePctD[measurementName]
-                                      })
-            rightStanceTimePct.append({"measurement": measurementName,
-                                       "values": rightStanceTimePctD[measurementName]
-                                       })
-
-        return (leftStanceTimePct, rightStanceTimePct)
+    def stanceTimePct(self, side):
+        stanceTimePct = self.getParamFromPyCGM2("stancePhase", [side])
+        return stanceTimePct
 
     def cadence(self):
         cadence = self.getParamFromPyCGM2(
@@ -119,11 +86,15 @@ class TSP:
         stepLengths = self.getParamFromPyCGM2("stepLength", [side])
         return stepLengths
 
-    def getParamFromPyCGM2(self, parameterName, sides):
+    @staticmethod
+    def check_sides_validity(sides):
         acceptedSides = ["Left", "Right"]
         for side in sides:
             assert side in acceptedSides, "attribute side = {} needs to be in {}".format(
                 side, acceptedSides)
+
+    def getParamFromPyCGM2(self, parameterName, sides):
+        TSP.check_sides_validity(sides)
         params = []
         for filename in self.fileNames:
             measurementName = path.basename(filename).replace('.c3d', '')
@@ -147,19 +118,19 @@ class TSP:
                {"id": "Left_Initial_Double_Limb_Support_Time",
                 "set": "left",
                 "type": "scalar",
-                "data":  self.doubleLimbSupport()[0]},
+                "data":  self.doubleLimbSupport("Left")},
                {"id": "Right_Initial_Double_Limb_Support_Time",
                 "set": "right",
                 "type": "scalar",
-                "data":  self.doubleLimbSupport()[1]},
+                "data":  self.doubleLimbSupport("Right")},
                {"id": "Left_Stance_Time_Pct",
                 "set": "left",
                 "type": "scalar",
-                "data":  self.stanceTimePct()[0]},
+                "data":  self.stanceTimePct("Left")},
                {"id": "Right_Stance_Time_Pct",
                 "set": "right",
                 "type": "scalar",
-                "data":  self.stanceTimePct()[1]},
+                "data":  self.stanceTimePct("Right")},
                {"id": "Cadence",
                 "set": self.null,
                 "type": "scalar",
