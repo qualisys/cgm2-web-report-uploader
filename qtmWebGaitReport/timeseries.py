@@ -81,7 +81,6 @@ class Timeseries:
                             i = 1
                         elif component == "Z":
                             i = 2
-                        # float(metaObj.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
                         bodyMass = float(mass[0])
 
                         if "Moment" in ourSigName:
