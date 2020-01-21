@@ -82,9 +82,9 @@ class Timeseries:
                         elif component == "Z":
                             i = 2
                         bodyMass = float(mass[0])
-
+                        constant2 = 0
                         if "Moment" in ourSigName:
-                            constant1 = bodyMass * 100  # 10 is arbitrary to make curve look nice
+                            constant1 = 1000  # converts from mm to m
                         elif "GRF" in ourSigName:
                             if component == "X":
                                 i = 1
@@ -101,7 +101,6 @@ class Timeseries:
                             constant2 = -90
                         else:
                             constant1 = 1
-                            constant2 = 0
 
                         if "Power" in ourSigName:
                             i = 2

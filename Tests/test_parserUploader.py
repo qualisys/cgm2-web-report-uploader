@@ -63,6 +63,8 @@ def prepare_parser(testDataPath):
                                               subjectInfo, sessionDate)
     return reportJsonGenerator
 
+# with open(savedDataFilePath, 'w') as outfile: json.dump(generatedReportJson, outfile, indent=4) # for saving updated generated json
+
 
 class TestClinicalGateExample():
     def testCreateReportJson(self):
