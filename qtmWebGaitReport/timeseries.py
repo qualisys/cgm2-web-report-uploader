@@ -21,11 +21,7 @@ class Timeseries:
         self.modelledC3dfilenames = modelledC3dfilenames
 
         c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
-        #self.fileNames = c3dValObj.getValidC3dList(False)
-        self.fileNames = []
-        for filename in self.modelledC3dfilenames:
-            self.fileNames.append(
-                str(path.join(self.workingDirectory, filename)))
+        self.fileNames = c3dValObj.getValidC3dList(False)
 
     def calculateTimeseries(self):
         #metaObj = metadata.Metadata(self.workingDirectory)
