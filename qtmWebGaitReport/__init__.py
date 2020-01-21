@@ -1,5 +1,10 @@
+import sys
 import os
-import glob
-import re
-cased_path = glob.glob(re.sub(r'([^:])(?=[/\\]|$)', r'[\1]', __file__))[0]
-GAIT_WEB_REPORT_PATH = os.path.abspath(os.path.join(os.path.dirname(cased_path), os.pardir)) + "\\"
+GAIT_WEB_REPORT_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir))
+
+# determine if application is a script file or frozen exe
+if getattr(sys, 'frozen', False):
+    PATH_TO_MAIN = os.path.dirname(sys.executable)
+elif __file__:
+    PATH_TO_MAIN = GAIT_WEB_REPORT_PATH

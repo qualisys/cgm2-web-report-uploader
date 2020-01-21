@@ -18,7 +18,7 @@ def loadConfigData(configPath):
 class WebReportFilter(object):
     def __init__(self, workingDirectory, modelledC3dfilenames, subjectInfo, sessionDate):
         configData = loadConfigData(os.path.join(
-            qtmWebGaitReport.GAIT_WEB_REPORT_PATH, 'config.json'))
+            qtmWebGaitReport.PATH_TO_MAIN, 'config.json'))
 
         self.processing = parserUploader.ParserUploader(workingDirectory,
                                                         configData, modelledC3dfilenames,

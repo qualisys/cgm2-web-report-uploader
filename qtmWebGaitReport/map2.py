@@ -27,8 +27,8 @@ class MAP:
         gvs = {}
         gvsLn = {}
 
-        tree = ET.parse(qtmWebGaitReport.GAIT_WEB_REPORT_PATH +
-                        "qtmWebGaitReport\\normatives\\normatives.xml")  # load normatives
+        tree = ET.parse(path.join(qtmWebGaitReport.GAIT_WEB_REPORT_PATH, "qtmWebGaitReport", "Normatives",
+                                  "normatives.xml"))
         xmlRoot = tree.getroot()
 
         for sigName in mapSignalNames:
@@ -173,5 +173,5 @@ class MAP:
                        })
         return gpsOut
 
-#a = MAP(workingDirectory)
-#b = a.calculateGVS()
+# a = MAP(workingDirectory)
+# b = a.calculateGVS()
