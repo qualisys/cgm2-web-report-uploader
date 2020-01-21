@@ -6,8 +6,6 @@ import numpy as np
 import c3dValidation
 from pyCGM2.Lib import analysis
 
-# workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\Oxford\\"
-
 
 class TSP:
     def __init__(self, workingDirectory):
@@ -21,47 +19,13 @@ class TSP:
             workingDirectory + "\\", [path.basename(name)]).stpStats for name in self.fileNames}
 
     def stepTime(self, side):
-        # stepTimes = self.getParamFromPyCGM2("stepTime", [side])
-        # returns an empty list since the stepTime is not implemented in the pyCGM2 analysis
-        return []
-
-    @staticmethod
-    def calculateDoubleLimbSupportInSeconds(duration, percentage):
-        params = []
-        assert len(duration) == len(percentage), "duration and percantage inputs need to be of same length, but currently are len(duration)={} and len(percentage)={}".format(
-            len(duration), len(percentage))
-        for curDurations, curPercentages in zip(duration, percentage):
-            measurementName = curDurations["measurement"]
-            vals = np.array(curDurations["values"]) * \
-                np.array(curPercentages["values"])/100
-            params.append({"measurement": measurementName,
-                           "values": vals.tolist()})
-        return params
+        stepTimes = self.getParamFromPyCGM2("stepDuration", [side])
+        return stepTimes
 
     def doubleLimbSupport(self, side):
-        duration = self.getParamFromPyCGM2("duration", [side])
-        doubleStancePercentage = self.getParamFromPyCGM2(
-            "doubleStance1", [side])
-        doubleStanceSeconds = TSP.calculateDoubleLimbSupportInSeconds(
-            duration, doubleStancePercentage)
+        doubleStanceSeconds = self.getParamFromPyCGM2(
+            "doubleStance1Duration", [side])
         return doubleStanceSeconds
-
-    def strideTime(self):
-        leftStrideTime = dict()
-        rightStrideTime = dict()
-
-        for filename in self.fileNames:
-            acq = qtools.fileOpen(filename)
-            measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
-            events = qtools.groupEvents(acq, measurementName, "time")
-
-            leftStrideTime[measurementName] = qtools.timeBetweenEvents(
-                measurementName, events, "LHS", "LHS")
-            rightStrideTime[measurementName] = qtools.timeBetweenEvents(
-                measurementName, events, "RHS", "RHS")
-
-        return (leftStrideTime, rightStrideTime)
 
     def stanceTimePct(self, side):
         stanceTimePct = self.getParamFromPyCGM2("stancePhase", [side])
@@ -154,7 +118,3 @@ class TSP:
 
                ]
         return exp
-
-# a = TSP(workingDirectory)
-# b = a.strideLength()
-# print b
