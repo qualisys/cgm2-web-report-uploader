@@ -167,7 +167,6 @@ def main():
                          "fms": sessionXML.find("Functional_Mobility_Scale").text}
 
             if webReportFlag:
-                workingDirectory = DATA_PATH
                 report = qtmFilters.WebReportFilter(
                     DATA_PATH, modelledTrials, subjectMd, sessionDate)
                 # report.exportJson()
