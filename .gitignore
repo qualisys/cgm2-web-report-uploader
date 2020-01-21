@@ -2,6 +2,8 @@
 Thumbs.db
 config.json
 *.pyc
+.vscode
+*.code-workspace
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
