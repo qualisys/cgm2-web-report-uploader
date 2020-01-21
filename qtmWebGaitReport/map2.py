@@ -18,7 +18,7 @@ class MAP:
         self.measurementNames = c3dValObj.getValidC3dList(True)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
-    def calculateGVS(self):
+    def getGVS(self):
 
         mapSignalNames = ["Left Pelvic Angles", "Left Hip Angles", "Left Knee Angles", "Left Ankle Angles", "Left Foot Progression",
                           "Right Pelvic Angles", "Right Hip Angles", "Right Knee Angles", "Right Ankle Angles", "Right Foot Progression"]
@@ -84,7 +84,7 @@ class MAP:
         GPSOverall = {}
 
         for measurementName in self.measurementNames:
-            gvs = self.calculateGVS()[0]
+            gvs = self.getGVS()[0]
 
             GPSLeft[measurementName] = np.sqrt(
                 self.getGVS(gvs, measurementName, "Left Ankle Angles_X")**2 +
