@@ -94,9 +94,9 @@ class ParserUploader:
                 set = "right"
 
             eventsDict[label] = {"id": label,
-                                    "set": set,
-                                    "data": qtools.setEventData(eventData, self.measurementNames, label)
-                                    }
+                                 "set": set,
+                                 "data": qtools.setEventData(eventData, self.measurementNames, label)
+                                 }
 
         ev = qtools.loadEvents(maxEventList, eventsDict)
         return ev
@@ -192,11 +192,8 @@ class ParserUploader:
             if reportData:
                 baseUrl = self.configData["baseUrl"]
 
-                # Get upload token
-                from temp import get_upload_token
-                uploadToken = get_upload_token(
-                    self.configData["baseUrl"], self.configData["clientId"])
-                headers = {'Authorization': 'Bearer ' + uploadToken}
+                headers = {'Authorization': 'Bearer ' +
+                           self.configData["token"]}
 
                 reportReq = requests.post(
                     baseUrl + '/api/v2/report/', json=reportData, headers=headers)
