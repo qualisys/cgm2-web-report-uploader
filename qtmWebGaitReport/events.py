@@ -6,8 +6,6 @@ from os import path
 import c3dValidation
 import numpy as np
 
-#workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\Oxford\\"
-
 
 class Events:
     def __init__(self, workingDirectory):
@@ -25,7 +23,6 @@ class Events:
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
 
-#            noMarkers = range(acq.GetPointNumber())
             measurementName = path.basename(filename)
             measurementName = measurementName.replace('.c3d', '')
 
@@ -132,15 +129,9 @@ class Events:
 
             if frameCheckBefore < 0:
                 frameCheckBefore = 0
-#            print (eventType,measurementName,GRFSignalName,frameCheckBefore,eventFrame,frameCheckAfter,eventTime)
 
             if eventType == 'on' and value[frameCheckBefore] < 0.1 and value[frameCheckAfter] > 0.1:
                 out.append(eventTime)
-#                print (eventType,measurementName,GRFSignalName,out)
             elif eventType == 'off' and value[frameCheckBefore] > 0.1 and value[frameCheckAfter] < 0.1:
                 out.append(eventTime)
-#                print (eventType,measurementName,GRFSignalName,out)
             return out
-
-#a =  Events(workingDirectory)
-#b = a.calculateEvents()

@@ -32,7 +32,6 @@ class EMG:
         for origSigName, ourSigName in signalMapping.emgNameMap.iteritems():
             if origSigName in origEMGNames and ourSigName is not "":
                 emgData[ourSigName] = {}
-#                emgData[ourSigName + "_raw"] = {}
 
                 for filename in self.fileNames:
                     acq = qtools.fileOpen(filename)
@@ -41,12 +40,9 @@ class EMG:
 
                     signal = acq.GetAnalog(origSigName)
                     values = np.array(signal.GetValues()[:, 0])
-#                    values_list = [round(elem,4) for elem in values_list]
 
                     emgData[ourSigName][measurementName] = {}
                     emgData[ourSigName][measurementName] = values
-#                    emgData[ourSigName + "_raw"][measurementName] = {}
-#                    emgData[ourSigName + "_raw"][measurementName] = values
 
         return emgData
 
@@ -61,12 +57,6 @@ class EMG:
                 # Highpass, cutoff 10, bidirect 1
                 sig[key][key2] = qtools.filterButter(
                     value2, analogRate, hiBiPass, hiCutoff, 'highpass')
-
-                # Lowwpass (optional), off by default, cuttoff 6?, bidirect 1
-                #sig[key][key2] = qtools.filterButter(sig[key][key2], analogRate, lowBiPass, lowCutoff, 'lowpass')
-
-                # Rectify (optional) off by default
-                #sig[key][key2] = np.abs(sig[key][key2])
 
                 # RMS, window 100
                 sig[key][key2] = self.movingRMS(sig[key][key2], RMSwindow)

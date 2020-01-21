@@ -131,7 +131,6 @@ class MAP:
         normValues = str()
         for child in xmlObj[0][0][0]:
             if sigName in child.attrib["value"]:
-                #            normName = (child.attrib["value"])
                 normValues = child[1].attrib["data"]
                 normValues = np.fromstring(
                     normValues, dtype=float, count=-1, sep=",")
@@ -143,8 +142,6 @@ class MAP:
             if signame in k:
                 for k1, v1 in v.items():
                     if measurementName in k1:
-                        #                    for k2,v2 in v1.items():
-                        #                        if component in k2 and v2 is not "":
                         out = v1
         return out
 
@@ -172,6 +169,3 @@ class MAP:
                        "data": gpsData
                        })
         return gpsOut
-
-# a = MAP(workingDirectory)
-# b = a.calculateGVS()
