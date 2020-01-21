@@ -42,7 +42,7 @@ class ReportJsonGenerator:
         return timeseriesResults
 
     def getGVSResults(self, mapProfile):
-        gvsScore = mapProfile.getGVS()[1]
+        gvsScore = mapProfile.calculateGVS()[1]
 
         gvs = []
         for signalName, signalData in gvsScore.items():
