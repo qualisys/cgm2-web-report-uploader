@@ -24,11 +24,6 @@ def getFrameAndAnalogRateFromC3D(filePath):
 
 
 class ReportJsonGenerator:
-    def __init__(self):
-        pass
-
-
-class WebReportUploader:
     def __init__(self, workingDirectory, configData, modelledC3dfilenames, subjectMetadata, sessionDate):
         self.workingDirectory = workingDirectory
         self.configData = configData
@@ -172,7 +167,13 @@ class WebReportUploader:
             root = {}
             return root
 
-    def Upload(self):
+
+class WebReportUploader:
+    def __init__(self, workingDirectory, configData):
+        self.workingDirectory = workingDirectory
+        self.configData = configData
+
+    def upload(self, reportData):
         # Convert Avi to mp4
         videoObj = avi2mp4.AviToMp4(self.workingDirectory)
         videoObj.convertAviToMp4()
@@ -197,7 +198,6 @@ class WebReportUploader:
             print "Error: Specify token in config.json"
 
         # Upload
-        reportData = self.createReportJson()
 
         if clientIdExists and baseUrlExists and tokenExists:
             if reportData:

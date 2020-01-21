@@ -1,4 +1,4 @@
-from qtmWebGaitReport.parserUploader import WebReportUploader
+from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.qtmFilters import loadConfigData
 from pyCGM2.qtm import qtmTools
 from pyCGM2.Utils import files
@@ -58,10 +58,10 @@ def prepare_parser(testDataPath):
                    "fms": sessionXML.find("Functional_Mobility_Scale").text}
     # initiate parser uploader
     processedDir = os.path.join(testDataPath, "processed")
-    parser = WebReportUploader(processedDir,
-                               configData, modelledTrials,
-                               subjectInfo, sessionDate)
-    return parser
+    reportJsonGenerator = ReportJsonGenerator(processedDir,
+                                              configData, modelledTrials,
+                                              subjectInfo, sessionDate)
+    return reportJsonGenerator
 
 
 class TestClinicalGateExample():

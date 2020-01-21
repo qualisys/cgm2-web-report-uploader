@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import qtmWebGaitReport
+from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.parserUploader import WebReportUploader
 
 
@@ -20,16 +21,18 @@ class WebReportFilter(object):
         configData = loadConfigData(os.path.join(
             qtmWebGaitReport.PATH_TO_MAIN, 'config.json'))
 
-        self.processing = WebReportUploader(workingDirectory,
-                                            configData, modelledC3dfilenames,
-                                            subjectInfo, sessionDate)
+        self.reportGenerator = ReportJsonGenerator(
+            workingDirectory, configData, modelledC3dfilenames, subjectInfo, sessionDate)
+
+        self.uploader = WebReportUploader(workingDirectory, configData)
 
     def exportJson(self):
 
-        jsonData = self.processing.createReportJson()
+        jsonData = self.reportGenerator.createReportJson()
 
         with open("jsonData.json", 'w') as outfile:
             json.dump(jsonData, outfile, indent=4)
 
     def upload(self):
-        self.processing.Upload()
+        reportData = self.reportGenerator.createReportJson()
+        self.uploader.upload(reportData)
