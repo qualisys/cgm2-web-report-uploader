@@ -89,10 +89,10 @@ def main():
     markerDiameter = float(staticMeasurement.Marker_diameter.text)*1000.0
     pointSuffix = None
 
-    model, acqStatic = cgm1.calibrate(DATA_PATH, calibrateFilenameLabelled, translators,
-                                      required_mp, optional_mp,
-                                      leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
-                                      pointSuffix)
+    model, _ = cgm1.calibrate(DATA_PATH, calibrateFilenameLabelled, translators,
+                              required_mp, optional_mp,
+                              leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
+                              pointSuffix)
 
     # --------------------------MODEL FITTING -----------------------
     dynamicMeasurements = qtmTools.findDynamic(sessionXML)
@@ -136,20 +136,9 @@ def main():
                                pointSuffix,
                                mfpa, momentProjection)
 
-        outFilename = reconstructFilenameLabelled  # [:-4] + "_CGM1.c3d"
+        outFilename = reconstructFilenameLabelled
         btkTools.smartWriter(acqGait, str(DATA_PATH + outFilename))
         modelledC3ds.append(outFilename)
-
-    # #--------------------------EVENTS -----------------------
-    # if not args.noGaitEventDetection:
-    #     for modelledC3d in modelledC3ds:
-    #         logging.info("----Event detection of [%s]-----"%(modelledC3d))
-    #         acq=btkTools.smartReader(str(DATA_PATH+modelledC3d))
-    #         acq = eventDetector.zeni(acq)
-    #         btkTools.smartWriter(acq, str(DATA_PATH + modelledC3d))
-    #
-    #         cmd = "Mokka.exe \"%s\""%(str(DATA_PATH + modelledC3d))
-    #         os.system(cmd)
 
     # --------------------------GAIT PROCESSING -----------------------
     webReportFlag = toBool(str(sessionXML.find("Create_WEB_report").text))
@@ -165,7 +154,6 @@ def main():
             for dynamicMeasurement in dynamicMeasurements:
                 if qtmTools.isType(dynamicMeasurement, type):
                     filename = qtmTools.getFilename(dynamicMeasurement)
-                    # .replace(".c3d","_CGM1.c3d"))
                     modelledTrials.append(filename)
 
             subjectMd = {"patientName": sessionXML.find("Last_name").text + " " + sessionXML.find("First_name").text,
