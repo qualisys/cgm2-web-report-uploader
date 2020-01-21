@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import qtmWebGaitReport
-from qtmWebGaitReport import parserUploader
+from qtmWebGaitReport import WebReportUploader
 
 
 def loadConfigData(configPath):
@@ -20,9 +20,9 @@ class WebReportFilter(object):
         configData = loadConfigData(os.path.join(
             qtmWebGaitReport.PATH_TO_MAIN, 'config.json'))
 
-        self.processing = parserUploader.ParserUploader(workingDirectory,
-                                                        configData, modelledC3dfilenames,
-                                                        subjectInfo, sessionDate)
+        self.processing = WebReportUploader.WebReportUploader(workingDirectory,
+                                                              configData, modelledC3dfilenames,
+                                                              subjectInfo, sessionDate)
 
     def exportJson(self):
 

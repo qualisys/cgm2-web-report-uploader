@@ -23,7 +23,12 @@ def getFrameAndAnalogRateFromC3D(filePath):
     return frameRate, analogRate
 
 
-class ParserUploader:
+class ReportJsonGenerator:
+    def __init__(self):
+        pass
+
+
+class WebReportUploader:
     def __init__(self, workingDirectory, configData, modelledC3dfilenames, subjectMetadata, sessionDate):
         self.workingDirectory = workingDirectory
         self.configData = configData
@@ -185,10 +190,16 @@ class ParserUploader:
             baseUrlExists = False
             print "Error: Specify baseUrl in config.json"
 
+        if "token" in self.configData.keys():
+            tokenExists = True
+        else:
+            tokenExists = False
+            print "Error: Specify token in config.json"
+
         # Upload
         reportData = self.createReportJson()
 
-        if clientIdExists and baseUrlExists:  # and tokenExists:
+        if clientIdExists and baseUrlExists and tokenExists:
             if reportData:
                 baseUrl = self.configData["baseUrl"]
 
