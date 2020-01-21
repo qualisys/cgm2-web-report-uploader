@@ -2,7 +2,9 @@
 
 block_cipher = None
 
-added_files = [("qtmWebGaitReport\\Normatives\\normatives.xml","qtmWebGaitReport\\Normatives")]
+added_files = [
+    ("qtmWebGaitReport\\Normatives\\normatives.xml","qtmWebGaitReport\\Normatives"),
+]
 
 a = Analysis(['main.py'],
              pathex=[''],
@@ -18,6 +20,17 @@ a = Analysis(['main.py'],
              noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
+
+# add all normatives from pyCGM2 to datas
+
+import pyCGM2
+
+pyCGM2_path = os.path.abspath(os.path.join(os.path.dirname(pyCGM2.__file__),os.pardir))
+pyCGM2_normative_path = os.path.join(pyCGM2_path,"pyCGM2\\Data\\normativeData")
+pyCGM2_normatives = Tree( pyCGM2_normative_path, prefix="pyCGM2\\Data\\normativeData",excludes=['*.pyx','*.py','*.pyc'])
+
+a.datas += pyCGM2_normatives
+
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
