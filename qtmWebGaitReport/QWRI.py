@@ -50,7 +50,7 @@ class App:
 
         workingDirectory = "C:\\Users\\HLS501\\Documents\\Programming\\API\\pyCGM2\\pyCGM2-Qualisys\\Data\WebReport\\"
 
-        processing = WebReportUploader.WebReportUploader(workingDirectory)
+        processing = WebReportUploader(workingDirectory)
         processing.Upload()
 
 
