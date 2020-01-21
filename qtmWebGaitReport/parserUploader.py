@@ -51,9 +51,9 @@ class ReportJsonGenerator:
         return gvs
 
     def getGPSResults(self, mapProfile):
-        gpsScoreLeft = mapProfile.calculateGPS()[0]
-        gpsScoreRight = mapProfile.calculateGPS()[1]
-        gpsScoreOverall = mapProfile.calculateGPS()[2]
+        gpsScoreLeft = mapProfile.getAllGPS()[0]
+        gpsScoreRight = mapProfile.getAllGPS()[1]
+        gpsScoreOverall = mapProfile.getAllGPS()[2]
 
         gpsLeft = mapProfile.gpsExport(
             gpsScoreLeft, "Left_GPS_ln_mean", self.frameRate)

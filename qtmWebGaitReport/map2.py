@@ -78,7 +78,7 @@ class MAP:
 
         return(gvs, gvsLn)
 
-    def calculateGPS(self):
+    def getAllGPS(self):
         GPSLeft = {}
         GPSRight = {}
         GPSOverall = {}
