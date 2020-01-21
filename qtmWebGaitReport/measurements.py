@@ -11,8 +11,6 @@ import c3dValidation
 
 from datetime import datetime
 
-#workingDirectory = "E:\\OneDrive\\qualisys.se\\App Team - Documents\\Projects\\Gait web reports from Vicon c3d data\\Python parser\\Data\\Oxford\\"
-
 
 def get_creation_date(file):
     stat = os.stat(file)
@@ -40,29 +38,16 @@ class Measurements:
 
             val = acq.GetDuration()
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
-            # self.getValueFromXMLSystem("Capture","MeasuredFrameRate")
             frameRate = acq.GetPointFrequency()
-            # self.getValueFromXMLSystem("Capture","FramesCaptured") / frameRate
             originalDuration = acq.GetDuration()
-            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["CREATIONDATEANDTIME"]
-            creationDateTimeStr = "2019,6,12,12,54,7"
             creation_date = datetime.fromtimestamp(get_creation_date(filename))
-            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
             creationDate = str(creation_date.date())
-            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
             creationTime = str(creation_date.time())
 
-            # if "DIAGNOSIS" in self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0]):
-            #     diagnosis = self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["DIAGNOSIS"]
-            # else:
-            #     diagnosis = ""
             diagnosis = ""
 
-            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*" + measurementName + ".Trial" +"*"+ ".enf")[0])["NAME"]
             patientName = "UNSPECIFIED"
-            # float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Height"]) / 1000
             bodyHeight = 0
-            # float(self.getSettingsFromTextfile(glob(self.workingDirectory + "*.mp")[0])["$Bodymass"])
             bodyWeight = 0
 
             videoObj = avi2mp4.AviToMp4(self.workingDirectory)
@@ -135,10 +120,3 @@ class Measurements:
                 value = str.strip(parts[1])
                 settings[key] = value
         return settings
-
-#a = Measurements(workingDirectory)
-#creationDate = a.getSettingsFromTextfile(glob(workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
-##dd = datetime.strptime(str(creationDate),"%Y-%m-%d %H:%M:%S")
-##ddd = datetime.strftime(dd, '%y,%m,%d,%H,%M,%S')
-#b = a.measurementInfo()
-#print b
