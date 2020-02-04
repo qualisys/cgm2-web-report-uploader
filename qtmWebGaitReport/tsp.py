@@ -36,6 +36,11 @@ class TSP:
             "cadence", ["Left", "Right"])
         return cadence
 
+    def speed(self):
+        speed = self.getParamFromPyCGM2(
+            "speed", ["Left", "Right"])
+        return speed
+
     def strideLength(self):
         strideLength = self.getParamFromPyCGM2(
             "strideLength", ["Left", "Right"])
@@ -99,6 +104,10 @@ class TSP:
                 "set": self.null,
                 "type": "scalar",
                 "data":  self.cadence()},
+               {"id": "Speed",
+                "set": self.null,
+                "type": "scalar",
+                "data":  self.speed()},
                {"id": "Stride_Length",
                 "set": self.null,
                 "type": "scalar",
