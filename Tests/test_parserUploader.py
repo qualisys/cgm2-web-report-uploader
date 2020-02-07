@@ -59,7 +59,7 @@ def prepare_parser(testDataPath):
     # initiate parser uploader
     processedDir = os.path.join(testDataPath, "processed")
     reportJsonGenerator = ReportJsonGenerator(processedDir,
-                                              configData, modelledTrials,
+                                              configData["clientId"], modelledTrials,
                                               subjectInfo, sessionDate)
     return reportJsonGenerator
 

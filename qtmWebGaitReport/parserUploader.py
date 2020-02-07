@@ -24,9 +24,9 @@ def getFrameAndAnalogRateFromC3D(filePath):
 
 
 class ReportJsonGenerator:
-    def __init__(self, workingDirectory, configData, modelledC3dfilenames, subjectMetadata, sessionDate):
+    def __init__(self, workingDirectory, clientId, modelledC3dfilenames, subjectMetadata, sessionDate):
         self.workingDirectory = workingDirectory
-        self.configData = configData
+        self.clientId = clientId
         self.modelledC3dfilenames = modelledC3dfilenames
         self.subjectMetadata = subjectMetadata
         self.creationDate = sessionDate
@@ -157,7 +157,7 @@ class ReportJsonGenerator:
                 "events": ev,
                 "metadata": md,
                 "measurements": mea,
-                "clientId": self.configData["clientId"],
+                "clientId": self.clientId,
                 "subject": sub,
                 "project": proj
             }

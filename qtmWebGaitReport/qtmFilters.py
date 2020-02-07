@@ -22,7 +22,7 @@ class WebReportFilter(object):
             qtmWebGaitReport.PATH_TO_MAIN, 'config.json'))
 
         self.reportGenerator = ReportJsonGenerator(
-            workingDirectory, configData, modelledC3dfilenames, subjectInfo, sessionDate)
+            workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate)
 
         self.uploader = WebReportUploader(workingDirectory, configData)
 
