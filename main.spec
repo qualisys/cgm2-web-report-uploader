@@ -28,8 +28,11 @@ import pyCGM2
 pyCGM2_path = os.path.abspath(os.path.join(os.path.dirname(pyCGM2.__file__),os.pardir))
 pyCGM2_normative_path = os.path.join(pyCGM2_path,"pyCGM2\\Data\\normativeData")
 pyCGM2_normatives = Tree( pyCGM2_normative_path, prefix="pyCGM2\\Data\\normativeData",excludes=['*.pyx','*.py','*.pyc'])
+pyCGM2_settings_path = os.path.join(pyCGM2_path,"pyCGM2\\Settings")
+pyCGM2_settings = Tree(pyCGM2_settings_path,prefix="pyCGM2\\Settings",excludes=['*.pyx','*.py','*.pyc'])
 
 a.datas += pyCGM2_normatives
+a.datas += pyCGM2_settings
 
 exe = EXE(pyz,
           a.scripts,
