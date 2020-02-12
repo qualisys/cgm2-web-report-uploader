@@ -23,16 +23,16 @@ class WebReportFilter(object):
 
         self.reportGenerator = ReportJsonGenerator(
             workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate)
+        self.reportData = self.reportGenerator.createReportJson()
 
         self.uploader = WebReportUploader(workingDirectory, configData)
 
     def exportJson(self):
+        with open("session_data.json", 'w') as outfile:
+            json.dump(self.reportData, outfile, indent=4)
 
-        jsonData = self.reportGenerator.createReportJson()
-
-        with open("jsonData.json", 'w') as outfile:
-            json.dump(jsonData, outfile, indent=4)
+    def getReportData(self):
+        return self.reportData
 
     def upload(self):
-        reportData = self.reportGenerator.createReportJson()
-        self.uploader.upload(reportData)
+        self.uploader.upload(self.reportData)
