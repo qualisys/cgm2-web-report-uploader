@@ -9,11 +9,17 @@ def dict_to_xml(data_dict):
     return xmltodict.unparse(data_dict, pretty=True)
 
 
-def get_xml_string_from_report_json(report_json_data):
+def get_xml_string_from(report_json_data):
     xml_creator = ReportJsonToRegressionXmlCreator()
     xml_creator.prepare_xml_from(report_json_data)
     report_xml_string = xml_creator.get_xml_string()
     return report_xml_string
+
+
+def save_session_data_xml_from(report_json_data):
+    xml_report_string = get_xml_string_from(report_json_data)
+    with open("session_data.xml", "w") as f:
+        f.write(xml_report_string)
 
 
 class ReportJsonToRegressionXmlCreator:
