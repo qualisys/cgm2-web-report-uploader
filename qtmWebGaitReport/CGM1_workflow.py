@@ -170,7 +170,7 @@ def main():
             if webReportFlag:
                 report = qtmFilters.WebReportFilter(
                     DATA_PATH, modelledTrials, subjectMd, sessionDate)
-                report.exportJson()
+                # report.exportJson()
                 save_session_data_xml_from(report.getReportData())
                 report.upload()
                 logging.info("qualisys Web Report exported")
