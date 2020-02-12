@@ -12,6 +12,7 @@ from pyCGM2.Utils import files
 from pyCGM2.Lib.CGM import cgm1
 import shutil
 from qtmWebGaitReport import qtmFilters
+from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
 import argparse
 import matplotlib.pyplot as plt
 import logging
@@ -169,7 +170,8 @@ def main():
             if webReportFlag:
                 report = qtmFilters.WebReportFilter(
                     DATA_PATH, modelledTrials, subjectMd, sessionDate)
-                # report.exportJson()
+                report.exportJson()
+                save_session_data_xml_from(report.getReportData())
                 report.upload()
                 logging.info("qualisys Web Report exported")
 
