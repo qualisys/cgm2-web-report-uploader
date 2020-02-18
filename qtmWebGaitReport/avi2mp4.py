@@ -11,7 +11,7 @@ class AviToMp4:
 
     def __init__(self, workingDirectory):
         self.workingDirectory = workingDirectory
-        self.aviFilePath = glob(self.workingDirectory + "*.avi")
+        self.aviFilePath = glob(path.join(self.workingDirectory, "*.avi"))
 
     def convertAviToMp4(self):
         for inputFilename in self.aviFilePath:
