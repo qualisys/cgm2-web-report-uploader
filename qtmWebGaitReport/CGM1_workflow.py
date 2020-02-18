@@ -24,9 +24,8 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def main():
+def main(sessionXML):
     file = "session.xml"
-    sessionXML = files.readXml(os.getcwd()+"\\", file)
     sessionDate = files.getFileCreationDate(os.getcwd()+"\\"+file)
 
     # ---------------------------------------------------------------------------
