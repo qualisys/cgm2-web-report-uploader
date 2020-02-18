@@ -11,7 +11,7 @@ import avi2mp4
 import requests
 import c3dValidation
 import json
-from os import path, getcwd
+import os
 import webbrowser
 
 
@@ -175,8 +175,8 @@ class WebReportUploader:
 
     def upload(self, reportData):
         # Convert Avi to mp4
-        videoObj = avi2mp4.AviToMp4(self.workingDirectory)
-        videoObj.convertAviToMp4()
+        # videoObj = avi2mp4.AviToMp4(os.path.abspath(os.path.join(self.workingDirectory, os.pardir)))
+        # videoObj.convertAviToMp4()
 
         # check that clientId, baseUrl and token are specified in config.json
         if "clientId" in self.configData.keys():
@@ -216,12 +216,12 @@ class WebReportUploader:
                 reportResJson = reportReq.json()
                 newReportId = reportResJson['id']
 
-                resourceOutput = videoObj.getMp4Filenames(False)
+                # resourceOutput = videoObj.getMp4Filenames(True)
 
-                for index, resource in enumerate(resourceOutput):
-                    fileData = {'file_' + `index`: open(resource, 'rb')}
-                    resourceReq = requests.post(
-                        baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
+                # for index, resource in enumerate(resourceOutput):
+                #     fileData = {'file_%i' % index: open(resource, 'rb')}
+                #     resourceReq = requests.post(
+                #         baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
                 print "Report [%s] generated" % (str(newReportId))
                 webbrowser.open_new_tab(baseUrl + '/claim/' + newReportId)
             else:
