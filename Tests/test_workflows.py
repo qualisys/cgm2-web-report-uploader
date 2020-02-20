@@ -20,7 +20,7 @@ def session_xml(clinical_gait_example_work_folder):
 
 
 class TestCGM1Workflow:
-    def test_CGM1_workflow(self, session_xml, clinical_gait_example_work_folder):
+    def test_runs_without_errors(self, session_xml, clinical_gait_example_work_folder):
         CGM1_workflow(session_xml, clinical_gait_example_work_folder)
         assert 1, "When this assertion is run all is fine and dandy"
 
