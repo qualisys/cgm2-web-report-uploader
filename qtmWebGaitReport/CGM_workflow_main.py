@@ -26,8 +26,88 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
+def create_pdf_report(data_path, modelled_trials, title, model, point_suffix, normative_dataset):
+    analysisInstance = analysis.makeAnalysis(
+        data_path, modelled_trials,
+        subjectInfo=None,
+        experimentalInfo=None,
+        modelInfo=None,
+        pointLabelSuffix=None)
+
+    # spatiotemporal
+    plot.plot_spatioTemporal(data_path, analysisInstance,
+                             exportPdf=True,
+                             outputName=title,
+                             show=None,
+                             title=title)
+
+    # Kinematics
+    if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
+        plot.plot_DescriptiveKinematic(data_path, analysisInstance, "LowerLimb",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+
+        plot.plot_ConsistencyKinematic(data_path, analysisInstance, "LowerLimb",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+    if model.m_bodypart in [enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
+        plot.plot_DescriptiveKinematic(data_path, analysisInstance, "Trunk",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+
+        plot.plot_ConsistencyKinematic(data_path, analysisInstance, "Trunk",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+
+    if model.m_bodypart in [enums.BodyPart.UpperLimb, enums.BodyPart.FullBody]:
+        pass  # TODO plot upperlimb panel
+
+    # Kinetics
+    if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
+        plot.plot_DescriptiveKinetic(data_path, analysisInstance, "LowerLimb",
+                                     normative_dataset,
+                                     exportPdf=True,
+                                     outputName=title,
+                                     pointLabelSuffix=point_suffix,
+                                     show=False,
+                                     title=title)
+
+        plot.plot_ConsistencyKinetic(data_path, analysisInstance, "LowerLimb",
+                                     normative_dataset,
+                                     exportPdf=True,
+                                     outputName=title,
+                                     pointLabelSuffix=point_suffix,
+                                     show=False,
+                                     title=title)
+
+    # MAP
+    plot.plot_MAP(data_path, analysisInstance,
+                  normative_dataset,
+                  exportPdf=True,
+                  outputName=title, pointLabelSuffix=point_suffix,
+                  show=False,
+                  title=title)
+
+    plt.show()
+
+
 def CGM1_workflow(sessionXML, work_folder):
-    file = "session.xml"
     sessionDate = utils.get_creation_date(sessionXML)
     # ---------------------------------------------------------------------------
     # management of the Processed folder
@@ -73,13 +153,13 @@ def CGM1_workflow(sessionXML, work_folder):
         settings = files.openFile(
             pyCGM2.PYCGM2_SETTINGS_FOLDER, "CGM1-pyCGM2.settings")
 
-    # --------------------------MP ------------------------------------
-    required_mp, optional_mp = qtmTools.SubjectMp(sessionXML)
-
     #  translators management
     translators = files.getTranslators(work_folder+"\\", "CGM1.translators")
     if not translators:
         translators = settings["Translators"]
+
+    # --------------------------MP ------------------------------------
+    required_mp, optional_mp = qtmTools.SubjectMp(sessionXML)
 
     # --------------------------MODEL CALIBRATION -----------------------
     staticMeasurement = qtmTools.findStatic(sessionXML)
@@ -88,12 +168,12 @@ def CGM1_workflow(sessionXML, work_folder):
     rightFlatFoot = toBool(staticMeasurement.Right_foot_flat)
     headFlat = toBool(staticMeasurement.Head_flat)
     markerDiameter = float(staticMeasurement.Marker_diameter.text)*1000.0
-    pointSuffix = None
+    point_suffix = None
 
     model, _ = cgm1.calibrate(DATA_PATH + "\\", calibrateFilenameLabelled, translators,
                               required_mp, optional_mp,
                               leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
-                              pointSuffix)
+                              point_suffix)
 
     # --------------------------MODEL FITTING -----------------------
     dynamicMeasurements = qtmTools.findDynamic(sessionXML)
@@ -101,14 +181,13 @@ def CGM1_workflow(sessionXML, work_folder):
     modelledC3ds = []
     for dynamicMeasurement in dynamicMeasurements:
 
-        reconstructFilenameLabelled = qtmTools.getFilename(dynamicMeasurement)
-        logging.info("----Processing of [%s]-----" %
-                     (reconstructFilenameLabelled))
+        filename = qtmTools.getFilename(dynamicMeasurement)
+        logging.info("----Processing of [%s]-----" % filename)
         mfpa = qtmTools.getForcePlateAssigment(dynamicMeasurement)
         momentProjection = enums.MomentProjection.Distal
 
         # filtering
-        file_path = os.path.join(DATA_PATH, reconstructFilenameLabelled)
+        file_path = os.path.join(DATA_PATH, filename)
         acq = btkTools.smartReader(file_path)
         if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
             forceplates.correctForcePlateType5(acq)
@@ -130,30 +209,30 @@ def CGM1_workflow(sessionXML, work_folder):
                 forceplates.correctForcePlateType5(acq)
             signal_processing.markerFiltering(acq, order=order, fc=fc)
 
-        btkTools.smartWriter(file_path)
+        btkTools.smartWriter(acq, file_path)
 
-        acqGait = cgm1.fitting(model, DATA_PATH + "\\", reconstructFilenameLabelled,
+        acqGait = cgm1.fitting(model, DATA_PATH + "\\", filename,
                                translators,
                                markerDiameter,
-                               pointSuffix,
+                               point_suffix,
                                mfpa, momentProjection)
 
         btkTools.smartWriter(acqGait, file_path)
-        modelledC3ds.append(reconstructFilenameLabelled)
+        modelledC3ds.append(filename)
 
     # --------------------------GAIT PROCESSING -----------------------
     webReportFlag = toBool(str(sessionXML.find("Create_WEB_report").text))
     pdfReportFlag = toBool(str(sessionXML.find("Create_PDF_report").text))
 
     if webReportFlag or pdfReportFlag:
-        nds = normativeDatasets.Schwartz2008("Free")
+        normative_dataset = normativeDatasets.Schwartz2008("Free")
 
-        types = qtmTools.detectMeasurementType(sessionXML)
-        for type in types:
+        measurement_types = qtmTools.detectMeasurementType(sessionXML)
+        for measurement_type in measurement_types:
 
             modelledTrials = []
             for dynamicMeasurement in dynamicMeasurements:
-                if qtmTools.isType(dynamicMeasurement, type):
+                if qtmTools.isType(dynamicMeasurement, measurement_type):
                     filename = qtmTools.getFilename(dynamicMeasurement)
                     modelledTrials.append(filename)
 
@@ -163,7 +242,7 @@ def CGM1_workflow(sessionXML, work_folder):
                          "diagnosis": sessionXML.find("Diagnosis").text,
                          "dob": sessionXML.find("Date_of_birth").text,
                          "sex": sessionXML.find("Sex").text,
-                         "test condition": type,
+                         "test condition": measurement_type,
                          "gmfcs": sessionXML.find("Gross_Motor_Function_Classification").text,
                          "fms": sessionXML.find("Functional_Mobility_Scale").text}
 
@@ -176,87 +255,8 @@ def CGM1_workflow(sessionXML, work_folder):
                 logging.info("qualisys Web Report exported")
 
             if pdfReportFlag:
-
-                analysisInstance = analysis.makeAnalysis(
-                    DATA_PATH, modelledTrials,
-                    subjectInfo=None,
-                    experimentalInfo=None,
-                    modelInfo=None,
-                    pointLabelSuffix=None)
-
-                title = type
-
-                # spatiotemporal
-                plot.plot_spatioTemporal(DATA_PATH, analysisInstance,
-                                         exportPdf=True,
-                                         outputName=title,
-                                         show=None,
-                                         title=title)
-
-                # Kinematics
-                if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
-                    plot.plot_DescriptiveKinematic(DATA_PATH, analysisInstance, "LowerLimb",
-                                                   nds,
-                                                   exportPdf=True,
-                                                   outputName=title,
-                                                   pointLabelSuffix=pointSuffix,
-                                                   show=False,
-                                                   title=title)
-
-                    plot.plot_ConsistencyKinematic(DATA_PATH, analysisInstance, "LowerLimb",
-                                                   nds,
-                                                   exportPdf=True,
-                                                   outputName=title,
-                                                   pointLabelSuffix=pointSuffix,
-                                                   show=False,
-                                                   title=title)
-                if model.m_bodypart in [enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
-                    plot.plot_DescriptiveKinematic(DATA_PATH, analysisInstance, "Trunk",
-                                                   nds,
-                                                   exportPdf=True,
-                                                   outputName=title,
-                                                   pointLabelSuffix=pointSuffix,
-                                                   show=False,
-                                                   title=title)
-
-                    plot.plot_ConsistencyKinematic(DATA_PATH, analysisInstance, "Trunk",
-                                                   nds,
-                                                   exportPdf=True,
-                                                   outputName=title,
-                                                   pointLabelSuffix=pointSuffix,
-                                                   show=False,
-                                                   title=title)
-
-                if model.m_bodypart in [enums.BodyPart.UpperLimb, enums.BodyPart.FullBody]:
-                    pass  # TODO plot upperlimb panel
-
-                # Kinetics
-                if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
-                    plot.plot_DescriptiveKinetic(DATA_PATH, analysisInstance, "LowerLimb",
-                                                 nds,
-                                                 exportPdf=True,
-                                                 outputName=title,
-                                                 pointLabelSuffix=pointSuffix,
-                                                 show=False,
-                                                 title=title)
-
-                    plot.plot_ConsistencyKinetic(DATA_PATH, analysisInstance, "LowerLimb",
-                                                 nds,
-                                                 exportPdf=True,
-                                                 outputName=title,
-                                                 pointLabelSuffix=pointSuffix,
-                                                 show=False,
-                                                 title=title)
-
-                # MAP
-                plot.plot_MAP(DATA_PATH, analysisInstance,
-                              nds,
-                              exportPdf=True,
-                              outputName=title, pointLabelSuffix=pointSuffix,
-                              show=False,
-                              title=title)
-
-                plt.show()
+                create_pdf_report(
+                    DATA_PATH, modelledTrials, measurement_type, model, point_suffix, normative_dataset)
 
 
 def CGM23_workflow(sessionXML):
