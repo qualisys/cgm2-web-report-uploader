@@ -182,10 +182,12 @@ def get_model_and_fit_to_measurements(sessionXML, data_path, translators, requir
     return model
 
 
-def copy_files_to_processed_folder(sessionXML, work_folder, data_path):
+def prepare_processed_folder(sessionXML, work_folder, processed_folder):
+    files.createDir(processed_folder)
+
     staticMeasurement = qtmTools.findStatic(sessionXML)
     filename = qtmTools.getFilename(staticMeasurement)
-    calibrated_file_path = os.path.join(data_path, filename)
+    calibrated_file_path = os.path.join(processed_folder, filename)
     if not os.path.isfile(calibrated_file_path):
         shutil.copyfile(os.path.join(work_folder, filename),
                         calibrated_file_path)
@@ -196,7 +198,7 @@ def copy_files_to_processed_folder(sessionXML, work_folder, data_path):
     for dynamicMeasurement in dynamicMeasurements:
         filename = qtmTools.getFilename(dynamicMeasurement)
         no_events_file_path = os.path.join(work_folder, filename)
-        processed_file_path = os.path.join(data_path, filename)
+        processed_file_path = os.path.join(processed_folder, filename)
         if not os.path.isfile(processed_file_path):
             shutil.copyfile(no_events_file_path,
                             processed_file_path)
@@ -264,17 +266,16 @@ def CGM1_workflow(session_xml, work_folder):
 
     # ---------------------------------------------------------------------------
     # management of the Processed folder
-    data_path = os.path.join(work_folder, "processed")
-    files.createDir(data_path)
+    processed_folder = os.path.join(work_folder, "processed")
 
-    copy_files_to_processed_folder(session_xml, work_folder, data_path)
+    prepare_processed_folder(session_xml, work_folder, processed_folder)
 
     translators = fetch_translators(work_folder)
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
     point_suffix = None
 
     model = get_model_and_fit_to_measurements(
-        session_xml, data_path, translators, required_mp, optional_mp, point_suffix)
+        session_xml, processed_folder, translators, required_mp, optional_mp, point_suffix)
 
     # --------------------------Reporting -----------------------
     webReportFlag = toBool(str(session_xml.find("Create_WEB_report").text))
@@ -283,7 +284,7 @@ def CGM1_workflow(session_xml, work_folder):
     if webReportFlag:
         create_web_report(session_xml)
     if pdfReportFlag:
-        create_pdf_report(session_xml, data_path, model, point_suffix)
+        create_pdf_report(session_xml, processed_folder, model, point_suffix)
 
 
 def CGM23_workflow(sessionXML):
