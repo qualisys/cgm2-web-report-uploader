@@ -5,6 +5,7 @@ from qtmWebGaitReport.utils import read_session_xml
 from qtmWebGaitReport.utils import create_directory_if_needed
 
 import os
+import shutil
 import glob
 import pytest
 
@@ -24,9 +25,20 @@ def session_xml(clinical_gait_example_work_folder):
 
 class TestCGM1Workflow:
     def test_runs_without_errors(self, session_xml, clinical_gait_example_work_folder):
-        # TODO running this test updates the processed c3d files which is unwanted
-        CGM1_workflow(session_xml, clinical_gait_example_work_folder)
+        # create a copy of processed files folder
+        processed_folder_name = "processed_folder_test_generated"
+        new_processed_folder_path = os.path.join(
+            clinical_gait_example_work_folder, processed_folder_name)
+        presaved_processed_folder_path = os.path.join(
+            clinical_gait_example_work_folder, "processed")
+        shutil.copytree(presaved_processed_folder_path,
+                        new_processed_folder_path)
+        # apply workflow
+        CGM1_workflow(session_xml, clinical_gait_example_work_folder,
+                      processed_folder_name=processed_folder_name)
         assert 1, "When this assertion is run all is fine and dandy"
+        # cleanup
+        shutil.rmtree(new_processed_folder_path)
 
 
 class TestEventDetection:

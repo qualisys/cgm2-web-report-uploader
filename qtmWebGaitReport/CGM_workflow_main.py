@@ -229,11 +229,11 @@ def create_pdf_report(session_xml, data_path, model, point_suffix):
             data_path, modelledTrials, measurement_type, model, point_suffix, normative_dataset)
 
 
-def CGM1_workflow(session_xml, work_folder):
+def CGM1_workflow(session_xml, work_folder, processed_folder_name="processed"):
 
     # ---------------------------------------------------------------------------
     # management of the Processed folder
-    processed_folder = os.path.join(work_folder, "processed")
+    processed_folder = os.path.join(work_folder, processed_folder_name)
 
     translators = fetch_translators(work_folder)
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
