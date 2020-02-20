@@ -26,87 +26,6 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def create_pdf_report(data_path, modelled_trials, title, model, point_suffix, normative_dataset):
-    analysisInstance = analysis.makeAnalysis(
-        data_path, modelled_trials,
-        subjectInfo=None,
-        experimentalInfo=None,
-        modelInfo=None,
-        pointLabelSuffix=None)
-
-    # spatiotemporal
-    plot.plot_spatioTemporal(data_path, analysisInstance,
-                             exportPdf=True,
-                             outputName=title,
-                             show=None,
-                             title=title)
-
-    # Kinematics
-    if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
-        plot.plot_DescriptiveKinematic(data_path, analysisInstance, "LowerLimb",
-                                       normative_dataset,
-                                       exportPdf=True,
-                                       outputName=title,
-                                       pointLabelSuffix=point_suffix,
-                                       show=False,
-                                       title=title)
-
-        plot.plot_ConsistencyKinematic(data_path, analysisInstance, "LowerLimb",
-                                       normative_dataset,
-                                       exportPdf=True,
-                                       outputName=title,
-                                       pointLabelSuffix=point_suffix,
-                                       show=False,
-                                       title=title)
-    if model.m_bodypart in [enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
-        plot.plot_DescriptiveKinematic(data_path, analysisInstance, "Trunk",
-                                       normative_dataset,
-                                       exportPdf=True,
-                                       outputName=title,
-                                       pointLabelSuffix=point_suffix,
-                                       show=False,
-                                       title=title)
-
-        plot.plot_ConsistencyKinematic(data_path, analysisInstance, "Trunk",
-                                       normative_dataset,
-                                       exportPdf=True,
-                                       outputName=title,
-                                       pointLabelSuffix=point_suffix,
-                                       show=False,
-                                       title=title)
-
-    if model.m_bodypart in [enums.BodyPart.UpperLimb, enums.BodyPart.FullBody]:
-        pass  # TODO plot upperlimb panel
-
-    # Kinetics
-    if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
-        plot.plot_DescriptiveKinetic(data_path, analysisInstance, "LowerLimb",
-                                     normative_dataset,
-                                     exportPdf=True,
-                                     outputName=title,
-                                     pointLabelSuffix=point_suffix,
-                                     show=False,
-                                     title=title)
-
-        plot.plot_ConsistencyKinetic(data_path, analysisInstance, "LowerLimb",
-                                     normative_dataset,
-                                     exportPdf=True,
-                                     outputName=title,
-                                     pointLabelSuffix=point_suffix,
-                                     show=False,
-                                     title=title)
-
-    # MAP
-    plot.plot_MAP(data_path, analysisInstance,
-                  normative_dataset,
-                  exportPdf=True,
-                  outputName=title, pointLabelSuffix=point_suffix,
-                  show=False,
-                  title=title)
-
-    plt.show()
-
-
 def fetch_translators(work_folder):
     if os.path.isfile(pyCGM2.PYCGM2_APPDATA_PATH + "CGM1-pyCGM2.settings"):
         settings = files.openFile(
@@ -225,6 +144,87 @@ def get_modelled_trials(session_xml, measurement_type):
     return modelled_trials
 
 
+def process_pdf_report(data_path, modelled_trials, title, model, point_suffix, normative_dataset):
+    analysisInstance = analysis.makeAnalysis(
+        data_path, modelled_trials,
+        subjectInfo=None,
+        experimentalInfo=None,
+        modelInfo=None,
+        pointLabelSuffix=None)
+
+    # spatiotemporal
+    plot.plot_spatioTemporal(data_path, analysisInstance,
+                             exportPdf=True,
+                             outputName=title,
+                             show=None,
+                             title=title)
+
+    # Kinematics
+    if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
+        plot.plot_DescriptiveKinematic(data_path, analysisInstance, "LowerLimb",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+
+        plot.plot_ConsistencyKinematic(data_path, analysisInstance, "LowerLimb",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+    if model.m_bodypart in [enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
+        plot.plot_DescriptiveKinematic(data_path, analysisInstance, "Trunk",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+
+        plot.plot_ConsistencyKinematic(data_path, analysisInstance, "Trunk",
+                                       normative_dataset,
+                                       exportPdf=True,
+                                       outputName=title,
+                                       pointLabelSuffix=point_suffix,
+                                       show=False,
+                                       title=title)
+
+    if model.m_bodypart in [enums.BodyPart.UpperLimb, enums.BodyPart.FullBody]:
+        pass  # TODO plot upperlimb panel
+
+    # Kinetics
+    if model.m_bodypart in [enums.BodyPart.LowerLimb, enums.BodyPart.LowerLimbTrunk, enums.BodyPart.FullBody]:
+        plot.plot_DescriptiveKinetic(data_path, analysisInstance, "LowerLimb",
+                                     normative_dataset,
+                                     exportPdf=True,
+                                     outputName=title,
+                                     pointLabelSuffix=point_suffix,
+                                     show=False,
+                                     title=title)
+
+        plot.plot_ConsistencyKinetic(data_path, analysisInstance, "LowerLimb",
+                                     normative_dataset,
+                                     exportPdf=True,
+                                     outputName=title,
+                                     pointLabelSuffix=point_suffix,
+                                     show=False,
+                                     title=title)
+
+    # MAP
+    plot.plot_MAP(data_path, analysisInstance,
+                  normative_dataset,
+                  exportPdf=True,
+                  outputName=title, pointLabelSuffix=point_suffix,
+                  show=False,
+                  title=title)
+
+    plt.show()
+
+
 def create_web_report(session_xml, data_path):
 
     measurement_types = qtmTools.detectMeasurementType(session_xml)
@@ -258,7 +258,7 @@ def create_pdf_report(session_xml, data_path, model, point_suffix):
     for measurement_type in measurement_types:
 
         modelledTrials = get_modelled_trials(session_xml, measurement_type)
-        create_pdf_report(
+        process_pdf_report(
             data_path, modelledTrials, measurement_type, model, point_suffix, normative_dataset)
 
 
