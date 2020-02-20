@@ -45,11 +45,10 @@ class Metadata:
             # self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
             version = "UNSPECIFIED"
 
-            creation_date = datetime.fromtimestamp(get_creation_date(filename))
             # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
-            creationDate = str(creation_date.date())
+            creationDate = str(self.creationDate.date())
             # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
-            creationTime = str(creation_date.time())
+            creationTime = str(self.creationDate.time())
 
             # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["DIAGNOSIS"]
             diagnosis = "UNSPECIFIED"

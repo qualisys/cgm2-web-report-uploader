@@ -1,7 +1,7 @@
 from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.qtmFilters import loadConfigData
 from pyCGM2.qtm import qtmTools
-from pyCGM2.Utils import files
+from qtmWebGaitReport import utils
 
 import json
 import pytest
@@ -32,11 +32,9 @@ def get_paths(example_folder_name):
 
 def prepare_parser(testDataPath):
     # this code is mostly duplicate from the PAF modules template, possibly rework where the functionality goes
-    sessionXMLfilename = "session.xml"
-    # the + "\\" is because of the Util file in pyCGM2 to update it I would need make a pull request to the pyCGM2 library
-    sessionXML = files.readXml(testDataPath+"\\", sessionXMLfilename)
-    sessionDate = files.getFileCreationDate(
-        os.path.join(testDataPath, sessionXMLfilename))
+    session_xml_path = os.path.join(testDataPath, "session.xml")
+    sessionXML = utils.read_session_xml(session_xml_path)
+    sessionDate = utils.get_creation_date(sessionXML)
     session_type = qtmTools.detectMeasurementType(
         sessionXML)[0]  # in this example there is only one
 
