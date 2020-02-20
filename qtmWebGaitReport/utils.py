@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+import logging
+import os
+
 
 def read_session_xml(path):
     with open(path, "r") as f:
@@ -18,3 +21,10 @@ def get_creation_date(session_xml):
         int(year), int(month), int(day),
         int(hour), int(minute), int(second))
     return datetime_obj
+
+
+def create_directory_if_needed(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
+    else:
+        logging.warning("directory already exists")
