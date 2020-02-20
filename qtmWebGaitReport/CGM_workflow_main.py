@@ -282,7 +282,7 @@ def CGM1_workflow(session_xml, work_folder):
     pdfReportFlag = toBool(str(session_xml.find("Create_PDF_report").text))
 
     if webReportFlag:
-        create_web_report(session_xml)
+        create_web_report(session_xml, processed_folder)
     if pdfReportFlag:
         create_pdf_report(session_xml, processed_folder, model, point_suffix)
 
