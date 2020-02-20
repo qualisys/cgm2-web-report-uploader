@@ -38,6 +38,30 @@ def get_settings(version):
     return settings
 
 
+def filter_data(file_path, measurement):
+    acq = btkTools.smartReader(file_path)
+    if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
+        forceplates.correctForcePlateType5(acq)
+
+    # marker
+    order = int(float(measurement.Marker_lowpass_filter_order.text))
+    fc = float(measurement.Marker_lowpass_filter_frequency.text)
+
+    signal_processing.markerFiltering(acq, order=order, fc=fc)
+
+    # force plate filtering
+    order = int(float(measurement.Forceplate_lowpass_filter_order.text))
+    fc = float(measurement.Forceplate_lowpass_filter_frequency.text)
+
+    if order != 0 and fc != 0:
+        acq = btkTools.smartReader(file_path)
+        if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
+            forceplates.correctForcePlateType5(acq)
+        signal_processing.markerFiltering(acq, order=order, fc=fc)
+
+    btkTools.smartWriter(acq, file_path)
+
+
 def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
     settings = get_settings(model_type)
     translators = settings["Translators"]
@@ -58,7 +82,6 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
     # --------------------------MODEL FITTING -----------------------
     dynamicMeasurements = qtmTools.findDynamic(session_xml)
 
-    modelledC3ds = []
     for dynamicMeasurement in dynamicMeasurements:
 
         filename = qtmTools.getFilename(dynamicMeasurement)
@@ -66,30 +89,10 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
         mfpa = qtmTools.getForcePlateAssigment(dynamicMeasurement)
         momentProjection = enums.MomentProjection.Distal
 
-        # filtering
         file_path = os.path.join(data_path, filename)
-        acq = btkTools.smartReader(file_path)
-        if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
-            forceplates.correctForcePlateType5(acq)
 
-        # marker
-        order = int(float(dynamicMeasurement.Marker_lowpass_filter_order.text))
-        fc = float(dynamicMeasurement.Marker_lowpass_filter_frequency.text)
-
-        signal_processing.markerFiltering(acq, order=order, fc=fc)
-
-        # force plate filtering
-        order = int(
-            float(dynamicMeasurement.Forceplate_lowpass_filter_order.text))
-        fc = float(dynamicMeasurement.Forceplate_lowpass_filter_frequency.text)
-
-        if order != 0 and fc != 0:
-            acq = btkTools.smartReader(file_path)
-            if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
-                forceplates.correctForcePlateType5(acq)
-            signal_processing.markerFiltering(acq, order=order, fc=fc)
-
-        btkTools.smartWriter(acq, file_path)
+        # filtering
+        filter_data(file_path, dynamicMeasurement)
 
         acqGait = cgm1.fitting(model, data_path + "\\", filename,
                                translators,
@@ -98,7 +101,6 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
                                mfpa, momentProjection)
 
         btkTools.smartWriter(acqGait, file_path)
-        modelledC3ds.append(filename)
     return model
 
 
