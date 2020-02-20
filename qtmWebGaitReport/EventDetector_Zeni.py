@@ -53,16 +53,20 @@ def prepare_folder_and_run_event_detection(sessionXML, work_folder, processed_fo
             os.system(cmd)
 
 
-def main():
-    working_dir = os.getcwd()+"\\"
+def run_event_detection_and_verify_in_mokka(working_dir, processed_folder_name="processed"):
+
     session_xml_path = os.path.join(working_dir, "session.xml")
     sessionXML = utils.read_session_xml(session_xml_path)
 
-    # create processed folder
-    processed_data_path = os.path.join(working_dir, "processed")
+    processed_data_path = os.path.join(working_dir, processed_folder_name)
 
     prepare_folder_and_run_event_detection(
         sessionXML, working_dir, processed_data_path)
+
+
+def main():
+    working_dir = os.getcwd()+"\\"
+    run_event_detection_and_verify_in_mokka()
 
 
 if __name__ == "__main__":
