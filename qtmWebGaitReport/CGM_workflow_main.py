@@ -101,39 +101,6 @@ def get_model_and_fit_to_measurements(sessionXML, data_path, translators, requir
     return model
 
 
-def prepare_processed_folder(sessionXML, work_folder, processed_folder):
-    files.createDir(processed_folder)
-
-    staticMeasurement = qtmTools.findStatic(sessionXML)
-    filename = qtmTools.getFilename(staticMeasurement)
-    calibrated_file_path = os.path.join(processed_folder, filename)
-    if not os.path.isfile(calibrated_file_path):
-        shutil.copyfile(os.path.join(work_folder, filename),
-                        calibrated_file_path)
-        logging.info("qualisys exported c3d file [%s] copied to processed folder" % (
-            filename))
-
-    dynamicMeasurements = qtmTools.findDynamic(sessionXML)
-    for dynamicMeasurement in dynamicMeasurements:
-        filename = qtmTools.getFilename(dynamicMeasurement)
-        no_events_file_path = os.path.join(work_folder, filename)
-        processed_file_path = os.path.join(processed_folder, filename)
-        if not os.path.isfile(processed_file_path):
-            shutil.copyfile(no_events_file_path,
-                            processed_file_path)
-            logging.info("qualisys exported c3d file [%s] copied to processed folder" % (
-                filename))
-
-            acq = btkTools.smartReader(processed_file_path)
-            if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
-                forceplates.correctForcePlateType5(acq)
-            acq = eventDetector.zeni(acq)
-            btkTools.smartWriter(acq, processed_file_path)
-
-            cmd = "Mokka.exe \"%s\"" % (processed_file_path)
-            os.system(cmd)
-
-
 def get_modelled_trials(session_xml, measurement_type):
     modelled_trials = []
     dynamicMeasurements = qtmTools.findDynamic(session_xml)
@@ -267,8 +234,6 @@ def CGM1_workflow(session_xml, work_folder):
     # ---------------------------------------------------------------------------
     # management of the Processed folder
     processed_folder = os.path.join(work_folder, "processed")
-
-    prepare_processed_folder(session_xml, work_folder, processed_folder)
 
     translators = fetch_translators(work_folder)
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)

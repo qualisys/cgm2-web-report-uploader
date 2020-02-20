@@ -9,12 +9,48 @@ from qtmWebGaitReport import utils
 import matplotlib.pyplot as plt
 import logging
 import os
+import shutil
 import pyCGM2
 from pyCGM2 import log
 log.setLoggingLevel(logging.INFO)
 
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
+
+def prepare_folder_and_run_event_detection(sessionXML, work_folder, processed_folder):
+    utils.create_directory_if_needed(processed_folder)
+
+    staticMeasurement = qtmTools.findStatic(sessionXML)
+    filename = qtmTools.getFilename(staticMeasurement)
+    calibrated_file_path = os.path.join(processed_folder, filename)
+    if not os.path.isfile(calibrated_file_path):
+        shutil.copyfile(os.path.join(work_folder, filename),
+                        calibrated_file_path)
+        logging.info("qualisys exported c3d file [%s] copied to processed folder" % (
+            filename))
+
+    dynamicMeasurements = qtmTools.findDynamic(sessionXML)
+    for dynamicMeasurement in dynamicMeasurements:
+        filename = qtmTools.getFilename(dynamicMeasurement)
+        no_events_file_path = os.path.join(work_folder, filename)
+        processed_file_path = os.path.join(processed_folder, filename)
+        if not os.path.isfile(processed_file_path):
+            shutil.copyfile(no_events_file_path,
+                            processed_file_path)
+            logging.info("qualisys exported c3d file [%s] copied to processed folder" % (
+                filename))
+
+            acq = btkTools.smartReader(processed_file_path)
+
+            if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
+                forceplates.correctForcePlateType5(acq)
+
+            acq = eventDetector.zeni(acq)
+            btkTools.smartWriter(acq, processed_file_path)
+
+            cmd = "Mokka.exe \"%s\"" % (processed_file_path)
+            os.system(cmd)
 
 
 def main():
@@ -24,29 +60,9 @@ def main():
 
     # create processed folder
     processed_data_path = os.path.join(working_dir, "processed")
-    utils.create_directory_if_needed(processed_data_path)
 
-    # --------------------------dynamic measurement-----------------------
-    dynamicMeasurements = qtmTools.findDynamic(sessionXML)
-
-    # --------------------------EVENTS -----------------------
-    for dynamicMeasurement in dynamicMeasurements:
-
-        c3dfile = qtmTools.getFilename(dynamicMeasurement)
-        c3d_file_path = os.path.join(processed_data_path, c3dfile)
-
-        logging.info("----Event detection of [%s]-----" % c3dfile)
-        acq = btkTools.smartReader(c3d_file_path)
-        forcePlateType = btkTools.smartGetMetadata(
-            acq, "FORCE_PLATFORM", "TYPE")
-        if forcePlateType is not None and "5" in forcePlateType:
-            forceplates.correctForcePlateType5(acq)
-
-        acq = eventDetector.zeni(acq)
-        btkTools.smartWriter(acq, c3d_file_path)
-
-        cmd = "Mokka.exe \"%s\"" % c3d_file_path
-        os.system(cmd)
+    prepare_folder_and_run_event_detection(
+        sessionXML, working_dir, processed_data_path)
 
 
 if __name__ == "__main__":
