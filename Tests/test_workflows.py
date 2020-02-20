@@ -7,6 +7,7 @@ from qtmWebGaitReport.utils import create_directory_if_needed
 import os
 import shutil
 import glob
+import time
 import pytest
 
 session_xml_file_name = "session.xml"
@@ -66,7 +67,7 @@ class TestEventDetection:
                 with open(generated_c3d_path, "rb") as generated_c3d:
                     assert generated_c3d.read() == presaved_c3d.read(
                     ), "generated event c3d differs from presaved one"
-
+            time.sleep(0.1)
             # cleanup generated file
             os.remove(generated_c3d_path)
 
