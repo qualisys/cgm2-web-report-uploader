@@ -49,8 +49,15 @@ def prepare_folder_and_run_event_detection(sessionXML, work_folder, processed_fo
             acq = eventDetector.zeni(acq)
             btkTools.smartWriter(acq, processed_file_path)
 
-            cmd = "Mokka.exe \"%s\"" % (processed_file_path)
-            os.system(cmd)
+
+def verify_events_in_mokka(sessionXML, processed_folder):
+    dynamicMeasurements = qtmTools.findDynamic(sessionXML)
+    for dynamicMeasurement in dynamicMeasurements:
+        filename = qtmTools.getFilename(dynamicMeasurement)
+        processed_file_path = os.path.join(processed_folder, filename)
+
+        cmd = "Mokka.exe \"%s\"" % (processed_file_path)
+        os.system(cmd)
 
 
 def run_event_detection_and_verify_in_mokka(working_dir, processed_folder_name="processed"):
@@ -62,6 +69,8 @@ def run_event_detection_and_verify_in_mokka(working_dir, processed_folder_name="
 
     prepare_folder_and_run_event_detection(
         sessionXML, working_dir, processed_data_path)
+
+    verify_events_in_mokka(sessionXML, processed_data_path)
 
 
 def main():

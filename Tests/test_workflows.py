@@ -1,6 +1,6 @@
 from qtmWebGaitReport.CGM_workflow_main import CGM1_workflow
 from qtmWebGaitReport.CGM_workflow_main import CGM23_workflow
-from qtmWebGaitReport.EventDetector_Zeni import run_event_detection_and_verify_in_mokka
+from qtmWebGaitReport.EventDetector_Zeni import prepare_folder_and_run_event_detection
 from qtmWebGaitReport.utils import read_session_xml
 from qtmWebGaitReport.utils import create_directory_if_needed
 
@@ -43,17 +43,19 @@ class TestCGM1Workflow:
 
 
 class TestEventDetection:
-    def test_zeni_flow(self, clinical_gait_example_work_folder):
+    def test_zeni_flow(self, session_xml, clinical_gait_example_work_folder):
         processed_folder_name = "with_events_test_generated"
-        processed_to_compare_to = "with_events"
-        # run the detection
-        run_event_detection_and_verify_in_mokka(
-            clinical_gait_example_work_folder, processed_folder_name)
-        # compare to presaved c3ds
-        presaved_events_folder = os.path.join(
-            clinical_gait_example_work_folder, processed_to_compare_to)
+
         generated_events_folder = os.path.join(
             clinical_gait_example_work_folder, processed_folder_name)
+        # run the detection
+        prepare_folder_and_run_event_detection(session_xml,
+                                               clinical_gait_example_work_folder, generated_events_folder)
+        # compare to presaved c3ds
+        processed_to_compare_to = "with_events"
+        presaved_events_folder = os.path.join(
+            clinical_gait_example_work_folder, processed_to_compare_to)
+
         for c3d_path in glob.glob(os.path.join(presaved_events_folder, "*.c3d")):
             c3d_name = os.path.split(c3d_path)[-1]
             generated_c3d_path = os.path.join(
@@ -67,7 +69,6 @@ class TestEventDetection:
                 with open(generated_c3d_path, "rb") as generated_c3d:
                     assert generated_c3d.read() == presaved_c3d.read(
                     ), "generated event c3d differs from presaved one"
-            time.sleep(0.1)
             # cleanup generated file
             os.remove(generated_c3d_path)
 
