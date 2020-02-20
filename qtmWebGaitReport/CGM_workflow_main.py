@@ -38,7 +38,7 @@ def fetch_translators():
     return translators
 
 
-def get_model_and_fit_to_measurements(session_xml, data_path, point_suffix):
+def get_model_and_fit_to_measurements(session_xml, data_path, point_suffix=None):
     translators = fetch_translators()
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
 
@@ -111,7 +111,7 @@ def get_modelled_trials(session_xml, measurement_type):
     return modelled_trials
 
 
-def process_pdf_report(data_path, modelled_trials, title, model, point_suffix, normative_dataset):
+def process_pdf_report(data_path, modelled_trials, title, model,  normative_dataset, point_suffix=None):
     analysisInstance = analysis.makeAnalysis(
         data_path, modelled_trials,
         subjectInfo=None,
@@ -219,35 +219,28 @@ def create_web_report(session_xml, data_path):
         logging.info("qualisys Web Report exported")
 
 
-def create_pdf_report(session_xml, data_path, model, point_suffix):
+def create_pdf_report(session_xml, data_path, model):
     normative_dataset = normativeDatasets.Schwartz2008("Free")
     measurement_types = qtmTools.detectMeasurementType(session_xml)
     for measurement_type in measurement_types:
 
         modelledTrials = get_modelled_trials(session_xml, measurement_type)
         process_pdf_report(
-            data_path, modelledTrials, measurement_type, model, point_suffix, normative_dataset)
+            data_path, modelledTrials, measurement_type, model, normative_dataset)
 
 
-def CGM1_workflow(session_xml, processed_folder):
+def run_CGM1_workflow_and_return_model(session_xml, processed_folder):
+    model = get_model_and_fit_to_measurements(
+        session_xml, processed_folder)
 
-    point_suffix = None
+    return model
+
+
+def run_CGM23_workflow_and_return_model(session_xml, processed_folder):
 
     model = get_model_and_fit_to_measurements(
-        session_xml, processed_folder, point_suffix)
-
-    # --------------------------Reporting -----------------------
-    webReportFlag = toBool(str(session_xml.find("Create_WEB_report").text))
-    pdfReportFlag = toBool(str(session_xml.find("Create_PDF_report").text))
-
-    if webReportFlag:
-        create_web_report(session_xml, processed_folder)
-    if pdfReportFlag:
-        create_pdf_report(session_xml, processed_folder, model, point_suffix)
-
-
-def CGM23_workflow(session_xml, processed_folder):
-    pass
+        session_xml, processed_folder)
+    return model
 
 
 def main():
@@ -258,9 +251,20 @@ def main():
     pyCGM_processing_type = session_xml.Subsession.pyCGM_Processing_Type.text
 
     if pyCGM_processing_type == "pyCGM1":
-        CGM1_workflow(session_xml, processed_folder)
+        model = run_CGM1_workflow_and_return_model(
+            session_xml, processed_folder)
     elif pyCGM_processing_type == "pyCGM23":
-        CGM23_workflow(session_xml)
+        model = run_CGM23_workflow_and_return_model(
+            session_xml, processed_folder)
     else:
         raise Exception(
             "Only pyCGM1 processing is currently implemented, but you selected %s" % pyCGM_processing_type)
+
+    # --------------------------Reporting -----------------------
+    webReportFlag = toBool(str(session_xml.find("Create_WEB_report").text))
+    pdfReportFlag = toBool(str(session_xml.find("Create_PDF_report").text))
+
+    if webReportFlag:
+        create_web_report(session_xml, processed_folder)
+    if pdfReportFlag:
+        create_pdf_report(session_xml, processed_folder, model)
