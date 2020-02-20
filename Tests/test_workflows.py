@@ -41,6 +41,12 @@ class TestCGM1Workflow:
         shutil.rmtree(new_processed_folder_path)
 
 
+class TestCGM2Workflow:
+    def test_runs_without_errors(self, session_xml, clinical_gait_example_work_folder):
+
+        assert 0
+
+
 class TestEventDetection:
     def test_zeni_flow(self, session_xml, clinical_gait_example_work_folder):
         processed_folder_name = "with_events_test_generated"
@@ -70,6 +76,3 @@ class TestEventDetection:
                     ), "generated event c3d differs from presaved one"
             # cleanup generated file
             os.remove(generated_c3d_path)
-
-# def test_CGM2_workflow():
-#     assert 0
