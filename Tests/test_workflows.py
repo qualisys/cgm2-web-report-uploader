@@ -1,5 +1,5 @@
-from qtmWebGaitReport.CGM_workflow_main import CGM1_workflow
-from qtmWebGaitReport.CGM_workflow_main import CGM23_workflow
+from qtmWebGaitReport.CGM_workflow_main import run_CGM1_workflow_and_return_model
+from qtmWebGaitReport.CGM_workflow_main import run_CGM23_workflow_and_return_model
 from qtmWebGaitReport.EventDetector_Zeni import prepare_folder_and_run_event_detection
 from qtmWebGaitReport.utils import read_session_xml
 from qtmWebGaitReport.utils import create_directory_if_needed
@@ -35,7 +35,8 @@ class TestCGM1Workflow:
         shutil.copytree(presaved_processed_folder_path,
                         new_processed_folder_path)
         # apply workflow
-        CGM1_workflow(session_xml, new_processed_folder_path)
+        _ = run_CGM1_workflow_and_return_model(
+            session_xml, new_processed_folder_path)
         assert 1, "When this assertion is run all is fine and dandy"
         # cleanup
         shutil.rmtree(new_processed_folder_path)
@@ -43,7 +44,6 @@ class TestCGM1Workflow:
 
 class TestCGM2Workflow:
     def test_runs_without_errors(self, session_xml, clinical_gait_example_work_folder):
-
         assert 0
 
 
