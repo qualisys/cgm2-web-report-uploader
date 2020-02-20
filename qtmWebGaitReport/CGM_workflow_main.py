@@ -26,7 +26,7 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def fetch_translators(work_folder):
+def fetch_translators():
     if os.path.isfile(pyCGM2.PYCGM2_APPDATA_PATH + "CGM1-pyCGM2.settings"):
         settings = files.openFile(
             pyCGM2.PYCGM2_APPDATA_PATH, "CGM1-pyCGM2.settings")
@@ -34,10 +34,7 @@ def fetch_translators(work_folder):
         settings = files.openFile(
             pyCGM2.PYCGM2_SETTINGS_FOLDER, "CGM1-pyCGM2.settings")
 
-    #  translators management
-    translators = files.getTranslators(work_folder+"\\", "CGM1.translators")
-    if not translators:
-        translators = settings["Translators"]
+    translators = settings["Translators"]
     return translators
 
 
@@ -235,7 +232,7 @@ def CGM1_workflow(session_xml, work_folder, processed_folder_name="processed"):
     # management of the Processed folder
     processed_folder = os.path.join(work_folder, processed_folder_name)
 
-    translators = fetch_translators(work_folder)
+    translators = fetch_translators()
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
     point_suffix = None
 
