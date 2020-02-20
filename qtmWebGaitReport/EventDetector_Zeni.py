@@ -66,7 +66,7 @@ def run_event_detection_and_verify_in_mokka(working_dir, processed_folder_name="
 
 def main():
     working_dir = os.getcwd()+"\\"
-    run_event_detection_and_verify_in_mokka()
+    run_event_detection_and_verify_in_mokka(working_dir)
 
 
 if __name__ == "__main__":
