@@ -226,11 +226,10 @@ def create_pdf_report(session_xml, data_path, model, point_suffix):
             data_path, modelledTrials, measurement_type, model, point_suffix, normative_dataset)
 
 
-def CGM1_workflow(session_xml, work_folder, processed_folder_name="processed"):
+def CGM1_workflow(session_xml, processed_folder):
 
     # ---------------------------------------------------------------------------
     # management of the Processed folder
-    processed_folder = os.path.join(work_folder, processed_folder_name)
 
     translators = fetch_translators()
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
@@ -257,10 +256,11 @@ def main():
     work_folder = os.getcwd()
     session_xml_path = os.path.join(work_folder, "session.xml")
     sessionXML = utils.read_session_xml(session_xml_path)
+    processed_folder = os.path.join(work_folder, "processed")
     pyCGM_processing_type = sessionXML.Subsession.pyCGM_Processing_Type.text
 
     if pyCGM_processing_type == "pyCGM1":
-        CGM1_workflow(sessionXML, work_folder)
+        CGM1_workflow(sessionXML, processed_folder)
     elif pyCGM_processing_type == "pyCGM23":
         CGM23_workflow(sessionXML)
     else:
