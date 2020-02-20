@@ -38,8 +38,11 @@ def fetch_translators():
     return translators
 
 
-def get_model_and_fit_to_measurements(sessionXML, data_path, translators, required_mp, optional_mp, point_suffix):
-    staticMeasurement = qtmTools.findStatic(sessionXML)
+def get_model_and_fit_to_measurements(session_xml, data_path, point_suffix):
+    translators = fetch_translators()
+    required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
+
+    staticMeasurement = qtmTools.findStatic(session_xml)
     calibrateFilenameLabelled = qtmTools.getFilename(staticMeasurement)
     leftFlatFoot = toBool(staticMeasurement.Left_foot_flat)
     rightFlatFoot = toBool(staticMeasurement.Right_foot_flat)
@@ -52,7 +55,7 @@ def get_model_and_fit_to_measurements(sessionXML, data_path, translators, requir
                               point_suffix)
 
     # --------------------------MODEL FITTING -----------------------
-    dynamicMeasurements = qtmTools.findDynamic(sessionXML)
+    dynamicMeasurements = qtmTools.findDynamic(session_xml)
 
     modelledC3ds = []
     for dynamicMeasurement in dynamicMeasurements:
@@ -228,15 +231,10 @@ def create_pdf_report(session_xml, data_path, model, point_suffix):
 
 def CGM1_workflow(session_xml, processed_folder):
 
-    # ---------------------------------------------------------------------------
-    # management of the Processed folder
-
-    translators = fetch_translators()
-    required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
     point_suffix = None
 
     model = get_model_and_fit_to_measurements(
-        session_xml, processed_folder, translators, required_mp, optional_mp, point_suffix)
+        session_xml, processed_folder, point_suffix)
 
     # --------------------------Reporting -----------------------
     webReportFlag = toBool(str(session_xml.find("Create_WEB_report").text))
@@ -248,21 +246,21 @@ def CGM1_workflow(session_xml, processed_folder):
         create_pdf_report(session_xml, processed_folder, model, point_suffix)
 
 
-def CGM23_workflow(sessionXML):
+def CGM23_workflow(session_xml, processed_folder):
     pass
 
 
 def main():
     work_folder = os.getcwd()
     session_xml_path = os.path.join(work_folder, "session.xml")
-    sessionXML = utils.read_session_xml(session_xml_path)
+    session_xml = utils.read_session_xml(session_xml_path)
     processed_folder = os.path.join(work_folder, "processed")
-    pyCGM_processing_type = sessionXML.Subsession.pyCGM_Processing_Type.text
+    pyCGM_processing_type = session_xml.Subsession.pyCGM_Processing_Type.text
 
     if pyCGM_processing_type == "pyCGM1":
-        CGM1_workflow(sessionXML, processed_folder)
+        CGM1_workflow(session_xml, processed_folder)
     elif pyCGM_processing_type == "pyCGM23":
-        CGM23_workflow(sessionXML)
+        CGM23_workflow(session_xml)
     else:
         raise Exception(
             "Only pyCGM1 processing is currently implemented, but you selected %s" % pyCGM_processing_type)
