@@ -5,7 +5,7 @@ from pyCGM2.Lib import eventDetector
 from pyCGM2.Tools import btkTools
 from pyCGM2.qtm import qtmTools
 from pyCGM2.Utils.utils import *
-from pyCGM2.Utils import files
+from qtmWebGaitReport import utils
 import matplotlib.pyplot as plt
 import logging
 import os
@@ -18,13 +18,13 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def main():
-    DATA_PATH = os.getcwd()+"\\"
-    file = "session.xml"
-    sessionXML = files.readXml(DATA_PATH, file)
+    working_dir = os.getcwd()+"\\"
+    session_xml_path = os.path.join(working_dir, "session.xml")
+    sessionXML = utils.read_session_xml(session_xml_path)
 
     # create processed folder
-    DATA_PATH_OUT = DATA_PATH + "processed\\"
-    files.createDir(DATA_PATH_OUT)
+    processed_data_path = os.path.join(working_dir, "processed")
+    utils.create_directory_if_needed(processed_data_path)
 
     # --------------------------dynamic measurement-----------------------
     dynamicMeasurements = qtmTools.findDynamic(sessionXML)
@@ -33,18 +33,19 @@ def main():
     for dynamicMeasurement in dynamicMeasurements:
 
         c3dfile = qtmTools.getFilename(dynamicMeasurement)
+        c3d_file_path = os.path.join(processed_data_path, c3dfile)
 
-        logging.info("----Event detection of [%s]-----" % (c3dfile))
-        acq = btkTools.smartReader(str(DATA_PATH+c3dfile))
+        logging.info("----Event detection of [%s]-----" % c3dfile)
+        acq = btkTools.smartReader(c3d_file_path)
         forcePlateType = btkTools.smartGetMetadata(
             acq, "FORCE_PLATFORM", "TYPE")
         if forcePlateType is not None and "5" in forcePlateType:
             forceplates.correctForcePlateType5(acq)
 
         acq = eventDetector.zeni(acq)
-        btkTools.smartWriter(acq, str(DATA_PATH_OUT + c3dfile))
+        btkTools.smartWriter(acq, c3d_file_path)
 
-        cmd = "Mokka.exe \"%s\"" % (str(DATA_PATH_OUT + c3dfile))
+        cmd = "Mokka.exe \"%s\"" % c3d_file_path
         os.system(cmd)
 
 
