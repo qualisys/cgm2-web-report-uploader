@@ -35,8 +35,7 @@ class TestCGM1Workflow:
         shutil.copytree(presaved_processed_folder_path,
                         new_processed_folder_path)
         # apply workflow
-        CGM1_workflow(session_xml, clinical_gait_example_work_folder,
-                      processed_folder_name=processed_folder_name)
+        CGM1_workflow(session_xml, new_processed_folder_path)
         assert 1, "When this assertion is run all is fine and dandy"
         # cleanup
         shutil.rmtree(new_processed_folder_path)
