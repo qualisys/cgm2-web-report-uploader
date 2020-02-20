@@ -11,6 +11,8 @@ from pyCGM2.qtm import qtmTools
 from pyCGM2.Utils.utils import *
 from pyCGM2.Utils import files
 from pyCGM2.Lib.CGM import cgm1
+from pyCGM2.Lib.CGM import cgm2_3
+from pyCGM2.Configurator import ModelManager
 from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
 from qtmWebGaitReport import utils
@@ -26,20 +28,19 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def fetch_translators():
-    if os.path.isfile(pyCGM2.PYCGM2_APPDATA_PATH + "CGM1-pyCGM2.settings"):
+def get_settings(version):
+    if os.path.isfile(pyCGM2.PYCGM2_APPDATA_PATH + "%s-pyCGM2.settings" % version):
         settings = files.openFile(
-            pyCGM2.PYCGM2_APPDATA_PATH, "CGM1-pyCGM2.settings")
+            pyCGM2.PYCGM2_APPDATA_PATH, "%s-pyCGM2.settings" % version)
     else:
         settings = files.openFile(
-            pyCGM2.PYCGM2_SETTINGS_FOLDER, "CGM1-pyCGM2.settings")
+            pyCGM2.PYCGM2_SETTINGS_FOLDER, "%s-pyCGM2.settings" % version)
+    return settings
 
+
+def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
+    settings = get_settings(model_type)
     translators = settings["Translators"]
-    return translators
-
-
-def get_model_and_fit_to_measurements(session_xml, data_path, point_suffix=None):
-    translators = fetch_translators()
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
 
     staticMeasurement = qtmTools.findStatic(session_xml)
@@ -231,15 +232,14 @@ def create_pdf_report(session_xml, data_path, model):
 
 def run_CGM1_workflow_and_return_model(session_xml, processed_folder):
     model = get_model_and_fit_to_measurements(
-        session_xml, processed_folder)
+        session_xml, processed_folder, model_type="CGM1")
 
     return model
 
 
 def run_CGM23_workflow_and_return_model(session_xml, processed_folder):
-
     model = get_model_and_fit_to_measurements(
-        session_xml, processed_folder)
+        session_xml, processed_folder, model_type="CGM2_3")
     return model
 
 
