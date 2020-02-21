@@ -68,13 +68,13 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
 
     staticMeasurement = qtmTools.findStatic(session_xml)
-    calibrateFilenameLabelled = qtmTools.getFilename(staticMeasurement)
+    calibration_filename = qtmTools.getFilename(staticMeasurement)
     leftFlatFoot = toBool(staticMeasurement.Left_foot_flat)
     rightFlatFoot = toBool(staticMeasurement.Right_foot_flat)
     headFlat = toBool(staticMeasurement.Head_flat)
     markerDiameter = float(staticMeasurement.Marker_diameter.text)*1000.0
 
-    model, _ = cgm1.calibrate(data_path + "\\", calibrateFilenameLabelled, translators,
+    model, _ = cgm1.calibrate(data_path + "\\", calibration_filename, translators,
                               required_mp, optional_mp,
                               leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
                               point_suffix)
