@@ -6,20 +6,30 @@ from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.parserUploader import WebReportUploader
 
 
-def loadConfigData(configPath):
-    if os.path.isfile(configPath):
-        with open(configPath) as jsonDataFile:
-            configData = json.load(jsonDataFile)
-    else:
-        raise Exception("Config file not found, file path investigated: " +
-                        configPath)
+def loadConfigData(directoryPath=None):
+    configData = {}
+    configPathsToCheck = [
+        os.path.join(directoryPath, "upload-token.json"),
+        os.path.join(os.path.abspath(os.path.join(directoryPath, os.pardir)),
+                     "upload-token.json"),
+        os.path.join(qtmWebGaitReport.PATH_TO_MAIN, 'config.json')
+    ]
+    for configPath in configPathsToCheck:
+        print("Checking path: " + configPath)
+        if os.path.isfile(configPath):
+            with open(configPath) as jsonDataFile:
+                configData = json.load(jsonDataFile)
+            print("Config loaded from " + configPath)
+            break
+    if configData == {}:
+        raise Exception("Config file not found, file paths investigated: [\n{}\n]".format(
+            "\n".join(configPathsToCheck)))
     return configData
 
 
 class WebReportFilter(object):
     def __init__(self, workingDirectory, modelledC3dfilenames, subjectInfo, sessionDate):
-        configData = loadConfigData(os.path.join(
-            qtmWebGaitReport.PATH_TO_MAIN, 'config.json'))
+        configData = loadConfigData(workingDirectory)
 
         self.reportGenerator = ReportJsonGenerator(
             workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate)
