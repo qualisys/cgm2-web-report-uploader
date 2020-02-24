@@ -28,16 +28,6 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def get_settings(version):
-    if os.path.isfile(pyCGM2.PYCGM2_APPDATA_PATH + "%s-pyCGM2.settings" % version):
-        settings = files.openFile(
-            pyCGM2.PYCGM2_APPDATA_PATH, "%s-pyCGM2.settings" % version)
-    else:
-        settings = files.openFile(
-            pyCGM2.PYCGM2_SETTINGS_FOLDER, "%s-pyCGM2.settings" % version)
-    return settings
-
-
 def filter_data(file_path, measurement):
     acq = btkTools.smartReader(file_path)
     if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
@@ -73,14 +63,22 @@ def get_processing_module_alias(model_type):
     return proccessing_module
 
 
-def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
-    settings = get_settings(model_type)
-    translators = settings["Translators"]
-    required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
+def get_settings(version):
+    if os.path.isfile(pyCGM2.PYCGM2_APPDATA_PATH + "%s-pyCGM2.settings" % version):
+        settings = files.openFile(
+            pyCGM2.PYCGM2_APPDATA_PATH, "%s-pyCGM2.settings" % version)
+    else:
+        settings = files.openFile(
+            pyCGM2.PYCGM2_SETTINGS_FOLDER, "%s-pyCGM2.settings" % version)
+    return settings
 
-    processing_module = get_processing_module_alias(model_type)
 
+def get_calibration_settings(model_type, data_path, session_xml, point_suffix):
     if model_type == "CGM1":
+        settings = get_settings(model_type)
+        translators = settings["Translators"]
+        required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
+
         static_session_xml_soup = qtmTools.findStatic(session_xml)
         calibration_filename = qtmTools.getFilename(static_session_xml_soup)
         leftFlatFoot = toBool(static_session_xml_soup.Left_foot_flat)
@@ -89,38 +87,71 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
         markerDiameter = float(
             static_session_xml_soup.Marker_diameter.text)*1000.0
 
-        model, _ = processing_module.calibrate(data_path + "\\", calibration_filename, translators,
-                                               required_mp, optional_mp,
-                                               leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
-                                               point_suffix)
-
-        # --------------------------MODEL FITTING -----------------------
-        dynamicMeasurements = qtmTools.findDynamic(session_xml)
-
-        for dynamicMeasurement in dynamicMeasurements:
-
-            filename = qtmTools.getFilename(dynamicMeasurement)
-            logging.info("----Processing of [%s]-----" % filename)
-            mfpa = qtmTools.getForcePlateAssigment(dynamicMeasurement)
-            momentProjection = enums.MomentProjection.Distal
-
-            file_path = os.path.join(data_path, filename)
-
-            # filtering
-            filter_data(file_path, dynamicMeasurement)
-
-            acqGait = processing_module.fitting(model, data_path + "\\", filename,
-                                                translators,
-                                                markerDiameter,
-                                                point_suffix,
-                                                mfpa, momentProjection)
-
-            btkTools.smartWriter(acqGait, file_path)
+        settings = (
+            data_path + "\\", calibration_filename, translators,
+            required_mp, optional_mp,
+            leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
+            point_suffix
+        )
     elif model_type == "CGM2_3":
-        pass
+        settings = ()
     else:
         raise Exception(
             "Processing for model_type={} is not implemented".format(model_type))
+    return settings
+
+
+def get_model_fitting_settings(model_type, dynamic_measurement, model, data_path, session_xml, point_suffix):
+    if model_type == "CGM1":
+        settings = get_settings(model_type)
+        translators = settings["Translators"]
+
+        markerDiameter = float(
+            session_xml.Marker_diameter.text)*1000.0
+
+        filename = qtmTools.getFilename(dynamic_measurement)
+        mfpa = qtmTools.getForcePlateAssigment(dynamic_measurement)
+        momentProjection = enums.MomentProjection.Distal
+        settings = (
+            model, data_path + "\\", filename,
+            translators,
+            markerDiameter,
+            point_suffix,
+            mfpa, momentProjection
+        )
+    elif model_type == "CGM2_3":
+        settings = ()
+    else:
+        raise Exception(
+            "Processing for model_type={} is not implemented".format(model_type))
+    return settings
+
+
+def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
+
+    processing_module = get_processing_module_alias(model_type)
+    calibration_settings = get_calibration_settings(
+        model_type, data_path, session_xml, point_suffix)
+
+    model, _ = processing_module.calibrate(*calibration_settings)
+
+    # --------------------------MODEL FITTING -----------------------
+    dynamic_measurements = qtmTools.findDynamic(session_xml)
+
+    for dynamic_measurement in dynamic_measurements:
+        fitting_settings = get_model_fitting_settings(
+            model_type, dynamic_measurement, model, data_path, session_xml, point_suffix)
+
+        filename = qtmTools.getFilename(dynamic_measurement)
+        logging.info("----Processing of [%s]-----" % filename)
+
+        file_path = os.path.join(data_path, filename)
+        filter_data(file_path, dynamic_measurement)
+
+        acqGait = processing_module.fitting(*fitting_settings)
+
+        btkTools.smartWriter(acqGait, file_path)
+
     return model
 
 
