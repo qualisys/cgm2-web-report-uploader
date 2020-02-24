@@ -74,19 +74,20 @@ def get_settings(version):
 
 
 def get_calibration_settings(model_type, data_path, session_xml, point_suffix):
+    settings = get_settings(model_type)
+    translators = settings["Translators"]
+    required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
+
+    static_session_xml_soup = qtmTools.findStatic(session_xml)
+    calibration_filename = qtmTools.getFilename(static_session_xml_soup)
+
+    leftFlatFoot = toBool(static_session_xml_soup.Left_foot_flat)
+    rightFlatFoot = toBool(static_session_xml_soup.Right_foot_flat)
+    headFlat = toBool(static_session_xml_soup.Head_flat)
+    markerDiameter = float(
+        static_session_xml_soup.Marker_diameter.text)*1000.0
+
     if model_type == "CGM1":
-        settings = get_settings(model_type)
-        translators = settings["Translators"]
-        required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
-
-        static_session_xml_soup = qtmTools.findStatic(session_xml)
-        calibration_filename = qtmTools.getFilename(static_session_xml_soup)
-        leftFlatFoot = toBool(static_session_xml_soup.Left_foot_flat)
-        rightFlatFoot = toBool(static_session_xml_soup.Right_foot_flat)
-        headFlat = toBool(static_session_xml_soup.Head_flat)
-        markerDiameter = float(
-            static_session_xml_soup.Marker_diameter.text)*1000.0
-
         settings = (
             data_path + "\\", calibration_filename, translators,
             required_mp, optional_mp,
@@ -94,7 +95,24 @@ def get_calibration_settings(model_type, data_path, session_xml, point_suffix):
             point_suffix
         )
     elif model_type == "CGM2_3":
-        settings = ()
+        final_settings = None  # a collection of some settings
+        enableIK = 0  # either 0 or 1
+        hjcMethod = "Hara"  # UNKNKOWN probably some bool or string
+        settings = (
+            data_path + "\\",
+            calibration_filename,
+            translators,
+            final_settings,
+            required_mp,
+            optional_mp,
+            enableIK,
+            leftFlatFoot,
+            rightFlatFoot,
+            headFlat,
+            markerDiameter,
+            hjcMethod,
+            point_suffix,
+        )
     else:
         raise Exception(
             "Processing for model_type={} is not implemented".format(model_type))
