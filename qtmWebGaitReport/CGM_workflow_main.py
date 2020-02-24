@@ -73,7 +73,7 @@ def get_settings(version):
     return settings
 
 
-def get_calibration_settings(model_type, data_path, session_xml, point_suffix):
+def get_calibration_arguments_and_model_manager(model_type, data_path, session_xml, point_suffix):
     settings = get_settings(model_type)
     translators = settings["Translators"]
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
@@ -87,6 +87,7 @@ def get_calibration_settings(model_type, data_path, session_xml, point_suffix):
     markerDiameter = float(
         static_session_xml_soup.Marker_diameter.text)*1000.0
 
+    dynamic_measurements = qtmTools.findDynamic(session_xml)
     user_settings = {
         "Calibration": {
             "Left flat foot": leftFlatFoot,
@@ -103,59 +104,64 @@ def get_calibration_settings(model_type, data_path, session_xml, point_suffix):
             "Optional": optional_mp
         },
         "Fitting": {
-            "Trials": 0
+            "Trials": dynamic_measurements
         }
     }
     if model_type == "CGM1":
-        settings = (
-            data_path + "\\", calibration_filename, translators,
-            required_mp, optional_mp,
-            leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
-            point_suffix
+        model_manager = ModelManager.CGM1ConfigManager(
+            user_settings, localInternalSettings=settings, localTranslators={"Translators": translators})
+        model_manager.contruct()
+        calibration_arguments = (
+            data_path + "\\",
+            model_manager.staticTrial,
+            model_manager.translators,
+            model_manager.requiredMp,
+            model_manager.optionalMp,
+            model_manager.leftFlatFoot,
+            model_manager.rightFlatFoot,
+            model_manager.headFlat,
+            model_manager.markerDiameter,
+            model_manager.pointSuffix,
         )
     elif model_type == "CGM2_3":
-        manager = ModelManager.CGM2_3ConfigManager(
+        model_manager = ModelManager.CGM2_3ConfigManager(
             user_settings, localInternalSettings=settings, localTranslators={"Translators": translators})
-        manager.contruct()
-        finalSettings = manager.getFinalSettings()
-        settings = (
+        model_manager.contruct()
+        finalSettings = model_manager.getFinalSettings()
+        calibration_arguments = (
             data_path + "\\",
-            manager.staticTrial,
-            manager.translators,
+            model_manager.staticTrial,
+            model_manager.translators,
             finalSettings,
-            manager.requiredMp,
-            manager.optionalMp,
-            manager.enableIK,
-            manager.leftFlatFoot,
-            manager.rightFlatFoot,
-            manager.headFlat,
-            manager.markerDiameter,
-            manager.hjcMethod,
-            manager.pointSuffix,
+            model_manager.requiredMp,
+            model_manager.optionalMp,
+            model_manager.enableIK,
+            model_manager.leftFlatFoot,
+            model_manager.rightFlatFoot,
+            model_manager.headFlat,
+            model_manager.markerDiameter,
+            model_manager.hjcMethod,
+            model_manager.pointSuffix,
         )
     else:
         raise Exception(
             "Processing for model_type={} is not implemented".format(model_type))
-    return settings
+    return calibration_arguments, model_manager
 
 
-def get_model_fitting_settings(model_type, dynamic_measurement, model, data_path, session_xml, point_suffix):
+def get_model_fitting_settings(model_type, dynamic_measurement, model, data_path, model_manager, point_suffix):
     if model_type == "CGM1":
-        settings = get_settings(model_type)
-        translators = settings["Translators"]
-
-        markerDiameter = float(
-            session_xml.Marker_diameter.text)*1000.0
-
         filename = qtmTools.getFilename(dynamic_measurement)
         mfpa = qtmTools.getForcePlateAssigment(dynamic_measurement)
-        momentProjection = enums.MomentProjection.Distal
+        # momentProjection = enums.MomentProjection.Distal
         settings = (
-            model, data_path + "\\", filename,
-            translators,
-            markerDiameter,
-            point_suffix,
-            mfpa, momentProjection
+            model, data_path + "\\",
+            filename,
+            model_manager.translators,
+            model_manager.markerDiameter,
+            model_manager.pointSuffix,
+            mfpa,
+            model_manager.momentProjection
         )
     elif model_type == "CGM2_3":
         settings = ()
@@ -165,20 +171,11 @@ def get_model_fitting_settings(model_type, dynamic_measurement, model, data_path
     return settings
 
 
-def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
-
+def fit_model_to_measurements(model, model_type, model_manager, data_path, point_suffix):
     processing_module = get_processing_module_alias(model_type)
-    calibration_settings = get_calibration_settings(
-        model_type, data_path, session_xml, point_suffix)
-
-    model, _ = processing_module.calibrate(*calibration_settings)
-
-    # --------------------------MODEL FITTING -----------------------
-    dynamic_measurements = qtmTools.findDynamic(session_xml)
-
-    for dynamic_measurement in dynamic_measurements:
+    for dynamic_measurement in model_manager.dynamicTrials:
         fitting_settings = get_model_fitting_settings(
-            model_type, dynamic_measurement, model, data_path, session_xml, point_suffix)
+            model_type, dynamic_measurement, model, data_path, model_manager, point_suffix)
 
         filename = qtmTools.getFilename(dynamic_measurement)
         logging.info("----Processing of [%s]-----" % filename)
@@ -189,6 +186,18 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
         acqGait = processing_module.fitting(*fitting_settings)
 
         btkTools.smartWriter(acqGait, file_path)
+
+
+def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
+
+    calibration_args, model_manager = get_calibration_arguments_and_model_manager(
+        model_type, data_path, session_xml, point_suffix)
+
+    processing_module = get_processing_module_alias(model_type)
+    model, _ = processing_module.calibrate(*calibration_args)
+
+    fit_model_to_measurements(
+        model, model_type, model_manager, data_path, point_suffix)
 
     return model
 
