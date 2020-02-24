@@ -1,5 +1,6 @@
 from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.qtmFilters import loadConfigData
+from qtmWebGaitReport.CGM_workflow_main import create_subject_metadata
 from pyCGM2.qtm import qtmTools
 from qtmWebGaitReport import utils
 
@@ -20,7 +21,7 @@ def loadJson(filePath):
 
 
 configData = loadConfigData(os.path.join(os.getcwd(),
-                                         "TestFiles", 'example_config.json'))
+                                         "TestFiles"))
 
 
 def get_paths(example_folder_name):
@@ -45,15 +46,7 @@ def prepare_parser(testDataPath):
             filename = qtmTools.getFilename(dynamicMeasurement)
             modelledTrials.append(filename)
 
-    subjectInfo = {"patientName": sessionXML.find("Last_name").text + " " + sessionXML.find("First_name").text,
-                   "bodyHeight": sessionXML.find("Height").text,
-                   "bodyWeight": sessionXML.find("Weight").text,
-                   "diagnosis": sessionXML.find("Diagnosis").text,
-                   "dob": sessionXML.find("Date_of_birth").text,
-                   "sex": sessionXML.find("Sex").text,
-                   "test condition": session_type,
-                   "gmfcs": sessionXML.find("Gross_Motor_Function_Classification").text,
-                   "fms": sessionXML.find("Functional_Mobility_Scale").text}
+    subjectInfo = create_subject_metadata(sessionXML, session_type)
     # initiate parser uploader
     processedDir = os.path.join(testDataPath, "processed")
     reportJsonGenerator = ReportJsonGenerator(processedDir,
