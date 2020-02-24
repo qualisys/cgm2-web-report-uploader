@@ -105,15 +105,9 @@ class Metadata:
         return info
 
     def subjectInfo(self):
-        # creationDateTimeStr = "2019,6,12,12,54,7"#self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["CREATIONDATEANDTIME"]
-        # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S"))
-        id = str(self.creationDate)
-
-        # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
-        patientName = self.subjectMetadata["patientName"]
         subject = {
-            "id": id,
-            "displayName": patientName,
+            "id": self.subjectMetadata["patientID"],
+            "displayName": self.subjectMetadata["patientName"],
         }
         return subject
 

@@ -202,15 +202,17 @@ def create_web_report(session_xml, data_path):
 
         modelledTrials = get_modelled_trials(session_xml, measurement_type)
 
-        subjectMd = {"patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
-                     "bodyHeight": session_xml.find("Height").text,
-                     "bodyWeight": session_xml.find("Weight").text,
-                     "diagnosis": session_xml.find("Diagnosis").text,
-                     "dob": session_xml.find("Date_of_birth").text,
-                     "sex": session_xml.find("Sex").text,
-                     "test condition": measurement_type,
-                     "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
-                     "fms": session_xml.find("Functional_Mobility_Scale").text}
+        subjectMd = {
+            "patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
+            "patientID": session_xml.find("Patient_ID").text,
+            "bodyHeight": session_xml.find("Height").text,
+            "bodyWeight": session_xml.find("Weight").text,
+            "diagnosis": session_xml.find("Diagnosis").text,
+            "dob": session_xml.find("Date_of_birth").text,
+            "sex": session_xml.find("Sex").text,
+            "test condition": measurement_type,
+            "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
+            "fms": session_xml.find("Functional_Mobility_Scale").text}
 
         sessionDate = utils.get_creation_date(session_xml)
 
