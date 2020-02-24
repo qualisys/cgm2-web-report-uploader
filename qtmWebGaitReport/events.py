@@ -115,8 +115,9 @@ class Events:
             out = True
         return out
 
-    def getOnOffEvent(self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType):
+    def getOnOffEvent(self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType, signalThreshold=1.0):
         out = []
+
         if self.checkSignalExists(acq, measurementName, GRFSignalName):
             # read corresponding GRF signal
             signal = acq.GetPoint(GRFSignalName)
@@ -130,8 +131,8 @@ class Events:
             if frameCheckBefore < 0:
                 frameCheckBefore = 0
 
-            if eventType == 'on' and value[frameCheckBefore] < 0.1 and value[frameCheckAfter] > 0.1:
+            if eventType == 'on' and value[frameCheckBefore] < signalThreshold and value[frameCheckAfter] > signalThreshold:
                 out.append(eventTime)
-            elif eventType == 'off' and value[frameCheckBefore] > 0.1 and value[frameCheckAfter] < 0.1:
+            elif eventType == 'off' and value[frameCheckBefore] > signalThreshold and value[frameCheckAfter] < signalThreshold:
                 out.append(eventTime)
             return out
