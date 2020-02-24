@@ -24,27 +24,36 @@ def session_xml(clinical_gait_example_work_folder):
     return read_session_xml(os.path.join(clinical_gait_example_work_folder, session_xml_file_name))
 
 
+@pytest.fixture
+def new_processed_folder_path(clinical_gait_example_work_folder):
+    processed_folder_name = "processed_folder_test_generated"
+    new_processed_folder_path = os.path.join(
+        clinical_gait_example_work_folder, processed_folder_name)
+    # copy files to temp folder
+    presaved_processed_folder_path = os.path.join(
+        clinical_gait_example_work_folder, "processed")
+    shutil.copytree(presaved_processed_folder_path,
+                    new_processed_folder_path)
+    print("SETUP COMPLETE FOR " + str(new_processed_folder_path))
+    yield new_processed_folder_path
+    print("TEARDOWN")
+    shutil.rmtree(new_processed_folder_path)
+    print("SUCCESSFUL")
+
+
 class TestCGM1Workflow:
-    def test_runs_without_errors(self, session_xml, clinical_gait_example_work_folder):
-        # create a copy of processed files folder
-        processed_folder_name = "processed_folder_test_generated"
-        new_processed_folder_path = os.path.join(
-            clinical_gait_example_work_folder, processed_folder_name)
-        presaved_processed_folder_path = os.path.join(
-            clinical_gait_example_work_folder, "processed")
-        shutil.copytree(presaved_processed_folder_path,
-                        new_processed_folder_path)
+    def test_runs_without_errors(self, session_xml, new_processed_folder_path):
         # apply workflow
         _ = run_CGM1_workflow_and_return_model(
             session_xml, new_processed_folder_path)
         assert 1, "When this assertion is run all is fine and dandy"
-        # cleanup
-        shutil.rmtree(new_processed_folder_path)
 
 
 class TestCGM2Workflow:
-    def test_runs_without_errors(self, session_xml, clinical_gait_example_work_folder):
-        assert 0
+    def test_runs_without_errors(self, session_xml, new_processed_folder_path):
+        model = run_CGM23_workflow_and_return_model(
+            session_xml, new_processed_folder_path)
+        assert 1, "When this assertion is run all is fine and dandy"
 
 
 class TestEventDetection:
