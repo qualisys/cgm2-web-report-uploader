@@ -62,45 +62,65 @@ def filter_data(file_path, measurement):
     btkTools.smartWriter(acq, file_path)
 
 
+def get_processing_module_alias(model_type):
+    if model_type == "CGM1":
+        proccessing_module = cgm1
+    elif model_type == "CGM2_3":
+        proccessing_module = cgm2_3
+    else:
+        raise Exception(
+            "Processing for model_type={} is not implemented".format(model_type))
+    return proccessing_module
+
+
 def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_suffix=None):
     settings = get_settings(model_type)
     translators = settings["Translators"]
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
 
-    staticMeasurement = qtmTools.findStatic(session_xml)
-    calibration_filename = qtmTools.getFilename(staticMeasurement)
-    leftFlatFoot = toBool(staticMeasurement.Left_foot_flat)
-    rightFlatFoot = toBool(staticMeasurement.Right_foot_flat)
-    headFlat = toBool(staticMeasurement.Head_flat)
-    markerDiameter = float(staticMeasurement.Marker_diameter.text)*1000.0
+    processing_module = get_processing_module_alias(model_type)
 
-    model, _ = cgm1.calibrate(data_path + "\\", calibration_filename, translators,
-                              required_mp, optional_mp,
-                              leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
-                              point_suffix)
+    if model_type == "CGM1":
+        static_session_xml_soup = qtmTools.findStatic(session_xml)
+        calibration_filename = qtmTools.getFilename(static_session_xml_soup)
+        leftFlatFoot = toBool(static_session_xml_soup.Left_foot_flat)
+        rightFlatFoot = toBool(static_session_xml_soup.Right_foot_flat)
+        headFlat = toBool(static_session_xml_soup.Head_flat)
+        markerDiameter = float(
+            static_session_xml_soup.Marker_diameter.text)*1000.0
 
-    # --------------------------MODEL FITTING -----------------------
-    dynamicMeasurements = qtmTools.findDynamic(session_xml)
+        model, _ = processing_module.calibrate(data_path + "\\", calibration_filename, translators,
+                                               required_mp, optional_mp,
+                                               leftFlatFoot, rightFlatFoot, headFlat, markerDiameter,
+                                               point_suffix)
 
-    for dynamicMeasurement in dynamicMeasurements:
+        # --------------------------MODEL FITTING -----------------------
+        dynamicMeasurements = qtmTools.findDynamic(session_xml)
 
-        filename = qtmTools.getFilename(dynamicMeasurement)
-        logging.info("----Processing of [%s]-----" % filename)
-        mfpa = qtmTools.getForcePlateAssigment(dynamicMeasurement)
-        momentProjection = enums.MomentProjection.Distal
+        for dynamicMeasurement in dynamicMeasurements:
 
-        file_path = os.path.join(data_path, filename)
+            filename = qtmTools.getFilename(dynamicMeasurement)
+            logging.info("----Processing of [%s]-----" % filename)
+            mfpa = qtmTools.getForcePlateAssigment(dynamicMeasurement)
+            momentProjection = enums.MomentProjection.Distal
 
-        # filtering
-        filter_data(file_path, dynamicMeasurement)
+            file_path = os.path.join(data_path, filename)
 
-        acqGait = cgm1.fitting(model, data_path + "\\", filename,
-                               translators,
-                               markerDiameter,
-                               point_suffix,
-                               mfpa, momentProjection)
+            # filtering
+            filter_data(file_path, dynamicMeasurement)
 
-        btkTools.smartWriter(acqGait, file_path)
+            acqGait = processing_module.fitting(model, data_path + "\\", filename,
+                                                translators,
+                                                markerDiameter,
+                                                point_suffix,
+                                                mfpa, momentProjection)
+
+            btkTools.smartWriter(acqGait, file_path)
+    elif model_type == "CGM2_3":
+        pass
+    else:
+        raise Exception(
+            "Processing for model_type={} is not implemented".format(model_type))
     return model
 
 
@@ -195,6 +215,20 @@ def process_pdf_report(data_path, modelled_trials, title, model,  normative_data
     plt.show()
 
 
+def create_subject_metadata(session_xml, measurement_type):
+    return {
+        "patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
+        "patientID": session_xml.find("Patient_ID").text,
+        "bodyHeight": session_xml.find("Height").text,
+        "bodyWeight": session_xml.find("Weight").text,
+        "diagnosis": session_xml.find("Diagnosis").text,
+        "dob": session_xml.find("Date_of_birth").text,
+        "sex": session_xml.find("Sex").text,
+        "test condition": measurement_type,
+        "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
+        "fms": session_xml.find("Functional_Mobility_Scale").text}
+
+
 def create_web_report(session_xml, data_path):
 
     measurement_types = qtmTools.detectMeasurementType(session_xml)
@@ -202,17 +236,7 @@ def create_web_report(session_xml, data_path):
 
         modelledTrials = get_modelled_trials(session_xml, measurement_type)
 
-        subjectMd = {
-            "patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
-            "patientID": session_xml.find("Patient_ID").text,
-            "bodyHeight": session_xml.find("Height").text,
-            "bodyWeight": session_xml.find("Weight").text,
-            "diagnosis": session_xml.find("Diagnosis").text,
-            "dob": session_xml.find("Date_of_birth").text,
-            "sex": session_xml.find("Sex").text,
-            "test condition": measurement_type,
-            "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
-            "fms": session_xml.find("Functional_Mobility_Scale").text}
+        subjectMd = create_subject_metadata(session_xml, measurement_type)
 
         sessionDate = utils.get_creation_date(session_xml)
 
