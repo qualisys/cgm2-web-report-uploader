@@ -291,10 +291,9 @@ def main():
             "[pyCGM2] Impossible to run Gait processing. Badly gait event detection. check the log file")
     logging.info(
         "---------------------GAIT PROCESSING -----------------------")
+    return model
 
 
 if __name__ == "__main__":
-
-    args = parser.parse_args()
 
     main()
