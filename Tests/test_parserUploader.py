@@ -1,6 +1,6 @@
 from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.qtmFilters import loadConfigData
-from qtmWebGaitReport.pyCGM_workflows.common_components import create_subject_metadata
+from qtmWebGaitReport.pyCGM_workflows.reporting import create_subject_metadata
 from pyCGM2.qtm import qtmTools
 from qtmWebGaitReport import utils
 
