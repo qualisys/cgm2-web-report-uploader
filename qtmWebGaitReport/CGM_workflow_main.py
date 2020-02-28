@@ -3,8 +3,8 @@ import pyCGM2
 from pyCGM2 import log
 from pyCGM2.Report import normativeDatasets
 from pyCGM2.Utils.utils import *
-from qtmWebGaitReport.pyCGM_workflows.common_components import create_web_report
-from qtmWebGaitReport.pyCGM_workflows.common_components import create_pdf_report
+from qtmWebGaitReport.pyCGM_workflows.reporting import create_web_report
+from qtmWebGaitReport.pyCGM_workflows.reporting import create_pdf_report
 from qtmWebGaitReport.pyCGM_workflows import CGM1_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM11_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM21_workflow
