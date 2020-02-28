@@ -1,9 +1,7 @@
 import pyCGM2
 from pyCGM2 import log
-from pyCGM2.Lib import analysis, plot
 from pyCGM2.ForcePlates import forceplates
 from pyCGM2.Signal import signal_processing
-from pyCGM2.Report import normativeDatasets
 from pyCGM2.Tools import btkTools
 from pyCGM2 import enums
 from pyCGM2.qtm import qtmTools
@@ -12,10 +10,7 @@ from pyCGM2.Utils import files
 from pyCGM2.Lib.CGM import cgm1
 from pyCGM2.Lib.CGM import cgm2_3
 from pyCGM2.Configurator import ModelManager
-from qtmWebGaitReport import qtmFilters
-from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
 from qtmWebGaitReport import utils
-import matplotlib.pyplot as plt
 import logging
 import warnings
 import os
@@ -197,16 +192,6 @@ def get_model_and_fit_to_measurements(session_xml, data_path, model_type, point_
         model, model_type, model_manager, data_path, point_suffix)
 
     return model
-
-
-def get_modelled_trials(session_xml, measurement_type):
-    modelled_trials = []
-    dynamicMeasurements = qtmTools.findDynamic(session_xml)
-    for dynamicMeasurement in dynamicMeasurements:
-        if qtmTools.isType(dynamicMeasurement, measurement_type):
-            filename = qtmTools.getFilename(dynamicMeasurement)
-            modelled_trials.append(filename)
-    return modelled_trials
 
 
 def run_CGM1_workflow_and_return_model(session_xml, processed_folder):
