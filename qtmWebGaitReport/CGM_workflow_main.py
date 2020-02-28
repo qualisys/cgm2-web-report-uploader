@@ -14,6 +14,12 @@ from pyCGM2.Lib.CGM import cgm1
 from pyCGM2.Lib.CGM import cgm2_3
 from pyCGM2.Configurator import ModelManager
 from qtmWebGaitReport import qtmFilters
+from qtmWebGaitReport.pyCGM_workflows import CGM1_workflow
+from qtmWebGaitReport.pyCGM_workflows import CGM11_workflow
+from qtmWebGaitReport.pyCGM_workflows import CGM21_workflow
+from qtmWebGaitReport.pyCGM_workflows import CGM22_workflow
+from qtmWebGaitReport.pyCGM_workflows import CGM23_workflow
+from qtmWebGaitReport.pyCGM_workflows import CGM24_workflow
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
 from qtmWebGaitReport import utils
 import shutil
@@ -355,13 +361,23 @@ def main():
     session_xml = utils.read_session_xml(session_xml_path)
     processed_folder = os.path.join(work_folder, "processed")
     pyCGM_processing_type = session_xml.Subsession.pyCGM_Processing_Type.text
-
+    logging.info("PROCESSING TYPE " + pyCGM_processing_type)
     if pyCGM_processing_type == "pyCGM1":
-        model = run_CGM1_workflow_and_return_model(
-            session_xml, processed_folder)
+        # model = run_CGM1_workflow_and_return_model(
+        #     session_xml, processed_folder)
+        CGM1_workflow.main()
+    elif pyCGM_processing_type == "pyCGM11":
+        CGM11_workflow.main()
+    elif pyCGM_processing_type == "pyCGM21":
+        CGM21_workflow.main()
+    elif pyCGM_processing_type == "pyCGM22":
+        CGM22_workflow.main()
     elif pyCGM_processing_type == "pyCGM23":
-        model = run_CGM23_workflow_and_return_model(
-            session_xml, processed_folder)
+        # model = run_CGM23_workflow_and_return_model(
+        #     session_xml, processed_folder)
+        CGM23_workflow.main()
+    elif pyCGM_processing_type == "pyCGM24":
+        CGM24_workflow.main()
     else:
         raise Exception(
             "Only pyCGM1 processing is currently implemented, but you selected %s" % pyCGM_processing_type)
