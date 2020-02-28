@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from pyCGM2 import log
-import matplotlib.pyplot as plt
 import logging
 import os
 import pyCGM2
