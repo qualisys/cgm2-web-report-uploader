@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pyCGM2
 from pyCGM2 import log
-from pyCGM2.Report import normativeDatasets
 from pyCGM2.Utils.utils import *
 from qtmWebGaitReport.pyCGM_workflows.reporting import create_web_report
 from qtmWebGaitReport.pyCGM_workflows.reporting import create_pdf_report
@@ -11,6 +10,8 @@ from qtmWebGaitReport.pyCGM_workflows import CGM21_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM22_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM23_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM24_workflow
+from qtmWebGaitReport.EventDetector_Zeni import main as EventDetector_Zeni_main
+from qtmWebGaitReport.pyCGM2_dataQuality import main as dataQuality_main
 from qtmWebGaitReport import utils
 import logging
 import warnings
@@ -21,11 +22,8 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def main():
-    work_folder = os.getcwd()
-    session_xml_path = os.path.join(work_folder, "session.xml")
-    session_xml = utils.read_session_xml(session_xml_path)
-    processed_folder = os.path.join(work_folder, "processed")
+def process_with_pycgm(session_xml, processed_folder):
+
     pyCGM_processing_type = session_xml.Subsession.pyCGM_Processing_Type.text
     logging.info("PROCESSING TYPE " + pyCGM_processing_type)
     if pyCGM_processing_type == "pyCGM1":
@@ -47,6 +45,20 @@ def main():
     else:
         raise Exception(
             "The pyCMG processing type is not implemented, you selected %s" % pyCGM_processing_type)
+    return model
+
+
+def main():
+
+    EventDetector_Zeni_main()
+    dataQuality_main()
+
+    work_folder = os.getcwd()
+    session_xml_path = os.path.join(work_folder, "session.xml")
+    session_xml = utils.read_session_xml(session_xml_path)
+    processed_folder = os.path.join(work_folder, "processed")
+
+    model = process_with_pycgm(session_xml, processed_folder)
 
     # --------------------------Reporting -----------------------
     webReportFlag = toBool(str(session_xml.find("Create_WEB_report").text))
