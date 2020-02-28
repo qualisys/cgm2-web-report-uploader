@@ -46,7 +46,7 @@ def prepare_folder_and_run_event_detection(sessionXML, work_folder, processed_fo
             if "5" in btkTools.smartGetMetadata(acq, "FORCE_PLATFORM", "TYPE"):
                 forceplates.correctForcePlateType5(acq)
 
-            acq = eventDetector.zeni(acq)
+            acq, state = eventDetector.zeni(acq)
             btkTools.smartWriter(acq, processed_file_path)
 
 
