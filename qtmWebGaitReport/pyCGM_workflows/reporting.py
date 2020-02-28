@@ -1,3 +1,31 @@
+from pyCGM2.Report import normativeDatasets
+from pyCGM2.Lib import analysis, plot
+from pyCGM2.qtm import qtmTools
+from pyCGM2 import enums
+from pyCGM2 import log
+from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
+from qtmWebGaitReport import qtmFilters
+from qtmWebGaitReport import utils
+import matplotlib.pyplot as plt
+import logging
+import warnings
+import os
+
+log.setLoggingLevel(logging.INFO)
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+
+def get_modelled_trials(session_xml, measurement_type):
+    modelled_trials = []
+    dynamicMeasurements = qtmTools.findDynamic(session_xml)
+    for dynamicMeasurement in dynamicMeasurements:
+        if qtmTools.isType(dynamicMeasurement, measurement_type):
+            filename = qtmTools.getFilename(dynamicMeasurement)
+            modelled_trials.append(filename)
+    return modelled_trials
+
+
 def create_subject_metadata(session_xml, measurement_type):
     return {
         "patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
@@ -109,7 +137,7 @@ def process_pdf_report(data_path, modelled_trials, title, model,  normative_data
                   show=False,
                   title=title)
 
-    plt.show()
+    plt.show(False)
 
 
 def create_pdf_report(session_xml, data_path, model):
