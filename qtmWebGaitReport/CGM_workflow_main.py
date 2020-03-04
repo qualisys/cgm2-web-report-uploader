@@ -24,27 +24,27 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def process_with_pycgm(session_xml, processed_folder):
 
-    pyCGM_processing_type = session_xml.Subsession.pyCGM_Processing_Type.text
-    logging.info("PROCESSING TYPE " + pyCGM_processing_type)
-    if pyCGM_processing_type == "pyCGM1":
+    CGM2_Model = session_xml.Subsession.CGM2_Model.text
+    logging.info("PROCESSING TYPE " + CGM2_Model)
+    if CGM2_Model == "CGM1":
         # model = run_CGM1_workflow_and_return_model(
         #     session_xml, processed_folder)
         model = CGM1_workflow.main()
-    elif pyCGM_processing_type == "pyCGM11":
+    elif CGM2_Model == "CGM1.1":
         model = CGM11_workflow.main()
-    elif pyCGM_processing_type == "pyCGM21":
+    elif CGM2_Model == "CGM2.1":
         model = CGM21_workflow.main()
-    elif pyCGM_processing_type == "pyCGM22":
+    elif CGM2_Model == "CGM2.2":
         model = CGM22_workflow.main()
-    elif pyCGM_processing_type == "pyCGM23":
+    elif CGM2_Model == "CGM2.3":
         # model = run_CGM23_workflow_and_return_model(
         #     session_xml, processed_folder)
         model = CGM23_workflow.main()
-    elif pyCGM_processing_type == "pyCGM24":
+    elif CGM2_Model == "CGM2.4":
         model = CGM24_workflow.main()
     else:
         raise Exception(
-            "The pyCMG processing type is not implemented, you selected %s" % pyCGM_processing_type)
+            "The pyCMG processing type is not implemented, you selected %s" % CGM2_Model)
     return model
 
 
