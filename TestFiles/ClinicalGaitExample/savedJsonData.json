@@ -51862,7 +51862,7 @@
         "type": "Gait"
     }, 
     "subject": {
-        "displayName": "Doe John", 
+        "displayName": "John Doe", 
         "id": "001_1983-08-01"
     }, 
     "events": [
@@ -51987,7 +51987,7 @@
             {
                 "type": "text", 
                 "id": "Last name", 
-                "value": "Doe John"
+                "value": "John Doe"
             }, 
             {
                 "type": "text", 
