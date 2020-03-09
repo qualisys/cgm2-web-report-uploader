@@ -14,7 +14,8 @@ class Events:
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
-    def calculateEvents(self):
+    def calculateEvents(self, forceThreshold):
+        self.forceThreshold = forceThreshold
         eventLabels = dict()
         eventsGroupped = dict()
         eventData = dict()
@@ -115,7 +116,7 @@ class Events:
             out = True
         return out
 
-    def getOnOffEvent(self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType, signalThreshold=1.0):
+    def getOnOffEvent(self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType):
         out = []
 
         if self.checkSignalExists(acq, measurementName, GRFSignalName):
@@ -131,8 +132,8 @@ class Events:
             if frameCheckBefore < 0:
                 frameCheckBefore = 0
 
-            if eventType == 'on' and value[frameCheckBefore] < signalThreshold and value[frameCheckAfter] > signalThreshold:
+            if eventType == 'on' and value[frameCheckBefore] < self.forceThreshold and value[frameCheckAfter] > self.forceThreshold:
                 out.append(eventTime)
-            elif eventType == 'off' and value[frameCheckBefore] > signalThreshold and value[frameCheckAfter] < signalThreshold:
+            elif eventType == 'off' and value[frameCheckBefore] > self.forceThreshold and value[frameCheckAfter] < self.forceThreshold:
                 out.append(eventTime)
             return out

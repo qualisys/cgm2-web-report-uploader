@@ -75,8 +75,10 @@ class ReportJsonGenerator:
 
     def getEvents(self):
         eventsObj = events.Events(self.workingDirectory)
-        eventData = eventsObj.calculateEvents()[0]
-        eventLabels = eventsObj.calculateEvents()[1]
+        forceThreshold = 10 / \
+            float(self.subjectMetadata["bodyWeight"])  # X Newton / BW kg
+        eventData = eventsObj.calculateEvents(forceThreshold)[0]
+        eventLabels = eventsObj.calculateEvents(forceThreshold)[1]
 
         maxNumEvents = 0
         maxEventList = []
