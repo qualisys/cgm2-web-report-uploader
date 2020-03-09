@@ -28,11 +28,11 @@ def loadConfigData(directoryPath=None):
 
 
 class WebReportFilter(object):
-    def __init__(self, workingDirectory, modelledC3dfilenames, subjectInfo, sessionDate):
+    def __init__(self, workingDirectory, modelledC3dfilenames, subjectInfo, sessionDate, settings_from_php={}):
         configData = loadConfigData(workingDirectory)
 
         self.reportGenerator = ReportJsonGenerator(
-            workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate)
+            workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate, settings_from_php)
         self.reportData = self.reportGenerator.createReportJson()
 
         self.uploader = WebReportUploader(workingDirectory, configData)
