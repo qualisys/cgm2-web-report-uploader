@@ -39,7 +39,7 @@ def load_settings_from_php(file_path):
 
 def create_subject_metadata(session_xml, measurement_type):
     return {
-        "patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
+        "patientName": session_xml.find("First_name").text + " " + session_xml.find("Last_name").text,
         "patientID": session_xml.find("Patient_ID").text,
         "bodyHeight": session_xml.find("Height").text,
         "bodyWeight": session_xml.find("Weight").text,
@@ -52,7 +52,7 @@ def create_subject_metadata(session_xml, measurement_type):
         "fms": session_xml.find("Functional_Mobility_Scale").text}
 
 
-def create_web_report(session_xml, data_path):
+def create_web_report(session_xml, data_path, settings_from_php):
 
     measurement_types = qtmTools.detectMeasurementType(session_xml)
     for measurement_type in measurement_types:
@@ -64,7 +64,7 @@ def create_web_report(session_xml, data_path):
         sessionDate = utils.get_creation_date(session_xml)
 
         report = qtmFilters.WebReportFilter(
-            data_path, modelledTrials, subjectMd, sessionDate)
+            data_path, modelledTrials, subjectMd, sessionDate, settings_from_php)
         # report.exportJson()
         save_session_data_xml_from(report.getReportData())
         report.upload()
