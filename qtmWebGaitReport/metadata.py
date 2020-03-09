@@ -114,7 +114,7 @@ class Metadata:
     def projectInfo(self):
         project = {
             "type": "Gait",
-            "subtype": "Plugin Gait"
+            "subtype": self.subjectMetadata["subSessionType"]
         }
         return project
 
