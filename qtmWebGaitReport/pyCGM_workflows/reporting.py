@@ -26,6 +26,17 @@ def get_modelled_trials(session_xml, measurement_type):
     return modelled_trials
 
 
+def load_settings_from_php(file_path):
+    settings_to_find = ["$force_threshold"]
+    with open(file_path, "r") as f:
+        all_lines = f.readlines()
+        settings_dict = {
+            x.split(" ")[0].replace("$", ""): int(x.split("= ")[-1].split(";")[0]) for x in all_lines
+            if x.split(" ")[0] in settings_to_find
+        }
+    return settings_dict
+
+
 def create_subject_metadata(session_xml, measurement_type):
     return {
         "patientName": session_xml.find("Last_name").text + " " + session_xml.find("First_name").text,
