@@ -23,13 +23,22 @@ def getFrameAndAnalogRateFromC3D(filePath):
     return frameRate, analogRate
 
 
+def get_force_threshold_in_newton(settings_from_php):
+    if "force_threshold" in settings_from_php.keys():
+        force_threshold_newton = settings_from_php["force_threshold"]
+    else:
+        force_threshold_newton = 10
+    return force_threshold_newton
+
+
 class ReportJsonGenerator:
-    def __init__(self, workingDirectory, clientId, modelledC3dfilenames, subjectMetadata, sessionDate):
+    def __init__(self, workingDirectory, clientId, modelledC3dfilenames, subjectMetadata, sessionDate, settingsFromPhp={}):
         self.workingDirectory = workingDirectory
         self.clientId = clientId
         self.modelledC3dfilenames = modelledC3dfilenames
         self.subjectMetadata = subjectMetadata
         self.creationDate = sessionDate
+        self.settingsFromPhp = settingsFromPhp
 
     def getTimeseriesResults(self):
         tsObj = timeseries.Timeseries(
@@ -75,10 +84,13 @@ class ReportJsonGenerator:
 
     def getEvents(self):
         eventsObj = events.Events(self.workingDirectory)
-        forceThreshold = 10 / \
+
+        forceThresholdNewton = get_force_threshold_in_newton(
+            self.settingsFromPhp)
+        forceThresholdNormalised = forceThresholdNewton / \
             float(self.subjectMetadata["bodyWeight"])  # X Newton / BW kg
-        eventData = eventsObj.calculateEvents(forceThreshold)[0]
-        eventLabels = eventsObj.calculateEvents(forceThreshold)[1]
+        eventData = eventsObj.calculateEvents(forceThresholdNormalised)[0]
+        eventLabels = eventsObj.calculateEvents(forceThresholdNormalised)[1]
 
         maxNumEvents = 0
         maxEventList = []
