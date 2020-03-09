@@ -63,7 +63,7 @@ def main(args):
     dataQuality_main()
 
     work_folder = os.getcwd()
-    settings_from_php = load_settings_php_if_possible(args.settings_php_file)
+    settings_from_php = load_settings_php_if_possible(args.settings_php_path)
     session_xml_path = os.path.join(work_folder, "session.xml")
     session_xml = utils.read_session_xml(session_xml_path)
     processed_folder = os.path.join(work_folder, "processed")
