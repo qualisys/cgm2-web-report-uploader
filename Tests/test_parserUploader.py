@@ -57,15 +57,31 @@ def prepare_parser(testDataPath):
 # with open(savedDataFilePath, 'w') as outfile: json.dump(generatedReportJson, outfile, indent=4) # for saving updated generated json
 
 
-class TestClinicalGateExample():
-    def testCreateReportJson(self):
-        testDataPath, savedDataFilePath = get_paths("ClinicalGaitExample")
-        parser = prepare_parser(testDataPath)
-        generatedReportJson = parser.createReportJson()
-        loadedReportJson = loadJson(savedDataFilePath)
+def check_key_value_pairs(generated_json, loaded_json):
+    for key, val in generated_json.items():
+        assert key in loaded_json.keys(
+        ), "{} not in loaded reoport json but exists in generated one".format(key)
+        assert val == loaded_json[key], "value for entry under key = {} differs from loaded vs generated".format(
+            key)
 
-        for key, val in generatedReportJson.items():
-            assert key in loadedReportJson.keys(
-            ), "{} not in loaded reoport json but exists in generated one".format(key)
-            assert val == loadedReportJson[key], "value for entry under key = {} differs from loaded vs generated".format(
-                key)
+
+def get_generated_and_loaded_json(folder_name):
+    testDataPath, savedDataFilePath = get_paths(folder_name)
+    parser = prepare_parser(testDataPath)
+    generatedReportJson = parser.createReportJson()
+    loadedReportJson = loadJson(savedDataFilePath)
+    return generatedReportJson, loadedReportJson
+
+
+class TestGenerateReportJson():
+    def test_clinical_gait_example(self):
+        generatedReportJson, loadedReportJson = get_generated_and_loaded_json(
+            "ClinicalGaitExample")
+
+        check_key_value_pairs(generatedReportJson, loadedReportJson)
+
+    def test_example_with_force_data(self):
+        generatedReportJson, loadedReportJson = get_generated_and_loaded_json(
+            "WithForceData")
+
+        check_key_value_pairs(generatedReportJson, loadedReportJson)
