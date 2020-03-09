@@ -49,11 +49,11 @@ class TestCGM1Workflow:
         assert 1, "When this assertion is run all is fine and dandy"
 
 
-class TestCGM2Workflow:
-    def test_runs_without_errors(self, session_xml, new_processed_folder_path):
-        model = run_CGM23_workflow_and_return_model(
-            session_xml, new_processed_folder_path)
-        assert 1, "When this assertion is run all is fine and dandy"
+# class TestCGM2Workflow:
+#     def test_runs_without_errors(self, session_xml, new_processed_folder_path):
+#         model = run_CGM23_workflow_and_return_model(
+#             session_xml, new_processed_folder_path)
+#         assert 1, "When this assertion is run all is fine and dandy"
 
 
 class TestEventDetection:
