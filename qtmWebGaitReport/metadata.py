@@ -106,7 +106,7 @@ class Metadata:
 
     def subjectInfo(self):
         subject = {
-            "id": self.subjectMetadata["patientID"],
+            "id": self.subjectMetadata["patientID"] + "_" + self.subjectMetadata["dob"],
             "displayName": self.subjectMetadata["patientName"],
         }
         return subject
