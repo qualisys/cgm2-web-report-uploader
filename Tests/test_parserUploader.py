@@ -54,7 +54,14 @@ def prepare_parser(testDataPath):
                                               subjectInfo, sessionDate)
     return reportJsonGenerator
 
-# with open(savedDataFilePath, 'w') as outfile: json.dump(generatedReportJson, outfile, indent=4) # for saving updated generated json
+
+resave_all_test_data = False
+
+
+def update_test_data(savedDataFilePath, generatedReportJson):
+    with open(savedDataFilePath, 'w') as outfile:
+        # for saving updated generated json
+        json.dump(generatedReportJson, outfile, indent=4)
 
 
 def check_key_value_pairs(generated_json, loaded_json):
@@ -69,7 +76,11 @@ def get_generated_and_loaded_json(folder_name):
     testDataPath, savedDataFilePath = get_paths(folder_name)
     parser = prepare_parser(testDataPath)
     generatedReportJson = parser.createReportJson()
+
+    if resave_all_test_data:
+        update_test_data(savedDataFilePath, generatedReportJson)
     loadedReportJson = loadJson(savedDataFilePath)
+
     return generatedReportJson, loadedReportJson
 
 

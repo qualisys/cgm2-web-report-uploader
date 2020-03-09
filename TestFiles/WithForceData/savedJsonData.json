@@ -24253,7 +24253,7 @@
     ], 
     "clientId": "theId", 
     "project": {
-        "subtype": "Plugin Gait", 
+        "subtype": "CGM2 - Full body session", 
         "type": "Gait"
     }, 
     "subject": {
