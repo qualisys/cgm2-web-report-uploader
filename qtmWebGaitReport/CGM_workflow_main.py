@@ -5,6 +5,7 @@ from pyCGM2.Utils.utils import *
 from qtmWebGaitReport.pyCGM_workflows.reporting import create_web_report
 from qtmWebGaitReport.pyCGM_workflows.reporting import create_pdf_report
 from qtmWebGaitReport.pyCGM_workflows.reporting import load_settings_from_php
+from qtmWebGaitReport.pyCGM_workflows.reporting import load_user_settings_yaml
 from qtmWebGaitReport.pyCGM_workflows import CGM1_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM11_workflow
 from qtmWebGaitReport.pyCGM_workflows import CGM21_workflow
@@ -57,13 +58,31 @@ def load_settings_php_if_possible(path_to_settings_file):
     return settings_from_php
 
 
+def load_user_settings_if_possible(path_to_file):
+    if os.path.isfile(path_to_file):
+        settings = load_user_settings_yaml(path_to_file)
+    else:
+        settings = {}
+    return settings
+
+
+def load_extra_settings(path_to_templates):
+    settings = load_settings_php_if_possible(
+        os.path.join(path_to_templates, "settings.php"))
+    user_settings = load_user_settings_if_possible(os.path.join(
+        path_to_templates, os.pardir, "Settings", "User Settings.paf"))
+    settings.update(user_settings)
+    return settings
+
+
 def main(args):
 
     EventDetector_Zeni_main()
     dataQuality_main()
 
     work_folder = os.getcwd()
-    settings_from_php = load_settings_php_if_possible(args.settings_php_path)
+
+    settings = load_extra_settings(args.templates_path)
     session_xml_path = os.path.join(work_folder, "session.xml")
     session_xml = utils.read_session_xml(session_xml_path)
     processed_folder = os.path.join(work_folder, "processed")
@@ -75,6 +94,6 @@ def main(args):
     pdfReportFlag = toBool(str(session_xml.find("Create_PDF_report").text))
 
     if webReportFlag:
-        create_web_report(session_xml, processed_folder, settings_from_php)
+        create_web_report(session_xml, processed_folder, settings)
     if pdfReportFlag:
         create_pdf_report(session_xml, processed_folder, model)

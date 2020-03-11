@@ -2,11 +2,13 @@
 
 import qtools
 import os
+import yaml
 from os import path
 from glob import glob
 import xml.etree.cElementTree as ET
 from datetime import datetime
-import avi2mp4
+from avi2mp4 import get_mp4_filenames
+from avi2mp4 import get_parent_folder_absolute_path
 import c3dValidation
 
 from datetime import datetime
@@ -20,6 +22,29 @@ def get_creation_date(file):
         return stat.st_mtime
 
 
+def create_resources(video_filenames, extra_settings):
+
+    if "Cameras" in extra_settings.keys():
+        all_video_serials = list(extra_settings["Cameras"].keys())
+    else:
+        all_video_serials = []
+    resources = []
+    for video_filename in video_filenames:
+        video_name = video_filename.replace('.mp4', '')
+        cur_resource = {
+            "type": "video",
+            "name": video_name,
+            "src": video_filename,
+        }
+        current_serial = [
+            serial for serial in all_video_serials if str(serial) in video_name]
+        if current_serial != []:
+            current_serial = current_serial[0]
+            cur_resource["group"] = extra_settings["Cameras"][current_serial]["Group"]
+        resources.append(cur_resource)
+    return resources
+
+
 class Measurements:
     def __init__(self, workingDirectory):
         self.workingDirectory = workingDirectory
@@ -27,14 +52,13 @@ class Measurements:
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
-    def measurementInfo(self):
+    def measurementInfo(self, extra_settings={}):
         info = []
 
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
             measurementName = path.basename(filename)
             measurementName = measurementName.replace('.c3d', '')
-            resources = []
 
             val = acq.GetDuration()
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
@@ -50,49 +74,50 @@ class Measurements:
             bodyHeight = 0
             bodyWeight = 0
 
-            videoObj = avi2mp4.AviToMp4(self.workingDirectory)
-            videoFilenames = videoObj.getMp4Filenames(True)
+            video_filenames = get_mp4_filenames(
+                get_parent_folder_absolute_path(self.workingDirectory))
+            resources = create_resources(video_filenames, extra_settings)
 
-            for videoFilename in videoFilenames:
-                videoName = videoFilename.replace('.mp4', '')
-                resources.append({
-                    "type": "video",
-                    "name": videoName,
-                    "src": videoFilename})
-
-            fields = [{"id": "Creation date",
-                             "value": creationDate,
-                             "type": "text"},
-                      {
-                "id": "Creation time",
-                "value": creationTime,
-                "type": "text"},
+            fields = [
                 {
-                "id": "Diagnosis",
-                "value": diagnosis,
-                "type": "text"},
+                    "id": "Creation date",
+                    "value": creationDate,
+                    "type": "text"
+                },
                 {
-                "id": "Last name",
-                "value": patientName,
-                "type": "text"},
+                    "id": "Creation time",
+                    "value": creationTime,
+                    "type": "text"},
                 {
-                "id": "Height",
-                "value": bodyHeight,
-                "type": "text"},
+                    "id": "Diagnosis",
+                    "value": diagnosis,
+                    "type": "text"},
                 {
-                "id": "Weight",
-                "value": bodyWeight,
-                "type": "text"},
+                    "id": "Last name",
+                    "value": patientName,
+                    "type": "text"},
+                {
+                    "id": "Height",
+                    "value": bodyHeight,
+                    "type": "text"},
+                {
+                    "id": "Weight",
+                    "value": bodyWeight,
+                    "type": "text"
+                },
             ]
 
-            info.append({"duration": val,
-                         "startOffset": startOffset,
-                         "originalDuration": originalDuration,
-                         "rate": frameRate,
-                         "id": measurementName,
-                         "fields": fields,
-                         "resources": resources
-                         })
+            info.append(
+                {
+                    "duration": val,
+                    "startOffset": startOffset,
+                    "originalDuration": originalDuration,
+                    "rate": frameRate,
+                    "id": measurementName,
+                    "fields": fields,
+                    "resources": resources
+                }
+            )
         return info
 
     def getValueFromXMLSystem(self, defList, param):

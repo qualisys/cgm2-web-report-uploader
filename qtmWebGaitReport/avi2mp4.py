@@ -1,17 +1,32 @@
 # -*- coding: utf-8 -*-
 
-from os import path
+import os
 from glob import glob
 from ffmpy import FFmpeg
 
 
+def get_mp4_filepaths(working_directory):
+    mp4_file_paths = list(glob(os.path.join(working_directory, "*.mp4")))
+    return mp4_file_paths
+
+
+def get_mp4_filenames(working_directory):
+    mp4_file_paths = get_mp4_filepaths(working_directory)
+    output_filenames = [os.path.basename(x) for x in mp4_file_paths]
+    return output_filenames
+
+
+def get_parent_folder_absolute_path(folder):
+    return os.path.abspath(os.path.join(folder, os.pardir))
+
+
 class AviToMp4:
-    templatesDirectory = path.dirname(__file__)
-    ffmpeg = path.join(templatesDirectory, 'ffmpeg/bin/ffmpeg.exe')
+    templatesDirectory = os.path.dirname(__file__)
+    ffmpeg = os.path.join(templatesDirectory, 'ffmpeg/bin/ffmpeg.exe')
 
     def __init__(self, workingDirectory):
         self.workingDirectory = workingDirectory
-        self.aviFilePath = glob(path.join(self.workingDirectory, "*.avi"))
+        self.aviFilePath = glob(os.path.join(self.workingDirectory, "*.avi"))
 
     def convertAviToMp4(self):
         for inputFilename in self.aviFilePath:
@@ -27,7 +42,7 @@ class AviToMp4:
         outputFileNames = []
         for inputFilename in self.aviFilePath:
             if basenameOnly == True:
-                inputFilename = path.basename(inputFilename)
+                inputFilename = os.path.basename(inputFilename)
             outputFileName = inputFilename.replace('avi', 'mp4')
             outputFileNames.append(outputFileName)
         return outputFileNames

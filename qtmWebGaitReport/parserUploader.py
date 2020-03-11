@@ -7,7 +7,8 @@ import emg
 import metadata
 import tsp
 import measurements
-import avi2mp4
+from avi2mp4 import get_mp4_filepaths
+from avi2mp4 import get_parent_folder_absolute_path
 import requests
 import c3dValidation
 import json
@@ -32,13 +33,13 @@ def get_force_threshold_in_newton(settings_from_php):
 
 
 class ReportJsonGenerator:
-    def __init__(self, workingDirectory, clientId, modelledC3dfilenames, subjectMetadata, sessionDate, settingsFromPhp={}):
+    def __init__(self, workingDirectory, clientId, modelledC3dfilenames, subjectMetadata, sessionDate, extra_settings={}):
         self.workingDirectory = workingDirectory
         self.clientId = clientId
         self.modelledC3dfilenames = modelledC3dfilenames
         self.subjectMetadata = subjectMetadata
         self.creationDate = sessionDate
-        self.settingsFromPhp = settingsFromPhp
+        self.extra_settings = extra_settings
 
     def getTimeseriesResults(self):
         tsObj = timeseries.Timeseries(
@@ -86,7 +87,7 @@ class ReportJsonGenerator:
         eventsObj = events.Events(self.workingDirectory)
 
         forceThresholdNewton = get_force_threshold_in_newton(
-            self.settingsFromPhp)
+            self.extra_settings)
         forceThresholdNormalised = forceThresholdNewton / \
             float(self.subjectMetadata["bodyWeight"])  # X Newton / BW kg
         eventData = eventsObj.calculateEvents(forceThresholdNormalised)[0]
@@ -161,7 +162,7 @@ class ReportJsonGenerator:
 
             # Measurements
             measObj = measurements.Measurements(self.workingDirectory)
-            mea = measObj.measurementInfo()
+            mea = measObj.measurementInfo(self.extra_settings)
 
             print "--------------------Measurements OK--------------------------------"
 
@@ -188,9 +189,8 @@ class WebReportUploader:
         self.configData = configData
 
     def upload(self, reportData):
-        # Convert Avi to mp4
-        # videoObj = avi2mp4.AviToMp4(os.path.abspath(os.path.join(self.workingDirectory, os.pardir)))
-        # videoObj.convertAviToMp4()
+        pathToLookForMp4 = get_parent_folder_absolute_path(
+            self.workingDirectory)
 
         # check that clientId, baseUrl and token are specified in config.json
         if "clientId" in self.configData.keys():
@@ -230,12 +230,12 @@ class WebReportUploader:
                 reportResJson = reportReq.json()
                 newReportId = reportResJson['id']
 
-                # resourceOutput = videoObj.getMp4Filenames(True)
+                resourceOutput = get_mp4_filepaths(pathToLookForMp4)
 
-                # for index, resource in enumerate(resourceOutput):
-                #     fileData = {'file_%i' % index: open(resource, 'rb')}
-                #     resourceReq = requests.post(
-                #         baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
+                for index, resource in enumerate(resourceOutput):
+                    fileData = {'file_%i' % index: open(resource, 'rb')}
+                    resourceReq = requests.post(
+                        baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
                 print "Report [%s] generated" % (str(newReportId))
                 webbrowser.open_new_tab(baseUrl + '/claim/' + newReportId)
             else:
