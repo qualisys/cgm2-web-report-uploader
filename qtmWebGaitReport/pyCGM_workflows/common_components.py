@@ -70,7 +70,7 @@ def get_calibration_arguments_and_model_manager(model_type, data_path, session_x
     translators = settings["Translators"]
     required_mp, optional_mp = qtmTools.SubjectMp(session_xml)
 
-    static_session_xml_soup = qtmTools.findStatic(session_xml)
+    static_session_xml_soup = utils.find_static(session_xml)
     calibration_filename = qtmTools.getFilename(static_session_xml_soup)
 
     leftFlatFoot = toBool(static_session_xml_soup.Left_foot_flat)

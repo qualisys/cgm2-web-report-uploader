@@ -21,7 +21,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 def prepare_folder_and_run_event_detection(sessionXML, work_folder, processed_folder):
     utils.create_directory_if_needed(processed_folder)
 
-    staticMeasurement = qtmTools.findStatic(sessionXML)
+    staticMeasurement = utils.find_static(sessionXML)
     filename = qtmTools.getFilename(staticMeasurement)
     calibrated_file_path = os.path.join(processed_folder, filename)
     if not os.path.isfile(calibrated_file_path):

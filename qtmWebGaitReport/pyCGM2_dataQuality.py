@@ -10,6 +10,7 @@ from pyCGM2.Model.CGM2 import cgm, cgm2
 from pyCGM2.Utils import files
 from pyCGM2.Utils.utils import *
 from pyCGM2.qtm import qtmTools
+from qtmWebGaitReport import utils
 from pyCGM2.Tools import btkTools
 
 import warnings
@@ -57,7 +58,7 @@ def main():
     inspector.run()
 
     # --------------------------FILES -----------------------
-    staticMeasurement = qtmTools.findStatic(sessionXML)
+    staticMeasurement = utils.find_static(sessionXML)
     staticFilename = qtmTools.getFilename(staticMeasurement)
 
     dynamicFilenames = []

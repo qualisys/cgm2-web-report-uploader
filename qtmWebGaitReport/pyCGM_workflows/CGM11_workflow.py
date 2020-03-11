@@ -14,6 +14,7 @@ from pyCGM2.Lib.CGM import cgm1_1
 from pyCGM2.Utils import files
 from pyCGM2.Utils.utils import *
 from pyCGM2.qtm import qtmTools
+from qtmWebGaitReport import utils
 from pyCGM2 import enums
 from pyCGM2.Tools import btkTools
 from pyCGM2.Lib import eventDetector, analysis, plot
@@ -49,7 +50,7 @@ def main():
     DATA_PATH = os.getcwd()+"\\"+"processed\\"
     files.createDir(DATA_PATH)
 
-    staticMeasurement = qtmTools.findStatic(sessionXML)
+    staticMeasurement = utils.find_static(sessionXML)
     calibrateFilenameLabelled = qtmTools.getFilename(staticMeasurement)
     if not os.path.isfile(DATA_PATH+calibrateFilenameLabelled):
         shutil.copyfile(os.getcwd()+"\\"+calibrateFilenameLabelled,
@@ -109,7 +110,7 @@ def main():
     # --------------------------MODEL CALIBRATION -----------------------
     logging.info(
         "--------------------------MODEL CALIBRATION -----------------------")
-    staticMeasurement = qtmTools.findStatic(sessionXML)
+    staticMeasurement = utils.find_static(sessionXML)
     calibrateFilenameLabelled = qtmTools.getFilename(staticMeasurement)
 
     logging.info(
