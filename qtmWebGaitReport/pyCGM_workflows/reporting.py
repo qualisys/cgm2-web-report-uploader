@@ -7,6 +7,7 @@ from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_ses
 from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport import utils
 import matplotlib.pyplot as plt
+import yaml
 import logging
 import warnings
 import os
@@ -35,6 +36,12 @@ def load_settings_from_php(file_path):
             if x.split(" ")[0] in settings_to_find
         }
     return settings_dict
+
+
+def load_user_settings_yaml(path):
+    with open(path, "r") as f:
+        settings = yaml.load(f)
+    return settings
 
 
 def create_subject_metadata(session_xml, measurement_type):
