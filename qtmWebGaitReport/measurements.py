@@ -40,7 +40,8 @@ def create_resources(video_filenames, extra_settings):
             serial for serial in all_video_serials if str(serial) in video_name]
         if current_serial != []:
             current_serial = current_serial[0]
-            cur_resource["group"] = extra_settings["Cameras"][current_serial]["Group"]
+            if "Group" in extra_settings["Cameras"][current_serial].keys():
+                cur_resource["group"] = extra_settings["Cameras"][current_serial]["Group"]
         resources.append(cur_resource)
     return resources
 
