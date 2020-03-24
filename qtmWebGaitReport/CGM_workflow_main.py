@@ -24,29 +24,34 @@ log.setLoggingLevel(logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
+def process_and_return_model(model_type):
+    if model_type == "CGM1.0":
+        # model = run_CGM1_workflow_and_return_model(
+        #     session_xml, processed_folder)
+        model = CGM1_workflow.main()
+    elif model_type == "CGM1.1":
+        model = CGM11_workflow.main()
+    elif model_type == "CGM2.1-HJC":
+        model = CGM21_workflow.main()
+    elif model_type == "CGM2.2-IK":
+        model = CGM22_workflow.main()
+    elif model_type == "CGM2.3-skinClusters":
+        # model = run_CGM23_workflow_and_return_model(
+        #     session_xml, processed_folder)
+        model = CGM23_workflow.main()
+    elif model_type == "CGM2.4-ForeFoot":
+        model = CGM24_workflow.main()
+    else:
+        raise Exception(
+            "The pyCMG processing type is not implemented, you selected %s" % model_type)
+    return model
+
+
 def process_with_pycgm(session_xml, processed_folder):
 
     CGM2_Model = session_xml.Subsession.CGM2_Model.text
     logging.info("PROCESSING TYPE " + CGM2_Model)
-    if CGM2_Model == "CGM1.0":
-        # model = run_CGM1_workflow_and_return_model(
-        #     session_xml, processed_folder)
-        model = CGM1_workflow.main()
-    elif CGM2_Model == "CGM1.1":
-        model = CGM11_workflow.main()
-    elif CGM2_Model == "CGM2.1-HJC":
-        model = CGM21_workflow.main()
-    elif CGM2_Model == "CGM2.2-IK":
-        model = CGM22_workflow.main()
-    elif CGM2_Model == "CGM2.3-skinClusters":
-        # model = run_CGM23_workflow_and_return_model(
-        #     session_xml, processed_folder)
-        model = CGM23_workflow.main()
-    elif CGM2_Model == "CGM2.4-ForeFoot":
-        model = CGM24_workflow.main()
-    else:
-        raise Exception(
-            "The pyCMG processing type is not implemented, you selected %s" % CGM2_Model)
+    model = process_and_return_model(CGM2_Model)
     return model
 
 
