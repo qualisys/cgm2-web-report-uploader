@@ -1,9 +1,11 @@
 from qtmWebGaitReport.pyCGM_workflows.common_components import run_CGM1_workflow_and_return_model
 from qtmWebGaitReport.pyCGM_workflows.common_components import run_CGM23_workflow_and_return_model
+from qtmWebGaitReport.CGM_workflow_main import process_and_return_model
 from qtmWebGaitReport.EventDetector_Zeni import prepare_folder_and_run_event_detection
 from qtmWebGaitReport.utils import read_session_xml
 from qtmWebGaitReport.utils import create_directory_if_needed
 
+from pathlib2 import Path
 import os
 import shutil
 import glob
@@ -15,8 +17,11 @@ session_xml_file_name = "session.xml"
 
 @pytest.fixture
 def clinical_gait_example_work_folder():
-    return os.path.join(
-        "TestFiles", "ClinicalGaitExample")
+    return os.path.join("TestFiles", "ClinicalGaitExample")
+
+
+with_fixed_marker_names_folder = str(
+    Path("TestFiles", "WithFixedMarkerNames").absolute())
 
 
 @pytest.fixture
@@ -39,6 +44,21 @@ def new_processed_folder_path(clinical_gait_example_work_folder):
     print("TEARDOWN")
     shutil.rmtree(new_processed_folder_path)
     print("SUCCESSFUL")
+
+
+@pytest.fixture(params=["CGM1.0", "CGM1.1", "CGM2.1-HJC", "CGM2.2-IK", "CGM2.3-skinClusters", "CGM2.4-ForeFoot"])
+def model_type(request):
+    return request.param
+
+
+class TestWorkflows:
+    def test_runs_without_errors(self, model_type):
+        if Path.cwd() != Path(with_fixed_marker_names_folder):
+            os.chdir(str(with_fixed_marker_names_folder))
+        try:
+            model = process_and_return_model(model_type)
+        except Exception as e:
+            assert 0, "Unexpected error: {}".format(e)
 
 
 class TestCGM1Workflow:
