@@ -26,8 +26,6 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def process_and_return_model(model_type):
     if model_type == "CGM1.0":
-        # model = run_CGM1_workflow_and_return_model(
-        #     session_xml, processed_folder)
         model = CGM1_workflow.main()
     elif model_type == "CGM1.1":
         model = CGM11_workflow.main()
@@ -36,8 +34,6 @@ def process_and_return_model(model_type):
     elif model_type == "CGM2.2-IK":
         model = CGM22_workflow.main()
     elif model_type == "CGM2.3-skinClusters":
-        # model = run_CGM23_workflow_and_return_model(
-        #     session_xml, processed_folder)
         model = CGM23_workflow.main()
     elif model_type == "CGM2.4-ForeFoot":
         model = CGM24_workflow.main()
@@ -95,8 +91,8 @@ def main(args):
     model = process_with_pycgm(session_xml, processed_folder)
 
     # --------------------------Reporting -----------------------
-    webReportFlag = toBool(str(session_xml.find("Create_WEB_report").text))
-    pdfReportFlag = toBool(str(session_xml.find("Create_PDF_report").text))
+    webReportFlag = args.web_report
+    pdfReportFlag = args.pdf_report
 
     if webReportFlag:
         create_web_report(session_xml, processed_folder, settings)
