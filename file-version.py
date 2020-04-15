@@ -34,10 +34,10 @@ VSVersionInfo(
                      StringStruct(u'FileDescription',
                                   u'Qualisys implementation for CGM2'),
                      StringStruct(u'FileVersion', u'0.1.0.0'),
-                     StringStruct(u'InternalName', u'QCMG2'),
+                     StringStruct(u'InternalName', u'QCGM2'),
                      StringStruct(u'LegalCopyright', u''),
-                     StringStruct(u'OriginalFilename', u'QCMG2.exe'),
-                     StringStruct(u'ProductName', u'QCMG2'),
+                     StringStruct(u'OriginalFilename', u'QCGM2.exe'),
+                     StringStruct(u'ProductName', u'QCGM2'),
                      StringStruct(u'ProductVersion', u'0.1.0.0')])
             ]),
         VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
