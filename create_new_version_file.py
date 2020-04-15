@@ -1,4 +1,5 @@
-
+import json
+template = """
 # UTF-8
 #
 # For more details about fixed file info 'ffi' see:
@@ -7,8 +8,8 @@ VSVersionInfo(
     ffi=FixedFileInfo(
         # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
         # Set not needed items to zero 0.
-        filevers=(0, 1, 0, 0),
-        prodvers=(0, 1, 0, 0),
+        filevers=%(version_tuple)s,
+        prodvers=%(version_tuple)s,
         # Contains a bitmask that specifies the valid bits 'flags'r
         mask=0x3f,
         # Contains a bitmask that specifies the Boolean attributes of the file.
@@ -32,15 +33,34 @@ VSVersionInfo(
                     u'040904B0',
                     [StringStruct(u'CompanyName', u'Qualisys'),
                      StringStruct(u'FileDescription',
-                                  u'Qualisys implementation for CGM2'),
-                     StringStruct(u'FileVersion', u'0.1.0.0'),
-                     StringStruct(u'InternalName', u'QCMG2'),
+                                  u'%(description)s'),
+                     StringStruct(u'FileVersion', u'%(version)s'),
+                     StringStruct(u'InternalName', u'%(name)s'),
                      StringStruct(u'LegalCopyright', u''),
-                     StringStruct(u'OriginalFilename', u'QCMG2.exe'),
-                     StringStruct(u'ProductName', u'QCMG2'),
-                     StringStruct(u'ProductVersion', u'0.1.0.0')])
+                     StringStruct(u'OriginalFilename', u'%(name)s.exe'),
+                     StringStruct(u'ProductName', u'%(name)s'),
+                     StringStruct(u'ProductVersion', u'%(version)s')])
             ]),
         VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
     ]
 )
 
+"""
+
+
+def update_file():
+
+    with open("settings.json", "r") as f:
+        settings = json.load(f)
+
+    version_tuple = tuple(int(x) for x in settings["version"].split("."))
+
+    new_version = template % {"version_tuple": version_tuple,
+                              "version": settings["version"], "name": settings["name"], "description": settings["description"]}
+
+    with open("file-version.py", "w") as f:
+        f.write(new_version)
+
+
+if __name__ == "__main__":
+    update_file()

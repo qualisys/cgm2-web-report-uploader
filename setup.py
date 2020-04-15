@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
+import json
+
+with open("settings.json", "r") as f:
+    settings = json.load(f)
 
 # ------------------------- INSTALL--------------------------------------------
 setup(name='qtmWebGaitReport',
-      version="0.0.1",
+      version=settings["version"],
       author='Qualisys',
       author_email='support@qualisys.com',
-      description="qtm web report uploader ",
+      description=settings["description"],
       keywords='gait, mocap',
       packages=find_packages(),
       include_package_data=True,
