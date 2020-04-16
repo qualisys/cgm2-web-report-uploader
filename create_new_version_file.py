@@ -1,4 +1,5 @@
 import json
+import os
 template = """
 # UTF-8
 #
@@ -34,12 +35,12 @@ VSVersionInfo(
                     [StringStruct(u'CompanyName', u'Qualisys'),
                      StringStruct(u'FileDescription',
                                   u'%(description)s'),
-                     StringStruct(u'FileVersion', u'%(version)s'),
+                     StringStruct(u'FileVersion', u'%(file_version)s'),
                      StringStruct(u'InternalName', u'%(name)s'),
                      StringStruct(u'LegalCopyright', u''),
                      StringStruct(u'OriginalFilename', u'%(name)s.exe'),
                      StringStruct(u'ProductName', u'%(name)s'),
-                     StringStruct(u'ProductVersion', u'%(version)s')])
+                     StringStruct(u'ProductVersion', u'%(product_version)s')])
             ]),
         VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
     ]
@@ -54,9 +55,10 @@ def update_file():
         settings = json.load(f)
 
     version_tuple = tuple(int(x) for x in settings["version"].split("."))
+    build_name = os.environ.get("BUILD_NAME")
 
     new_version = template % {"version_tuple": version_tuple,
-                              "version": settings["version"], "name": settings["name"], "description": settings["description"]}
+                              "file_version": settings["version"], "product_version": build_name, "name": settings["name"], "description": settings["description"]}
 
     with open("file-version.py", "w") as f:
         f.write(new_version)
