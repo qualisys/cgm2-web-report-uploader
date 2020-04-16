@@ -8,13 +8,14 @@ import scipy.signal
 
 null = None
 
-#File management
+
 def fileOpen(filename):
-    reader = btk.btkAcquisitionFileReader() # build a btk reader object
-    reader.SetFilename(filename) # set a filename to the reader
+    reader = btk.btkAcquisitionFileReader()  # build a btk reader object
+    reader.SetFilename(filename)  # set a filename to the reader
     reader.Update()
-    acq = reader.GetOutput() # acq is the btk aquisition object
+    acq = reader.GetOutput()  # acq is the btk aquisition object
     return acq
+
 
 def createC3dFileList(workingDirectory):
     c3dFileList = list()
@@ -23,13 +24,13 @@ def createC3dFileList(workingDirectory):
             c3dFileList.append(path.join(workingDirectory, file))
     return c3dFileList
 
-#Signal manamegent
-def renameSignal(array,signame):
+
+def renameSignal(array, signame):
     out = str(array.get(signame))
     return out
 
-#Export to json
-def setEventData(eventData,measurementNames,eventName):
+
+def setEventData(eventData, measurementNames, eventName):
     out = list()
     for measurementName in measurementNames:
         keyName = measurementName + "_" + eventName
@@ -37,14 +38,15 @@ def setEventData(eventData,measurementNames,eventName):
             out.append(eventData[measurementName + "_" + eventName])
     return out
 
-def loadEvents(eventLabels,eventsDict):
+
+def loadEvents(eventLabels, eventsDict):
     e = list()
     for label in eventLabels:
         e.append(eventsDict[label])
     return e
 
-#Events
-def groupEvents(acq,measurementName,unit):
+
+def groupEvents(acq, measurementName, unit):
     eventLabels = list()
     eventsGroupped = dict()
     eventTimesLHS = list()
@@ -57,7 +59,7 @@ def groupEvents(acq,measurementName,unit):
 
     for number in noEvents:
         firstFrame = acq.GetFirstFrame()
-        event = acq.GetEvent(number) # extract the event of the aquisition
+        event = acq.GetEvent(number)  # extract the event of the aquisition
         eventFrame = event.GetFrame()
         eventFrameCropped = eventFrame - firstFrame
         eventTime = eventFrameCropped / frameRate
@@ -68,9 +70,9 @@ def groupEvents(acq,measurementName,unit):
             eventUn = eventFrameCropped
 
         eventName = event.GetLabel()
-        eventSide = event.GetContext() # return a string representing the Context
+        eventSide = event.GetContext()  # return a string representing the Context
         eventLabelOrig = eventSide + " " + eventName
-        eventLabel = renameSignal(signalMapping.eventNameMap,eventLabelOrig)
+        eventLabel = renameSignal(signalMapping.eventNameMap, eventLabelOrig)
 
         if eventLabel not in eventLabels:
             eventLabels.append(eventLabel)
@@ -93,7 +95,8 @@ def groupEvents(acq,measurementName,unit):
             eventsGroupped[measurementName + "_" + eventLabel] = eventTimesRTO
     return eventsGroupped
 
-def timeBetweenEvents(measurementName,events,event1,event2):
+
+def timeBetweenEvents(measurementName, events, event1, event2):
     a = events[measurementName + "_" + event1]
     b = events[measurementName + "_" + event2]
 
@@ -103,7 +106,7 @@ def timeBetweenEvents(measurementName,events,event1,event2):
     n = np.argmax(bb > aa.item(0))
 
     if n > 0:
-        bb = np.delete(bb,n-1)
+        bb = np.delete(bb, n-1)
 
     aaLen = np.size(aa)
     bbLen = np.size(bb)
@@ -111,13 +114,12 @@ def timeBetweenEvents(measurementName,events,event1,event2):
     index.tolist()
 
     if aaLen > bbLen:
-        aa = np.delete(aa,index)
+        aa = np.delete(aa, index)
 
     c = list(np.abs(aa - bb))
     return c
 
 
-#Signal Processing
 def signalValueAtEvent(eventList, signal, eventName):
     for key, value in eventList.iteritems():
         if eventName in key:
@@ -125,18 +127,22 @@ def signalValueAtEvent(eventList, signal, eventName):
             out = signal[value2]
     return out
 
-def firstDerivative (signal, capture_rate):
+
+def firstDerivative(signal, capture_rate):
     sig_vel = np.diff(signal) / (1/capture_rate)
     return sig_vel
 
-def filterButter (signame, capture_rate, order, fiter_fq, filterType):
+
+def filterButter(signame, capture_rate, order, fiter_fq, filterType):
     b, a = scipy.signal.butter(order, fiter_fq/(0.5*capture_rate), filterType)
     sig_filtered = scipy.signal.filtfilt(b, a, signame)
     return sig_filtered
 
+
 def globalMax(signame):
     max = np.nanmax(signame)
     return max
+
 
 def timeGlobalMax(signame, capture_rate, unit):
     frame_of_max = signame.argmax()
@@ -147,59 +153,51 @@ def timeGlobalMax(signame, capture_rate, unit):
         max = frame_of_max
     return max
 
+
 def rootMeanSquared(sig):
-    mean= np.mean(sig)
-    mse = np.sum(np.power(sig - mean,2))/101
+    mean = np.mean(sig)
+    mse = np.sum(np.power(sig - mean, 2))/101
     rms = np.sqrt(mse)
     return rms
 
-def getKeyNameList(gvsScore):
-    f = list()
-    for k,v in gvsScore.iteritems():
-        f.append(k)
-    return f
 
-def getSeriesValuesExport(gvsScore, signalName, precision, frameRate):
-#    np.set_printoptions(suppress=True)
-    d = list()
-    for sigName, sigVal in gvsScore.iteritems():
-        if signalName == sigName:
-            for trialName, trialVal in sigVal.iteritems():
-                val = gvsScore[sigName][trialName]
-                val = np.round(val,precision).tolist()
-                if val is not "":
-                    d.append({"measurement": trialName,
-                         "values": val,
-                         "rate": frameRate})
-    return d
+def getKeyNameList(dictionary):
+    return list(dictionary.keys())
 
-def prepSeriesExport(gvsScore ,measurementNames, signalName, precision, frameRate):
-    val = getSeriesValuesExport(gvsScore,signalName, precision, frameRate)
-    return val
 
-def getSeriesExport(gvsScore, measurementNames, sigName, dataType, precision, frameRate, path):
-    out = {}
+def getSeriesValuesExport(signalData, signalName, precision, frameRate):
+    exportFormatData = []
+    for trialName, trialData in signalData.items():
+        trialData = np.round(trialData, precision).tolist()
+        if trialData is not "":
+            exportFormatData.append({"measurement": trialName,
+                                     "values": trialData,
+                                     "rate": frameRate})
+    return exportFormatData
 
-    if sigName.startswith('Left'):
+
+def getSeriesExport(signalData, signalName, dataType, precision, frameRate, path):
+
+    if signalName.startswith('Left'):
         sideSet = 'left'
-    elif sigName.startswith('Right'):
+    elif signalName.startswith('Right'):
         sideSet = 'right'
     else:
         sideSet = null
 
-    out = {
-       "id": sigName,
-       "type": dataType,
-       "set": sideSet,
-       "path": path,
-       "data": prepSeriesExport(gvsScore,measurementNames,sigName, precision, frameRate)
-       }
-    return out
+    return {
+        "id": signalName,
+        "type": dataType,
+        "set": sideSet,
+        "path": path,
+        "data": getSeriesValuesExport(signalData, signalName, precision, frameRate)
+    }
 
-def isPointExist(acq,label):
+
+def isPointExist(acq, label):
     i = acq.GetPoints().Begin()
     while i != acq.GetPoints().End():
-        if i.value().GetLabel()==label:
+        if i.value().GetLabel() == label:
             flag = True
             break
         else:
@@ -210,7 +208,3 @@ def isPointExist(acq,label):
         return True
     else:
         return False
-
-#a = getSeriesValuesExport(b, 'Left Ankle Angles_X', 4, 100)
-#c = prepSeriesExport(b ,('20141105-GBNNN-VDEF-16','20141105-GBNNN-VDEF-07'), 'Left Ankle Angles_X', 4, 100)
-#d = getSeriesExport(b ,('20141105-GBNNN-VDEF-16','20141105-GBNNN-VDEF-07'), 'Left Ankle Angles_X', 'series', 4, 100)
