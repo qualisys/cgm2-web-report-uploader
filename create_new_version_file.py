@@ -54,7 +54,10 @@ def update_file():
     with open("settings.json", "r") as f:
         settings = json.load(f)
 
-    version_tuple = tuple(int(x) for x in settings["version"].split("."))
+    version = [0,0,0,0]
+    for idx,num in enumerate(settings["version"].split(".")):
+        version[idx] = num
+    version_tuple = tuple(version)
     build_name = os.environ.get("BUILD_NAME")
 
     new_version = template % {"version_tuple": version_tuple,
