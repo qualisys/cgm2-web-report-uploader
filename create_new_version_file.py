@@ -56,7 +56,7 @@ def update_file():
 
     version = [0,0,0,0]
     for idx,num in enumerate(settings["version"].split(".")):
-        version[idx] = num
+        version[idx] = int(num)
     version_tuple = tuple(version)
     build_name = os.environ.get("BUILD_NAME")
 
