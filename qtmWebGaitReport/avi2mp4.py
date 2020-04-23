@@ -1,44 +1,48 @@
 # -*- coding: utf-8 -*-
 
-from os import path
+import os
 from glob import glob
 from ffmpy import FFmpeg
-#import subprocess
 
-workingDirectory = "E:\\Qualisys_repository\\Gait-Web-Importer\\Data\\Oxford\\"
+
+def get_mp4_filepaths(working_directory):
+    mp4_file_paths = list(glob(os.path.join(working_directory, "*.mp4")))
+    return mp4_file_paths
+
+
+def get_mp4_filenames(working_directory):
+    mp4_file_paths = get_mp4_filepaths(working_directory)
+    output_filenames = [os.path.basename(x) for x in mp4_file_paths]
+    return output_filenames
+
+
+def get_parent_folder_absolute_path(folder):
+    return os.path.abspath(os.path.join(folder, os.pardir))
+
 
 class AviToMp4:
-    templatesDirectory = path.dirname(__file__)
-    ffmpeg = path.join(templatesDirectory, 'ffmpeg/bin/ffmpeg.exe')
+    templatesDirectory = os.path.dirname(__file__)
+    ffmpeg = os.path.join(templatesDirectory, 'ffmpeg/bin/ffmpeg.exe')
 
-    def __init__(self,workingDirectory):
+    def __init__(self, workingDirectory):
         self.workingDirectory = workingDirectory
-        self.aviFilePath = glob(self.workingDirectory + "*.avi")
+        self.aviFilePath = glob(os.path.join(self.workingDirectory, "*.avi"))
 
     def convertAviToMp4(self):
         for inputFilename in self.aviFilePath:
-            outputFileName = inputFilename.replace('avi','mp4')
+            outputFileName = inputFilename.replace('avi', 'mp4')
             ff = FFmpeg(executable=self.ffmpeg,
-                   inputs={inputFilename: None},
-                   outputs={outputFileName: '-y -pix_fmt yuv420p -vcodec libx264 -profile:v baseline -level 3.0 -g 15 -s 720x404 -b:v 1000k -an -bufsize 2000k'} 
-                   )
+                        inputs={inputFilename: None},
+                        outputs={
+                            outputFileName: '-y -pix_fmt yuv420p -vcodec libx264 -profile:v baseline -level 3.0 -g 15 -s 720x404 -b:v 1000k -an -bufsize 2000k'}
+                        )
             ff.run()
-            
-#    def convert_avi_to_mp4(self):
-#        for inputFilename in self.aviFilePath:
-#            outputFileName = inputFilename.replace('avi','mp4')
-#            subprocess.Popen("ffmpeg -i '{input}' -y -pix_fmt yuv420p -vcodec libx264 -profile:v baseline -level 3.0 -g 15 -s 720x404 -b:v 1000k -an -bufsize 2000k '{output}'".format(input = inputFilename, output = outputFileName),shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-#        return True
 
-    def getMp4Filenames(self,basenameOnly):
+    def getMp4Filenames(self, basenameOnly):
         outputFileNames = []
         for inputFilename in self.aviFilePath:
             if basenameOnly == True:
-                inputFilename = path.basename(inputFilename)
-            outputFileName = inputFilename.replace('avi','mp4')
+                inputFilename = os.path.basename(inputFilename)
+            outputFileName = inputFilename.replace('avi', 'mp4')
             outputFileNames.append(outputFileName)
         return outputFileNames
-        
-#a = AviToMp4(workingDirectory)
-#b = a.convertAviToMp4()
-
