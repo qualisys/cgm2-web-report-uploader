@@ -28,19 +28,8 @@ def loadConfigData(directoryPath=None):
 
 
 class WebReportFilter(object):
-<<<<<<< HEAD
-    def __init__(self,workingDirectory,modelledC3dfilenames,subjectInfo,sessionDate):
-
-        if os.path.isfile(qtmWebGaitReport.GAIT_WEB_REPORT_PATH + 'config.json'):
-            with open(qtmWebGaitReport.GAIT_WEB_REPORT_PATH + 'config.json') as jsonDataFile:
-                configData = json.load(jsonDataFile)
-        else:
-            raise Exception ("Config.json not found at " + qtmWebGaitReport.GAIT_WEB_REPORT_PATH)
-
-=======
     def __init__(self, workingDirectory, modelledC3dfilenames, subjectInfo, sessionDate, settings_from_php={}):
         configData = loadConfigData(workingDirectory)
->>>>>>> b66937417b75b431de7dad13b558ca741ef68fbe
 
         self.reportGenerator = ReportJsonGenerator(
             workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate, settings_from_php)
