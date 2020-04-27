@@ -9,12 +9,12 @@ from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
 
 
-from pyCGM2.Apps.QtmApps.CGM1i import CGM1_workflow
-from pyCGM2.Apps.QtmApps.CGM1i import CGM11_workflow
-from pyCGM2.Apps.QtmApps.CGM1i import CGM21_workflow
-from pyCGM2.Apps.QtmApps.CGM1i import CGM22_workflow
-from pyCGM2.Apps.QtmApps.CGM1i import CGM23_workflow
-from pyCGM2.Apps.QtmApps.CGM1i import CGM24_workflow
+from pyCGM2.Apps.QtmApps.CGMi import CGM1_workflow
+from pyCGM2.Apps.QtmApps.CGMi import CGM11_workflow
+from pyCGM2.Apps.QtmApps.CGMi import CGM21_workflow
+from pyCGM2.Apps.QtmApps.CGMi import CGM22_workflow
+from pyCGM2.Apps.QtmApps.CGMi import CGM23_workflow
+from pyCGM2.Apps.QtmApps.CGMi import CGM24_workflow
 from pyCGM2.qtm import qtmTools
 
 from pyCGM2.Utils import files
@@ -63,7 +63,7 @@ def load_extra_settings(path_to_templates):
 
 
 # ---- process with pyCGM2-----
-def __process_and_return_model(model_type):
+def process_and_return_model(model_type):
     if model_type == "CGM1.0":
         model = CGM1_workflow.main()
     elif model_type == "CGM1.1":
@@ -86,7 +86,7 @@ def process_with_pycgm(session_xml):
 
     CGM2_Model = session_xml.Subsession.CGM2_Model.text
     logging.info("PROCESSING TYPE " + CGM2_Model)
-    model = __process_and_return_model(CGM2_Model)
+    model = process_and_return_model(CGM2_Model)
     return model
 
 
