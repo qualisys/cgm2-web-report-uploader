@@ -8,7 +8,9 @@ import scipy.signal
 import xml.etree.cElementTree as ET
 import c3dValidation
 
-
+from pyCGM2.Report import normativeDatasets
+from pyCGM2.Processing import scores
+from pyCGM2.Lib import analysis
 class MAP:
     def __init__(self, workingDirectory):
         self.workingDirectory = workingDirectory
@@ -17,115 +19,50 @@ class MAP:
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.measurementNames = c3dValObj.getValidC3dList(True)
         self.fileNames = c3dValObj.getValidC3dList(False)
+        self.normative_dataset = normativeDatasets.Schwartz2008("Free")
+        analysis_per_file = {path.basename(name).replace(".c3d", ""): analysis.makeAnalysis(
+            workingDirectory + "\\", [path.basename(name)]) for name in self.fileNames}
+        self.scores = {}
+        for filename, analysis_obj in analysis_per_file.items():
+            gps = scores.CGM1_GPS(pointSuffix=None)
+            scf = scores.ScoreFilter(gps,analysis_obj, self.normative_dataset)
+            scf.compute()
+            self.scores[filename] = analysis_obj
 
     def getAllGVS(self):
 
         mapSignalNames = ["Left Pelvic Angles", "Left Hip Angles", "Left Knee Angles", "Left Ankle Angles", "Left Foot Progression",
                           "Right Pelvic Angles", "Right Hip Angles", "Right Knee Angles", "Right Ankle Angles", "Right Foot Progression"]
-        components = {'X', 'Y', 'Z'}
-        measuredValuesNormalized = {}
-        gvs = {}
-        gvsLn = {}
+        component_idx_name = [(0,"X"),(1,"Y"),(2,"Z")]
+        gvs_pycgm2 = {}
+        for measurementName in self.measurementNames:
+            scores = self.scores[measurementName]
+            for sigName in mapSignalNames:
+                for idx,component in component_idx_name:
+                    gvs_pycgm2[sigName + "_" + component + "_gvs_ln_mean"] = {}
+                
+                    for origSigName, ourSigName in signalMapping.sigNameMap.iteritems():
+                        if ourSigName == sigName:
+                            pigSigName = origSigName
+                            side = "Left" if "Left" in ourSigName else "Right"
+                    if (pigSigName,side) in scores.gvs.keys():
+                        cur_score_values = scores.gvs[(pigSigName,side)]["mean"]
+                        gvs_pycgm2[sigName + "_" + component + "_gvs_ln_mean"][measurementName] = np.log(cur_score_values[idx])
 
-        tree = ET.parse(path.join(qtmWebGaitReport.GAIT_WEB_REPORT_PATH, "qtmWebGaitReport", "Normatives",
-                                  "normatives.xml"))
-        xmlRoot = tree.getroot()
 
-        for sigName in mapSignalNames:
-            measuredValuesNormalized[sigName] = {}
-
-            for component in components:
-                gvs[sigName + "_" + component + "_gvs"] = {}
-                gvsLn[sigName + "_" + component + "_gvs_ln_mean"] = {}
-
-                normValues = self.getNormValuesFromV3DXml(
-                    xmlRoot, sigName + "_" + component)
-
-                if normValues is not "":
-                    if component == "X":
-                        i = 0
-                    elif component == "Y":
-                        i = 1
-                    elif component == "Z":
-                        i = 2
-
-                    for filename in self.fileNames:
-                        acq = qtools.fileOpen(filename)
-                        measurementName = path.basename(filename)
-                        measurementName = measurementName.replace('.c3d', '')
-
-                        measuredValuesNormalized[sigName][measurementName] = {}
-                        gvs[sigName + "_" + component +
-                            "_gvs"][measurementName] = {}
-                        gvsLn[sigName + "_" + component +
-                              "_gvs_ln_mean"][measurementName] = {}
-
-                        for origSigName, ourSigName in signalMapping.sigNameMap.iteritems():
-                            if ourSigName == sigName:
-                                pigSigName = origSigName
-
-                        signal = acq.GetPoint(pigSigName)
-                        measuredValues = scipy.signal.resample(
-                            signal.GetValues(), 101)  # normalize to 101 points
-                        measuredValuesNormalized[sigName][measurementName] = measuredValues
-
-                        sub = measuredValuesNormalized[sigName][measurementName][:,
-                                                                                 i] - normValues
-                        gvs[sigName + "_" + component +
-                            "_gvs"][measurementName] = qtools.rootMeanSquared(sub)
-                        gvsLn[sigName + "_" + component + "_gvs_ln_mean"][measurementName] = np.log(
-                            gvs[sigName + "_" + component + "_gvs"][measurementName])
-
-        return(gvs, gvsLn)
+        return gvs_pycgm2
 
     def getAllGPS(self):
-        GPSLeft = {}
-        GPSRight = {}
-        GPSOverall = {}
+        GPSLeft_pycgm2 = {}
+        GPSRight_pycgm2 = {}
+        GPSOverall_pycgm2 = {}
 
         for measurementName in self.measurementNames:
-            gvs = self.getAllGVS()[0]
+            GPSLeft_pycgm2[measurementName] = np.log(self.scores[measurementName].gps["Context"]["Left"]["mean"][0])
+            GPSRight_pycgm2[measurementName] = np.log(self.scores[measurementName].gps["Context"]["Right"]["mean"][0])
+            GPSOverall_pycgm2[measurementName] = np.log(self.scores[measurementName].gps["Overall"]["mean"][0])
 
-            GPSLeft[measurementName] = np.sqrt(
-                self.getGVS(gvs, measurementName, "Left Ankle Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Foot Progression_Z")**2 +
-                self.getGVS(gvs, measurementName, "Left Hip Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Hip Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Left Hip Angles_Z")**2 +
-                self.getGVS(gvs, measurementName, "Left Knee Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Pelvic Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Pelvic Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Left Pelvic Angles_Z")**2
-            ) / 9
-            GPSRight[measurementName] = np.sqrt(
-                self.getGVS(gvs, measurementName, "Right Ankle Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Right Foot Progression_Z")**2 +
-                self.getGVS(gvs, measurementName, "Right Hip Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Right Hip Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Right Hip Angles_Z")**2 +
-                self.getGVS(gvs, measurementName, "Right Knee Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Right Pelvic Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Right Pelvic Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Right Pelvic Angles_Z")**2
-            ) / 9
-            GPSOverall[measurementName] = np.sqrt(
-                self.getGVS(gvs, measurementName, "Left Ankle Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Foot Progression_Z")**2 +
-                self.getGVS(gvs, measurementName, "Left Hip Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Hip Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Left Hip Angles_Z")**2 +
-                self.getGVS(gvs, measurementName, "Left Knee Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Pelvic Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Left Pelvic Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Left Pelvic Angles_Z")**2 +
-                self.getGVS(gvs, measurementName, "Right Ankle Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Right Foot Progression_Z")**2 +
-                self.getGVS(gvs, measurementName, "Right Hip Angles_X")**2 +
-                self.getGVS(gvs, measurementName, "Right Hip Angles_Y")**2 +
-                self.getGVS(gvs, measurementName, "Right Hip Angles_Z")**2 +
-                self.getGVS(gvs, measurementName, "Right Knee Angles_X")**2
-            ) / 15
-        return(GPSLeft, GPSRight, GPSOverall)
+        return (GPSLeft_pycgm2, GPSRight_pycgm2, GPSOverall_pycgm2)
 
     def getNormValuesFromV3DXml(self, xmlObj, sigName):
         normValues = str()

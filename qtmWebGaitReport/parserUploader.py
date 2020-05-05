@@ -52,7 +52,7 @@ class ReportJsonGenerator:
         return timeseriesResults
 
     def getGVSResults(self, mapProfile):
-        gvsScore = mapProfile.getAllGVS()[1]
+        gvsScore = mapProfile.getAllGVS()
 
         gvs = []
         for signalName, signalData in gvsScore.items():
@@ -61,9 +61,7 @@ class ReportJsonGenerator:
         return gvs
 
     def getGPSResults(self, mapProfile):
-        gpsScoreLeft = mapProfile.getAllGPS()[0]
-        gpsScoreRight = mapProfile.getAllGPS()[1]
-        gpsScoreOverall = mapProfile.getAllGPS()[2]
+        gpsScoreLeft,gpsScoreRight,gpsScoreOverall  = mapProfile.getAllGPS()
 
         gpsLeft = mapProfile.gpsExport(
             gpsScoreLeft, "Left_GPS_ln_mean", self.frameRate)

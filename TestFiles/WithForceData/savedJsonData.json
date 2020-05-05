@@ -23675,13 +23675,7 @@
             "set": "right", 
             "type": "scalar", 
             "id": "Right Pelvic Angles_X_gvs_ln_mean", 
-            "data": [
-                {
-                    "rate": null, 
-                    "values": 0.6054, 
-                    "measurement": "Gait - CGM2 1"
-                }
-            ]
+            "data": []
         }, 
         {
             "path": "LINK_MODEL_BASED/ORIGINAL", 
@@ -23691,7 +23685,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.4021, 
+                    "values": 1.1295, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23704,7 +23698,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.7589, 
+                    "values": 3.1212, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23714,20 +23708,20 @@
             "set": "right", 
             "type": "scalar", 
             "id": "Right Pelvic Angles_Z_gvs_ln_mean", 
-            "data": [
-                {
-                    "rate": null, 
-                    "values": 1.635, 
-                    "measurement": "Gait - CGM2 1"
-                }
-            ]
+            "data": []
         }, 
         {
             "path": "LINK_MODEL_BASED/ORIGINAL", 
             "set": "left", 
             "type": "scalar", 
             "id": "Left Ankle Angles_Z_gvs_ln_mean", 
-            "data": []
+            "data": [
+                {
+                    "rate": null, 
+                    "values": 2.3816, 
+                    "measurement": "Gait - CGM2 1"
+                }
+            ]
         }, 
         {
             "path": "LINK_MODEL_BASED/ORIGINAL", 
@@ -23737,7 +23731,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 2.1538, 
+                    "values": 2.524, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23750,7 +23744,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.1983, 
+                    "values": 1.9094, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23763,7 +23757,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.9503, 
+                    "values": 0.9648, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23776,7 +23770,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.3757, 
+                    "values": 1.5359, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23786,7 +23780,13 @@
             "set": "right", 
             "type": "scalar", 
             "id": "Right Foot Progression_Y_gvs_ln_mean", 
-            "data": []
+            "data": [
+                {
+                    "rate": null, 
+                    "values": 2.1191, 
+                    "measurement": "Gait - CGM2 1"
+                }
+            ]
         }, 
         {
             "path": "LINK_MODEL_BASED/ORIGINAL", 
@@ -23796,7 +23796,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.9898, 
+                    "values": 1.8095, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23806,7 +23806,13 @@
             "set": "left", 
             "type": "scalar", 
             "id": "Left Foot Progression_Y_gvs_ln_mean", 
-            "data": []
+            "data": [
+                {
+                    "rate": null, 
+                    "values": 1.8396, 
+                    "measurement": "Gait - CGM2 1"
+                }
+            ]
         }, 
         {
             "path": "LINK_MODEL_BASED/ORIGINAL", 
@@ -23816,7 +23822,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 3.3253, 
+                    "values": 2.189, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23829,7 +23835,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 3.113, 
+                    "values": 1.9969, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23842,7 +23848,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.5962, 
+                    "values": 2.6551, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23855,7 +23861,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.6995, 
+                    "values": 1.9956, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23868,7 +23874,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 2.1431, 
+                    "values": 2.346, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23881,7 +23887,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.5007, 
+                    "values": 2.5504, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23894,7 +23900,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 0.4798, 
+                    "values": 0.6762, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23907,7 +23913,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 0.8034, 
+                    "values": 1.4325, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23917,10 +23923,17 @@
             "set": "right", 
             "type": "scalar", 
             "id": "Right Pelvic Angles_Y_gvs_ln_mean", 
+            "data": []
+        }, 
+        {
+            "path": "LINK_MODEL_BASED/ORIGINAL", 
+            "set": "right", 
+            "type": "scalar", 
+            "id": "Right Foot Progression_X_gvs_ln_mean", 
             "data": [
                 {
                     "rate": null, 
-                    "values": 2.0834, 
+                    "values": 4.4112, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23929,15 +23942,14 @@
             "path": "LINK_MODEL_BASED/ORIGINAL", 
             "set": "right", 
             "type": "scalar", 
-            "id": "Right Foot Progression_X_gvs_ln_mean", 
-            "data": []
-        }, 
-        {
-            "path": "LINK_MODEL_BASED/ORIGINAL", 
-            "set": "right", 
-            "type": "scalar", 
             "id": "Right Ankle Angles_Z_gvs_ln_mean", 
-            "data": []
+            "data": [
+                {
+                    "rate": null, 
+                    "values": 2.2011, 
+                    "measurement": "Gait - CGM2 1"
+                }
+            ]
         }, 
         {
             "path": "LINK_MODEL_BASED/ORIGINAL", 
@@ -23947,7 +23959,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.7635, 
+                    "values": 1.2888, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23960,7 +23972,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 2.1433, 
+                    "values": 2.2772, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23973,7 +23985,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 3.1516, 
+                    "values": 2.1112, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23986,7 +23998,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 2.4356, 
+                    "values": 2.2947, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -23999,7 +24011,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 2.9954, 
+                    "values": 1.5778, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -24012,7 +24024,7 @@
             "data": [
                 {
                     "rate": null, 
-                    "values": 1.0845, 
+                    "values": 2.6348, 
                     "measurement": "Gait - CGM2 1"
                 }
             ]
@@ -24022,14 +24034,20 @@
             "set": "left", 
             "type": "scalar", 
             "id": "Left Foot Progression_X_gvs_ln_mean", 
-            "data": []
+            "data": [
+                {
+                    "rate": null, 
+                    "values": 4.367, 
+                    "measurement": "Gait - CGM2 1"
+                }
+            ]
         }, 
         {
             "data": [
                 {
                     "rate": null, 
                     "values": [
-                        4.008177844239856
+                        1.8383820120776786
                     ], 
                     "measurement": "Gait - CGM2 1"
                 }
@@ -24043,7 +24061,7 @@
                 {
                     "rate": null, 
                     "values": [
-                        4.3943789728505145
+                        1.6840868639603264
                     ], 
                     "measurement": "Gait - CGM2 1"
                 }
@@ -24057,7 +24075,7 @@
                 {
                     "rate": null, 
                     "values": [
-                        3.509531022764198
+                        1.7486885925429512
                     ], 
                     "measurement": "Gait - CGM2 1"
                 }
