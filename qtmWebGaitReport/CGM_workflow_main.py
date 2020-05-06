@@ -83,7 +83,7 @@ def process_and_return_model(model_type,generate_pdf_report=False):
     return model
 
 
-def process_with_pycgm(generate_pdf_report):
+def process_with_pycgm(work_folder,generate_pdf_report):
     session_xml = files.readXml(work_folder+"\\", SESSION_XML_FILENAME)
     CGM2_Model = session_xml.Subsession.CGM2_Model.text
     logging.info("PROCESSING TYPE " + CGM2_Model)
@@ -130,10 +130,11 @@ def main(args):
     work_folder = os.getcwd()
 
     # run and process pyCGM2
-    model = process_with_pycgm(args.pdf_report) # i keep  the model as output , just in case of futher use
+    model = process_with_pycgm(work_folder,args.pdf_report) # i keep  the model as output , just in case of futher use
 
     webReportFlag = args.web_report
     if webReportFlag:
         processed_folder = os.path.join(work_folder, "processed")
         settings = load_extra_settings(args.templates_path)
+        session_xml = files.readXml(work_folder+"\\", SESSION_XML_FILENAME)
         create_web_report(session_xml, processed_folder, settings)
