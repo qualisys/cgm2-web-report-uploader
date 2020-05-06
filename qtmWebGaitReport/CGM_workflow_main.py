@@ -19,6 +19,7 @@ from pyCGM2.qtm import qtmTools
 
 from pyCGM2.Utils import files
 
+SESSION_XML_FILENAME = "session.xml"
 
 # ---- settings-----
 def __load_settings_from_php(file_path):
@@ -63,30 +64,30 @@ def load_extra_settings(path_to_templates):
 
 
 # ---- process with pyCGM2-----
-def process_and_return_model(model_type):
+def process_and_return_model(model_type,generate_pdf_report=False):
     if model_type == "CGM1.0":
-        model = CGM1_workflow.main()
+        model = CGM1_workflow.main(SESSION_XML_FILENAME,generate_pdf_report)
     elif model_type == "CGM1.1":
-        model = CGM11_workflow.main()
+        model = CGM11_workflow.main(SESSION_XML_FILENAME,generate_pdf_report)
     elif model_type == "CGM2.1-HJC":
-        model = CGM21_workflow.main()
+        model = CGM21_workflow.main(SESSION_XML_FILENAME,generate_pdf_report)
     elif model_type == "CGM2.2-IK":
-        model = CGM22_workflow.main()
+        model = CGM22_workflow.main(SESSION_XML_FILENAME,generate_pdf_report)
     elif model_type == "CGM2.3-skinClusters":
-        model = CGM23_workflow.main()
+        model = CGM23_workflow.main(SESSION_XML_FILENAME,generate_pdf_report)
     elif model_type == "CGM2.4-ForeFoot":
-        model = CGM24_workflow.main()
+        model = CGM24_workflow.main(SESSION_XML_FILENAME,generate_pdf_report)
     else:
         raise Exception(
             "The pyCMG processing type is not implemented, you selected %s" % model_type)
     return model
 
 
-def process_with_pycgm(session_xml):
-
+def process_with_pycgm(generate_pdf_report):
+    session_xml = files.readXml(work_folder+"\\", SESSION_XML_FILENAME)
     CGM2_Model = session_xml.Subsession.CGM2_Model.text
     logging.info("PROCESSING TYPE " + CGM2_Model)
-    model = process_and_return_model(CGM2_Model)
+    model = process_and_return_model(CGM2_Model,generate_pdf_report)
     return model
 
 
@@ -126,19 +127,13 @@ def create_web_report(session_xml, data_path, settings_from_php):
 
 
 def main(args):
-
     work_folder = os.getcwd()
 
-    # settings
-    settings = load_extra_settings(args.templates_path)
-    session_xml = files.readXml(work_folder+"\\", "session.xml")
-
     # run and process pyCGM2
-    model = process_with_pycgm(session_xml) # i keep  the model as output , just in case of futher use
+    model = process_with_pycgm(args.pdf_report) # i keep  the model as output , just in case of futher use
 
-    # webreport
     webReportFlag = args.web_report
-
-    processed_folder = os.path.join(work_folder, "processed")
     if webReportFlag:
+        processed_folder = os.path.join(work_folder, "processed")
+        settings = load_extra_settings(args.templates_path)
         create_web_report(session_xml, processed_folder, settings)
