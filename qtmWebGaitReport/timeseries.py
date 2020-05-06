@@ -94,8 +94,6 @@ class Timeseries:
                                 constant1 = bodyMass * 9.81 * -1
                             else:
                                 constant1 = bodyMass * 9.81
-                        elif "Ankle Angles" in ourSigName and component == "Y":
-                            constant1 = -1
                         elif "Prog" in ourSigName and component == "X":
                             constant1 = - 1
                             constant2 = -90
