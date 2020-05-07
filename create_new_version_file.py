@@ -48,6 +48,14 @@ VSVersionInfo(
 
 """
 
+def load_pyCGM2_version(requrements_file):
+    with open(requrements_file,"r") as f:
+        for line in f.readlines():
+            if "git+https://github.com" in line and "pyCGM2" in line:
+                version = line.split("git+")[-1]
+                version = version.replace("\n","")
+                break
+    return version
 
 def update_file():
 
@@ -60,8 +68,10 @@ def update_file():
     version_tuple = tuple(version)
     build_name = os.environ.get("BUILD_NAME")
 
+    final_description = settings["description"] + " pyCGM2 version: " + load_pyCGM2_version("requirements-dev.txt")
+
     new_version = template % {"version_tuple": version_tuple,
-                              "file_version": settings["version"], "product_version": build_name, "name": settings["name"], "description": settings["description"]}
+                              "file_version": settings["version"], "product_version": build_name, "name": settings["name"], "description": final_description}
 
     with open("file-version.py", "w") as f:
         f.write(new_version)
