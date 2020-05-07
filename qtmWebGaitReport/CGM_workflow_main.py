@@ -19,6 +19,8 @@ import logging
 import warnings
 import os
 
+from pathlib2 import Path
+
 log.setLoggingLevel(logging.INFO)
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -75,18 +77,23 @@ def load_extra_settings(path_to_templates):
     settings.update(user_settings)
     return settings
 
+def delete_c3d_files_in(folder_path):
+    folder_path = Path(folder_path)
+    for c3d_file_path in folder_path.glob("*.c3d"):
+        c3d_file_path.unlink()
 
 def main(args):
-
-    EventDetector_Zeni_main()
-    dataQuality_main()
-
     work_folder = os.getcwd()
 
     settings = load_extra_settings(args.templates_path)
     session_xml_path = os.path.join(work_folder, "session.xml")
     session_xml = utils.read_session_xml(session_xml_path)
     processed_folder = os.path.join(work_folder, "processed")
+
+    delete_c3d_files_in(processed_folder)
+
+    EventDetector_Zeni_main()
+    dataQuality_main()
 
     model = process_with_pycgm(session_xml, processed_folder)
 
