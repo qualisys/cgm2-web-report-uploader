@@ -1,5 +1,7 @@
 /Data/
-file-version.py
+/Build/
+/dist/
+*.egg-info/
 Thumbs.db
 config.json
 *.pyc
