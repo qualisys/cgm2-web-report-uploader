@@ -7,6 +7,7 @@ import yaml
 
 from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
+from pathlib2 import Path
 
 
 from pyCGM2.Apps.QtmApps.CGMi import CGM1_workflow
@@ -62,6 +63,10 @@ def load_extra_settings(path_to_templates):
     settings.update(user_settings)
     return settings
 
+def delete_c3d_files_in(folder_path):
+    folder_path = Path(folder_path)
+    for c3d_file_path in folder_path.glob("*.c3d"):
+        c3d_file_path.unlink()
 
 # ---- process with pyCGM2-----
 def process_and_return_model(model_type,generate_pdf_report=False):
@@ -91,6 +96,7 @@ def process_with_pycgm(work_folder,generate_pdf_report):
     return model
 
 
+
 #----web report---------
 
 def __create_subject_metadata(session_xml, measurement_type):
@@ -106,6 +112,7 @@ def __create_subject_metadata(session_xml, measurement_type):
         "subSessionType": session_xml.find("Subsession").get("Type"),
         "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
         "fms": session_xml.find("Functional_Mobility_Scale").text}
+  
 
 
 def create_web_report(session_xml, data_path, settings_from_php):
@@ -128,13 +135,17 @@ def create_web_report(session_xml, data_path, settings_from_php):
 
 def main(args):
     work_folder = os.getcwd()
+    
+      
+    processed_folder = os.path.join(work_folder, "processed")
+    delete_c3d_files_in(processed_folder)
 
     # run and process pyCGM2
     model = process_with_pycgm(work_folder,args.pdf_report) # i keep  the model as output , just in case of futher use
 
     webReportFlag = args.web_report
     if webReportFlag:
-        processed_folder = os.path.join(work_folder, "processed")
+        
         settings = load_extra_settings(args.templates_path)
         session_xml = files.readXml(work_folder+"\\", SESSION_XML_FILENAME)
         create_web_report(session_xml, processed_folder, settings)
