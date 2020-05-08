@@ -8,6 +8,14 @@ eventNameMap = {
 }
 
 sigNameMap = {
+    'LElbowAngles':'Left Elbow Angles',
+    'RElbowAngles':'Right Elbow Angles',
+    'LShoulderAngles':'Left Shoulder Angles',
+    'RShoulderAngles':'Right Shoulder Angles',
+    'LThoraxAngles':'Left Thorax Angles',
+    'RThoraxAngles':'Right Thorax Angles',
+    'LSpineAngles':'Left Thorax_Lab Angles',
+    'RSpineAngles':'Right Thorax_Lab Angles',
     'L_FLAT': '',
     'LAbsAnkleAngle': '',
     'LAJC': '',
