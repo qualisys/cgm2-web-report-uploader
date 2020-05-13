@@ -96,3 +96,9 @@ class TestGenerateReportJson():
             "WithForceData")
 
         check_key_value_pairs(generatedReportJson, loadedReportJson)
+    
+    def test_example_with_new_paf_fields(self):
+        generatedReportJson, loadedReportJson = get_generated_and_loaded_json(
+            "WithNewPafFields")
+
+        check_key_value_pairs(generatedReportJson, loadedReportJson)
