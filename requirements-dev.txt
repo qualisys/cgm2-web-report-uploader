@@ -43,7 +43,7 @@ pickleshare==0.7.5
 pluggy==0.13.1
 prompt-toolkit==1.0.18
 py==1.8.0
-git+https://github.com/pyCGM2/pyCGM2.git@b4afce9baad4c9c18208e5f3450036abd5c9021c
+git+https://github.com/pyCGM2/pyCGM2.git@0f376d9fae24d97bc5257e04b1ab8982692ed7af
 pycodestyle==2.5.0
 Pygments==2.5.2
 PyInstaller==3.6
