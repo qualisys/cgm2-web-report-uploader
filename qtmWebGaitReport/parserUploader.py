@@ -44,7 +44,8 @@ class ReportJsonGenerator:
     def getTimeseriesResults(self):
         tsObj = timeseries.Timeseries(
             self.workingDirectory, self.modelledC3dfilenames)
-        timeSeriesData = tsObj.calculateTimeseries()
+        mass = float(self.subjectMetadata["bodyWeight"])
+        timeSeriesData = tsObj.calculateTimeseries(mass)
         timeseriesResults = []
         for signalName, signalData in timeSeriesData.items():
             timeseriesResults.append(qtools.getSeriesExport(signalData,

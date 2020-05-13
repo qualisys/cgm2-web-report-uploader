@@ -23,7 +23,7 @@ class Timeseries:
         c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
-    def calculateTimeseries(self):
+    def calculateTimeseries(self,bodyMass):
         #metaObj = metadata.Metadata(self.workingDirectory)
         timeseries = dict()
         components = {'X', 'Y', 'Z'}
@@ -37,18 +37,6 @@ class Timeseries:
             origLabelNamesSelected = list()
 
             acq = qtools.fileOpen(filename)
-            md = acq.GetMetaData()
-
-            if "PROCESSING" in _getSectionFromMd(md):
-                processingMd = acq.GetMetaData().FindChild("PROCESSING").value()
-
-                if "Weight" in _getSectionFromMd(processingMd):
-                    mass = processingMd.FindChild(
-                        "Weight").value().GetInfo().ToString()
-
-                elif "Bodymass" in _getSectionFromMd(processingMd):
-                    mass = processingMd.FindChild(
-                        "Bodymass").value().GetInfo().ToString()
 
             noMarkers = range(acq.GetPointNumber())
 
@@ -81,7 +69,6 @@ class Timeseries:
                             i = 1
                         elif component == "Z":
                             i = 2
-                        bodyMass = float(mass[0])
                         constant2 = 0
                         if "Moment" in ourSigName:
                             constant1 = 1000  # converts from mm to m
