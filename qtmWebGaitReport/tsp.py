@@ -32,8 +32,12 @@ class TSP:
         return stanceTimePct
 
     def cadence(self):
-        cadence = self.getParamFromPyCGM2(
-            "cadence", ["Left", "Right"])
+        """ cadence [steps/min] """
+        stepTimes = self.getParamFromPyCGM2("stepDuration", ["Left","Right"])
+        cadence = []
+        for measurement in stepTimes:
+            measurement["values"] = list(60 / np.array(measurement["values"])) 
+            cadence.append(measurement)
         return cadence
 
     def speed(self):
