@@ -25,4 +25,14 @@ def test_runs_without_errors( model_type,tmp_path ):
     except Exception as e:
         assert 0, "Unexpected error: {}".format(e)
 
+new_paf_fields_folder = str(
+    Path("TestFiles", "WithNewPafFields").absolute())
 
+def test_new_paf_fields( model_type,tmp_path ):
+    copy_folder_contents(new_paf_fields_folder,str(tmp_path))
+    if Path.cwd() != tmp_path:
+        os.chdir(str(tmp_path))
+    try:
+        process_and_return_model(model_type)
+    except Exception as e:
+        assert 0, "Unexpected error: {}".format(e)
