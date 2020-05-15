@@ -2,16 +2,10 @@
 
 import qtools
 import os
-import yaml
-from os import path
-from glob import glob
-import xml.etree.cElementTree as ET
+from pathlib2 import Path
+import json
 from datetime import datetime
-from avi2mp4 import get_mp4_filenames
-from avi2mp4 import get_parent_folder_absolute_path
 import c3dValidation
-
-from datetime import datetime
 
 
 def get_creation_date(file):
@@ -45,6 +39,26 @@ def create_resources(video_filenames, extra_settings):
         resources.append(cur_resource)
     return resources
 
+def get_current_measurement_mp4(measurement_name,video_meta):
+    # type: (List) -> List
+    measurement_videos = []
+    for cur_video in video_meta:
+        measurement_for_cur_video = str(Path(cur_video["measurement"]).stem)
+        if measurement_name == measurement_for_cur_video:
+            measurement_videos.append(
+                Path(cur_video["outputPath"]).name
+            )
+    return measurement_videos
+
+def load_videos_json(session_folder):
+    # type: (Path) -> List
+    video_json_path = session_folder / "videos.json"
+    if video_json_path.is_file():
+        with video_json_path.open("r") as f:
+            video_meta = json.load(f)
+    else: 
+        video_meta = []
+    return video_meta
 
 class Measurements:
     def __init__(self, workingDirectory):
@@ -55,11 +69,11 @@ class Measurements:
 
     def measurementInfo(self, extra_settings={}):
         info = []
-
+        session_folder = Path(self.workingDirectory).absolute().parent
+        video_meta = load_videos_json(session_folder)
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
-            measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
+            measurementName = Path(filename).stem
 
             val = acq.GetDuration()
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
@@ -75,8 +89,7 @@ class Measurements:
             bodyHeight = 0
             bodyWeight = 0
 
-            video_filenames = get_mp4_filenames(
-                get_parent_folder_absolute_path(self.workingDirectory))
+            video_filenames = get_current_measurement_mp4(measurementName,video_meta)
             resources = create_resources(video_filenames, extra_settings)
 
             fields = [
@@ -120,29 +133,3 @@ class Measurements:
                 }
             )
         return info
-
-    def getValueFromXMLSystem(self, defList, param):
-        filename = glob(self.workingDirectory + "*.system")[0]
-        tree = ET.parse(filename)
-        xmlRoot = tree.getroot()
-
-        for child in xmlRoot:
-            if defList in child.attrib["name"]:
-                for kid in child[0][0]:
-                    if param in kid.attrib["name"]:
-                        val = float(kid.attrib["value"])
-        return val
-
-    def getSettingsFromTextfile(self, filename):
-        file = open(filename, 'r')
-        content = file.read()
-        lines = content.split("\n")
-        settings = {}
-
-        for line in lines:
-            parts = line.split("=")
-            if len(parts) == 2:
-                key = str.strip(parts[0])
-                value = str.strip(parts[1])
-                settings[key] = value
-        return settings
