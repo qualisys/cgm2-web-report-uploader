@@ -64,6 +64,14 @@ class ReportJsonToRegressionXmlCreator:
             "Right Hip Moment": "Right Hip Moment",
             "Right Foot Progression": "Right Foot Progression",
             "Right Pelvic Angles": "Right Pelvic Angles",
+            'Left Elbow Angles':'Left Elbow Angles',
+            'Right Elbow Angles':'Right Elbow Angles',
+            'Left Shoulder Angles':'Left Shoulder Angles',
+            'Right Shoulder Angles':'Right Shoulder Angles',
+            'Left Thorax_Lab Angles':'Left Thorax_Lab Angles',
+            'Right Thorax_Lab Angles':'Right Thorax_Lab Angles',
+            'Left Thorax Angles':'Left Thorax Angles',
+            'Right Thorax Angles':'Right Thorax Angles',
         }
         self.xml_to_dict_metric_MAP = {
             "Left_GPS_ln_mean": "Left_GPS_ln_mean",
