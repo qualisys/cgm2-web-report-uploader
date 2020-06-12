@@ -50,6 +50,14 @@ class Timeseries:
 
             origLabels[measurementName] = origLabelNamesSelected
 
+
+        signalsToIgnore = [
+            ("Left Elbow Angles","Y"),
+            ("Left Elbow Angles","Z"),
+            ("Right Elbow Angles","Y"),
+            ("Right Elbow Angles","Z")
+        ]
+
         for origLabelNameSelected in origLabelNamesSelected:
             if signalMapping.sigNameMap.get(origLabelNameSelected) is not "":
                 ourSigName = signalMapping.sigNameMap.get(
@@ -58,6 +66,9 @@ class Timeseries:
                 for component in components:
                     timeseries[ourSigName + "_" + component] = {}
 
+                    if (ourSigName,component) in signalsToIgnore:
+                        continue
+                    
                     for filename in self.fileNames:
                         acq = qtools.fileOpen(filename)
                         measurementName = path.basename(filename)
