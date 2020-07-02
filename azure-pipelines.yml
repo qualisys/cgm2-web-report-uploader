@@ -9,6 +9,11 @@ trigger:
 pool:
   vmImage: 'windows-2019'
 
+variables:
+  GlobalBuildNumber: $[counter('', 74)]
+  ProductVersionNumber: 1.0.0
+  
+name: $(BuildDefinitionName)_$(ProductVersionNumber)+$(GlobalBuildNumber)
 steps:
 - task: UsePythonVersion@0
   inputs:
@@ -19,6 +24,7 @@ steps:
     pip install -r requirements-dev.txt
   displayName: 'Install dependencies'
 - script: |
+    python create_new_version_file.py --build-name $(Build.BuildNumber)
     pyinstaller main.spec
   displayName: 'Create executable'
 - task: PublishBuildArtifacts@1
