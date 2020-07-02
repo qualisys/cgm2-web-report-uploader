@@ -57,25 +57,34 @@ def load_pyCGM2_version(requrements_file):
                 break
     return version
 
-def update_file():
+def update_file(full_name):
 
-    with open("settings.json", "r") as f:
-        settings = json.load(f)
+    name = "_".join(full_name.split("_")[:-1])
 
+    with open("settings.json","w") as f:
+        json.dump({"name":name},f) # used in main.spec
+
+    version_number = full_name.split("_")[-1].split("+")[0]
     version = [0,0,0,0]
-    for idx,num in enumerate(settings["version"].split(".")):
+    for idx,num in enumerate(version_number.split(".")):
         version[idx] = int(num)
     version_tuple = tuple(version)
-    build_name = os.environ.get("BUILD_NAME")
 
-    final_description = settings["description"] + " pyCGM2 version: " + load_pyCGM2_version("requirements-dev.txt")
+    final_description = "Qualisys implementation for CGM2. pyCGM2 version: " + load_pyCGM2_version("requirements-dev.txt")
 
     new_version = template % {"version_tuple": version_tuple,
-                              "file_version": settings["version"], "product_version": build_name, "name": settings["name"], "description": final_description}
+                              "file_version": version_number, "product_version": full_name, "name": name, "description": final_description}
 
     with open("file-version.py", "w") as f:
         f.write(new_version)
 
 
 if __name__ == "__main__":
-    update_file()
+    import argparse
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--build-name",type=str,required=True,help="format needs to be as follows: name-you-desire_x.x.x+num ")
+    args = argparser.parse_args()
+
+    update_file(args.build_name)
+
