@@ -21,3 +21,8 @@ steps:
 - script: |
     pyinstaller main.spec
   displayName: 'Create executable'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\dist'
+    ArtifactName: 'Latest'
+    publishLocation: 'Container'
