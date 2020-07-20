@@ -38,10 +38,6 @@ pyCGM2_settings = Tree(pyCGM2_settings_path,prefix="pyCGM2\\Settings",excludes=[
 a.datas += pyCGM2_normatives
 a.datas += pyCGM2_settings
 
-import create_new_version_file
-
-create_new_version_file.update_file()
-
 exe = EXE(pyz,
           a.scripts,
           a.binaries,

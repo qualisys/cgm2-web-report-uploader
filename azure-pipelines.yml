@@ -1,0 +1,34 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+variables:
+  GlobalBuildNumber: $[counter('', 74)]
+  ProductVersionNumber: 1.0.0
+  
+name: $(BuildDefinitionName)_$(ProductVersionNumber)+$(GlobalBuildNumber)
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '2.7'
+    architecture: 'x86'
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements-dev.txt
+  displayName: 'Install dependencies'
+- script: |
+    python create_new_version_file.py --build-name $(Build.BuildNumber)
+    pyinstaller main.spec
+  displayName: 'Create executable'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\dist'
+    ArtifactName: 'Latest'
+    publishLocation: 'Container'
