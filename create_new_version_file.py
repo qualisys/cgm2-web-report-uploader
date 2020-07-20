@@ -62,7 +62,7 @@ def update_file(full_name):
     name = "_".join(full_name.split("_")[:-1])
 
     with open("settings.json","w") as f:
-        json.dump({"name":name},f) # used in main.spec
+        json.dump({"name":full_name},f) # used in main.spec
 
     version_number = full_name.split("_")[-1].split("+")[0]
     version = [0,0,0,0]
