@@ -25352,7 +25352,7 @@
             }, 
             {
                 "type": "text", 
-                "id": "Dob", 
+                "id": "Date of birth", 
                 "value": "2020-05-13"
             }, 
             {
@@ -25363,7 +25363,22 @@
             {
                 "type": "text", 
                 "id": "Test condition", 
-                "value": "Gait - CGM2"
+                "value": "unspecified"
+            }, 
+            {
+                "type": "text", 
+                "id": "Functional Mobility Scale", 
+                "value": "unspecified"
+            }, 
+            {
+                "type": "text", 
+                "id": "Gross Motor Function Classification", 
+                "value": "unspecified"
+            }, 
+            {
+                "type": "text", 
+                "id": "Patient ID", 
+                "value": "340"
             }
         ], 
         "generatedBy": [
