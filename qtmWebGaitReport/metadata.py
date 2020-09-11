@@ -85,7 +85,7 @@ class Metadata:
                 "value": self.subjectMetadata["bodyWeight"],
                 "type": "text"},
                 {
-                "id": "Dob",
+                "id": "Date of birth",
                 "value": self.subjectMetadata["dob"],
                 "type": "text"},
                 {
@@ -94,8 +94,19 @@ class Metadata:
                 "type": "text"},
                 {
                 "id": "Test condition",
-                "value": self.subjectMetadata["test condition"],
+                "value": self.subjectMetadata["testCondition"],
                 "type": "text"},
+                {
+                "id": "Functional Mobility Scale",
+                "value": self.subjectMetadata["fms"],
+                "type": "text"},
+                {
+                "id": "Gross Motor Function Classification",
+                "value": self.subjectMetadata["gmfcs"],
+                "type": "text"},
+                {"id": "Patient ID",
+                "value": self.subjectMetadata["patientID"],
+                "type":"text"}
             ]
 
             info = {"isUsingStandardUnits": True,
