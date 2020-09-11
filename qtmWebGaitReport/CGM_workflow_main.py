@@ -108,7 +108,7 @@ def __create_subject_metadata(session_xml, measurement_type):
         "diagnosis": session_xml.find("Diagnosis").text,
         "dob": session_xml.find("Date_of_birth").text,
         "sex": session_xml.find("Sex").text,
-        "test condition": measurement_type,
+        "testCondition": session_xml.find("Test_condition").text,
         "subSessionType": session_xml.find("Subsession").get("Type"),
         "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
         "fms": session_xml.find("Functional_Mobility_Scale").text}
