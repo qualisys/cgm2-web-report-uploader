@@ -73,10 +73,12 @@ class TSP:
             measurementName = path.basename(filename).replace('.c3d', '')
             vals = []
             for side in sides:
-                vals += self.perFilePyCGM2tspStats[measurementName][(
-                    parameterName, side)]["values"].tolist()
-            params.append({"measurement": measurementName,
-                           "values": vals})
+                if (parameterName, side) in self.perFilePyCGM2tspStats[measurementName].keys(): # skip instead of raising error if some parameters missing from a side, can happen with low number of cycles
+                    vals += self.perFilePyCGM2tspStats[measurementName][(
+                        parameterName, side)]["values"].tolist()
+            if vals != []:
+                params.append({"measurement": measurementName,
+                            "values": vals})
         return params
 
     def export(self):

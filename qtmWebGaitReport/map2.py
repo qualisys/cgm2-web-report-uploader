@@ -94,11 +94,12 @@ class MAP:
             side = self.null
 
         for k, v in gpsScoreData.iteritems():
-            gpsData.append({
-                "measurement": k,
-                "values": [v],
-                "rate": self.null
-            })
+            if np.all(np.isnan(v) == False):
+                gpsData.append({
+                    "measurement": k,
+                    "values": [v],
+                    "rate": self.null
+                })
 
         gpsOut.append({"id": signame,
                        "type": "scalar",

@@ -169,7 +169,7 @@ def getSeriesValuesExport(signalData, signalName, precision, frameRate):
     exportFormatData = []
     for trialName, trialData in signalData.items():
         trialData = np.round(trialData, precision).tolist()
-        if trialData is not "":
+        if trialData is not "" and np.all(np.isnan(trialData) == False):
             exportFormatData.append({"measurement": trialName,
                                      "values": trialData,
                                      "rate": frameRate})
@@ -184,7 +184,6 @@ def getSeriesExport(signalData, signalName, dataType, precision, frameRate, path
         sideSet = 'right'
     else:
         sideSet = null
-
     return {
         "id": signalName,
         "type": dataType,
