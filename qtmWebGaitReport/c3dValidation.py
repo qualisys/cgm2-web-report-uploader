@@ -20,7 +20,7 @@ class c3dValidation:
             noMarkers = range(acq.GetPointNumber())
 
             measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
+            measurementName = measurementName.replace(".c3d", "")
 
             for number in noMarkers:  # it is assumed that same signals are in all trials
                 marker = acq.GetPoint(number)

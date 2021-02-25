@@ -28,14 +28,13 @@ class Metadata:
         # self.fileNames = c3dValObj.getValidC3dList(False)
         self.fileNames = []
         for filename in self.modelledC3dfilenames:
-            self.fileNames.append(
-                str(path.join(self.workingDirectory, filename)))
+            self.fileNames.append(str(path.join(self.workingDirectory, filename)))
 
     def medatadaInfo(self):
         for filename in self.fileNames:
 
             measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
+            measurementName = measurementName.replace(".c3d", "")
             info = []
 
             # self.getMetaValue(measurementName,"MANUFACTURER","COMPANY")
@@ -55,63 +54,24 @@ class Metadata:
             # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
             patientName = "UNSPECIFIED"
 
-            generatedBy = [{
-                "type": ''.join(generatedByType),
-                "name": ''.join(name),
-                "version": ''.join(version)}
+            generatedBy = [{"type": "".join(generatedByType), "name": "".join(name), "version": "".join(version)}]
+
+            fields = [
+                {"id": "Creation date", "value": creationDate, "type": "text"},
+                {"id": "Creation time", "value": creationTime, "type": "text"},
+                {"id": "Diagnosis", "value": self.subjectMetadata["diagnosis"], "type": "text"},
+                {"id": "Last name", "value": self.subjectMetadata["patientName"], "type": "text"},
+                {"id": "Height", "value": self.subjectMetadata["bodyHeight"], "type": "text"},
+                {"id": "Weight", "value": self.subjectMetadata["bodyWeight"], "type": "text"},
+                {"id": "Date of birth", "value": self.subjectMetadata["dob"], "type": "text"},
+                {"id": "Sex", "value": self.subjectMetadata["sex"], "type": "text"},
+                {"id": "Test condition", "value": self.subjectMetadata["testCondition"], "type": "text"},
+                {"id": "Functional Mobility Scale", "value": self.subjectMetadata["fms"], "type": "text"},
+                {"id": "Gross Motor Function Classification", "value": self.subjectMetadata["gmfcs"], "type": "text"},
+                {"id": "Patient ID", "value": self.subjectMetadata["patientID"], "type": "text"},
             ]
 
-            fields = [{"id": "Creation date",
-                       "value": creationDate,
-                       "type": "text"},
-                      {
-                "id": "Creation time",
-                "value": creationTime,
-                "type": "text"},
-                {
-                "id": "Diagnosis",
-                "value": self.subjectMetadata["diagnosis"],
-                "type": "text"},
-                {
-                "id": "Last name",
-                "value": self.subjectMetadata["patientName"],
-                "type": "text"},
-                {
-                "id": "Height",
-                "value": self.subjectMetadata["bodyHeight"],
-                "type": "text"},
-                {
-                "id": "Weight",
-                "value": self.subjectMetadata["bodyWeight"],
-                "type": "text"},
-                {
-                "id": "Date of birth",
-                "value": self.subjectMetadata["dob"],
-                "type": "text"},
-                {
-                "id": "Sex",
-                "value": self.subjectMetadata["sex"],
-                "type": "text"},
-                {
-                "id": "Test condition",
-                "value": self.subjectMetadata["testCondition"],
-                "type": "text"},
-                {
-                "id": "Functional Mobility Scale",
-                "value": self.subjectMetadata["fms"],
-                "type": "text"},
-                {
-                "id": "Gross Motor Function Classification",
-                "value": self.subjectMetadata["gmfcs"],
-                "type": "text"},
-                {"id": "Patient ID",
-                "value": self.subjectMetadata["patientID"],
-                "type":"text"}
-            ]
-
-            info = {"isUsingStandardUnits": True,
-                    "generatedBy": generatedBy,
-                    "customFields": fields}
+            info = {"isUsingStandardUnits": True, "generatedBy": generatedBy, "customFields": fields}
 
         return info
 
@@ -123,10 +83,7 @@ class Metadata:
         return subject
 
     def projectInfo(self):
-        project = {
-            "type": "Gait",
-            "subtype": self.subjectMetadata["subSessionType"]
-        }
+        project = {"type": "Gait", "subtype": self.subjectMetadata["subSessionType"]}
         return project
 
     def getValueFromXMLSystem(self, defList, param):
@@ -142,7 +99,7 @@ class Metadata:
         return val
 
     def getSettingsFromTextfile(self, filename):
-        file = open(filename, 'r')
+        file = open(filename, "r")
         content = file.read()
         lines = content.split("\n")
         settings = {}
@@ -158,16 +115,13 @@ class Metadata:
     def getMetaValue(self, measurementName, groupLabelName, scalarName):
         acq = qtools.fileOpen(self.workingDirectory + measurementName + ".c3d")
         md = acq.GetMetaData()
-        fieldFormat = md.FindChild(groupLabelName).value().FindChild(
-            scalarName).value().GetInfo().GetFormatAsString()
+        fieldFormat = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().GetFormatAsString()
         scalarValue = list()
 
         if fieldFormat == "Char":
-            sValue = md.FindChild(groupLabelName).value().FindChild(
-                scalarName).value().GetInfo().ToString()
+            sValue = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().ToString()
             sValue = list(sValue)
             scalarValue = [i.rstrip() for i in sValue]
         else:
-            scalarValue = md.FindChild(groupLabelName).value().FindChild(
-                scalarName).value().GetInfo().ToDouble()
+            scalarValue = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().ToDouble()
         return scalarValue

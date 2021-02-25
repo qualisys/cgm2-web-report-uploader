@@ -106,7 +106,7 @@ def timeBetweenEvents(measurementName, events, event1, event2):
     n = np.argmax(bb > aa.item(0))
 
     if n > 0:
-        bb = np.delete(bb, n-1)
+        bb = np.delete(bb, n - 1)
 
     aaLen = np.size(aa)
     bbLen = np.size(bb)
@@ -129,12 +129,12 @@ def signalValueAtEvent(eventList, signal, eventName):
 
 
 def firstDerivative(signal, capture_rate):
-    sig_vel = np.diff(signal) / (1/capture_rate)
+    sig_vel = np.diff(signal) / (1 / capture_rate)
     return sig_vel
 
 
 def filterButter(signame, capture_rate, order, fiter_fq, filterType):
-    b, a = scipy.signal.butter(order, fiter_fq/(0.5*capture_rate), filterType)
+    b, a = scipy.signal.butter(order, fiter_fq / (0.5 * capture_rate), filterType)
     sig_filtered = scipy.signal.filtfilt(b, a, signame)
     return sig_filtered
 
@@ -156,7 +156,7 @@ def timeGlobalMax(signame, capture_rate, unit):
 
 def rootMeanSquared(sig):
     mean = np.mean(sig)
-    mse = np.sum(np.power(sig - mean, 2))/101
+    mse = np.sum(np.power(sig - mean, 2)) / 101
     rms = np.sqrt(mse)
     return rms
 
@@ -170,18 +170,16 @@ def getSeriesValuesExport(signalData, signalName, precision, frameRate):
     for trialName, trialData in signalData.items():
         trialData = np.round(trialData, precision).tolist()
         if trialData is not "" and np.all(np.isnan(trialData) == False):
-            exportFormatData.append({"measurement": trialName,
-                                     "values": trialData,
-                                     "rate": frameRate})
+            exportFormatData.append({"measurement": trialName, "values": trialData, "rate": frameRate})
     return exportFormatData
 
 
 def getSeriesExport(signalData, signalName, dataType, precision, frameRate, path):
 
-    if signalName.startswith('Left'):
-        sideSet = 'left'
-    elif signalName.startswith('Right'):
-        sideSet = 'right'
+    if signalName.startswith("Left"):
+        sideSet = "left"
+    elif signalName.startswith("Right"):
+        sideSet = "right"
     else:
         sideSet = null
     return {
@@ -189,7 +187,7 @@ def getSeriesExport(signalData, signalName, dataType, precision, frameRate, path
         "type": dataType,
         "set": sideSet,
         "path": path,
-        "data": getSeriesValuesExport(signalData, signalName, precision, frameRate)
+        "data": getSeriesValuesExport(signalData, signalName, precision, frameRate),
     }
 
 

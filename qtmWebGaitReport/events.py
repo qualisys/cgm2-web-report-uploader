@@ -25,7 +25,7 @@ class Events:
             acq = qtools.fileOpen(filename)
 
             measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
+            measurementName = measurementName.replace(".c3d", "")
 
             eventLabels[measurementName] = []
 
@@ -47,62 +47,89 @@ class Events:
                 eventName = event.GetLabel()
                 eventSide = event.GetContext()  # return a string representing the Context
                 eventLabelOrig = eventSide + " " + eventName
-                eventLabel = qtools.renameSignal(
-                    signalMapping.eventNameMap, eventLabelOrig)
+                eventLabel = qtools.renameSignal(signalMapping.eventNameMap, eventLabelOrig)
 
-                if eventLabel not in eventLabels[measurementName] and eventLabel != 'None':
+                if eventLabel not in eventLabels[measurementName] and eventLabel != "None":
                     eventLabels[measurementName].append(eventLabel)
 
                 if eventLabel == "LHS":
                     eventTimesLHS.append(eventTime)
-                    eventsGroupped[measurementName +
-                                   "_" + eventLabel] = eventTimesLHS
-                    if self.checkSignalExists(acq, measurementName, 'LGroundReactionForce'):
+                    eventsGroupped[measurementName + "_" + eventLabel] = eventTimesLHS
+                    if self.checkSignalExists(acq, measurementName, "LGroundReactionForce"):
                         eventTimeLON = self.getOnOffEvent(
-                            acq, measurementName, 'LGroundReactionForce', frameRate, firstFrame, lastFrame, eventFrame, eventTime, 'on')
+                            acq,
+                            measurementName,
+                            "LGroundReactionForce",
+                            frameRate,
+                            firstFrame,
+                            lastFrame,
+                            eventFrame,
+                            eventTime,
+                            "on",
+                        )
                         if eventTimeLON:
-                            eventsGroupped[measurementName +
-                                           "_LON"] = eventTimeLON
-                            eventLabels[measurementName].append('LON')
+                            eventsGroupped[measurementName + "_LON"] = eventTimeLON
+                            eventLabels[measurementName].append("LON")
                 elif eventLabel == "RHS":
                     eventTimesRHS.append(eventTime)
-                    eventsGroupped[measurementName +
-                                   "_" + eventLabel] = eventTimesRHS
-                    if self.checkSignalExists(acq, measurementName, 'RGroundReactionForce'):
+                    eventsGroupped[measurementName + "_" + eventLabel] = eventTimesRHS
+                    if self.checkSignalExists(acq, measurementName, "RGroundReactionForce"):
                         eventTimeRON = self.getOnOffEvent(
-                            acq, measurementName, 'RGroundReactionForce', frameRate, firstFrame, lastFrame, eventFrame, eventTime, 'on')
+                            acq,
+                            measurementName,
+                            "RGroundReactionForce",
+                            frameRate,
+                            firstFrame,
+                            lastFrame,
+                            eventFrame,
+                            eventTime,
+                            "on",
+                        )
                         if eventTimeRON:
-                            eventsGroupped[measurementName +
-                                           "_RON"] = eventTimeRON
-                            eventLabels[measurementName].append('RON')
+                            eventsGroupped[measurementName + "_RON"] = eventTimeRON
+                            eventLabels[measurementName].append("RON")
                 elif eventLabel == "LTO":
                     eventTimesLTO.append(eventTime)
-                    eventsGroupped[measurementName +
-                                   "_" + eventLabel] = eventTimesLTO
-                    if self.checkSignalExists(acq, measurementName, 'LGroundReactionForce'):
+                    eventsGroupped[measurementName + "_" + eventLabel] = eventTimesLTO
+                    if self.checkSignalExists(acq, measurementName, "LGroundReactionForce"):
                         eventTimeLOFF = self.getOnOffEvent(
-                            acq, measurementName, 'LGroundReactionForce', frameRate, firstFrame, lastFrame, eventFrame, eventTime, 'off')
+                            acq,
+                            measurementName,
+                            "LGroundReactionForce",
+                            frameRate,
+                            firstFrame,
+                            lastFrame,
+                            eventFrame,
+                            eventTime,
+                            "off",
+                        )
                         if eventTimeLOFF:
-                            eventsGroupped[measurementName +
-                                           "_LOFF"] = eventTimeLOFF
-                            eventLabels[measurementName].append('LOFF')
+                            eventsGroupped[measurementName + "_LOFF"] = eventTimeLOFF
+                            eventLabels[measurementName].append("LOFF")
                 elif eventLabel == "RTO":
                     eventTimesRTO.append(eventTime)
-                    eventsGroupped[measurementName +
-                                   "_" + eventLabel] = eventTimesRTO
-                    if self.checkSignalExists(acq, measurementName, 'RGroundReactionForce'):
+                    eventsGroupped[measurementName + "_" + eventLabel] = eventTimesRTO
+                    if self.checkSignalExists(acq, measurementName, "RGroundReactionForce"):
                         eventTimeROFF = self.getOnOffEvent(
-                            acq, measurementName, 'RGroundReactionForce', frameRate, firstFrame, lastFrame, eventFrame, eventTime, 'off')
+                            acq,
+                            measurementName,
+                            "RGroundReactionForce",
+                            frameRate,
+                            firstFrame,
+                            lastFrame,
+                            eventFrame,
+                            eventTime,
+                            "off",
+                        )
                         if eventTimeROFF:
-                            eventsGroupped[measurementName +
-                                           "_ROFF"] = eventTimeROFF
-                            eventLabels[measurementName].append('ROFF')
+                            eventsGroupped[measurementName + "_ROFF"] = eventTimeROFF
+                            eventLabels[measurementName].append("ROFF")
 
             for eventLabel in eventLabels[measurementName]:
                 eventData[measurementName + "_" + eventLabel] = {
                     "measurement": measurementName,
                     "values": eventsGroupped[measurementName + "_" + eventLabel],
-                    "rate": null
+                    "rate": null,
                 }
         return (eventData, eventLabels)
 
@@ -110,21 +137,23 @@ class Events:
         try:
             signal = acq.GetPoint(GRFSignalName)
         except:
-            print(measurementName + " " + GRFSignalName + ' signal is missing')
+            print(measurementName + " " + GRFSignalName + " signal is missing")
             out = False
         else:
             out = True
         return out
 
-    def getOnOffEvent(self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType):
+    def getOnOffEvent(
+        self, acq, measurementName, GRFSignalName, frameRate, firstFrame, lastFrame, eventFrame, eventTime, eventType
+    ):
         out = []
 
         if self.checkSignalExists(acq, measurementName, GRFSignalName):
             # read corresponding GRF signal
             signal = acq.GetPoint(GRFSignalName)
             value = np.array(signal.GetValues()[:, 2])
-            frameCheckBefore = int(eventFrame - round(frameRate/10, 0))
-            frameCheckAfter = int(eventFrame + round(frameRate/10, 0))
+            frameCheckBefore = int(eventFrame - round(frameRate / 10, 0))
+            frameCheckAfter = int(eventFrame + round(frameRate / 10, 0))
 
             if value.shape[0] < frameCheckAfter:
                 frameCheckAfter = value.shape[0] - 1
@@ -132,8 +161,16 @@ class Events:
             if frameCheckBefore < 0:
                 frameCheckBefore = 0
 
-            if eventType == 'on' and value[frameCheckBefore] < self.forceThreshold and value[frameCheckAfter] > self.forceThreshold:
+            if (
+                eventType == "on"
+                and value[frameCheckBefore] < self.forceThreshold
+                and value[frameCheckAfter] > self.forceThreshold
+            ):
                 out.append(eventTime)
-            elif eventType == 'off' and value[frameCheckBefore] > self.forceThreshold and value[frameCheckAfter] < self.forceThreshold:
+            elif (
+                eventType == "off"
+                and value[frameCheckBefore] > self.forceThreshold
+                and value[frameCheckAfter] < self.forceThreshold
+            ):
                 out.append(eventTime)
             return out
