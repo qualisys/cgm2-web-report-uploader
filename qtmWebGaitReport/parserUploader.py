@@ -127,43 +127,43 @@ class ReportJsonGenerator:
                 fileNames[0])
 
             ts = self.getTimeseriesResults()
-            print "--------------------Timeseries OK--------------------------------"
+            print("--------------------Timeseries OK--------------------------------")
             mapProfile = map2.MAP(self.workingDirectory)
             gvs = self.getGVSResults(mapProfile)
-            print "--------------------GVS OK--------------------------------"
+            print("--------------------GVS OK--------------------------------")
             gps = self.getGPSResults(mapProfile)
-            print "--------------------GPS OK--------------------------------"
+            print("--------------------GPS OK--------------------------------")
             emgExp = self.getEMGResults()
-            print "--------------------EMG--------------------------------"
+            print("--------------------EMG--------------------------------")
 
             # Events
             ev = self.getEvents()
 
-            print "--------------------events OK--------------------------------"
+            print("--------------------events OK--------------------------------")
 
             # #MetaData
             metaDataObj = metadata.Metadata(
                 self.workingDirectory, self.modelledC3dfilenames, self.subjectMetadata, self.creationDate)
             md = metaDataObj.medatadaInfo()
-            print "--------------------metadata OK--------------------------------"
+            print("--------------------metadata OK--------------------------------")
 
             # Subject
             sub = metaDataObj.subjectInfo()
-            print "--------------------subjectInfo OK--------------------------------"
+            print("--------------------subjectInfo OK--------------------------------")
             # Project
             proj = metaDataObj.projectInfo()
-            print "--------------------proj OK--------------------------------"
+            print("--------------------proj OK--------------------------------")
 
             # TSP
             tspObj = tsp.TSP(self.workingDirectory)
             tsparams = tspObj.export()
-            print "--------------------TSP OK--------------------------------"
+            print("--------------------TSP OK--------------------------------")
 
             # Measurements
             measObj = measurements.Measurements(self.workingDirectory)
             mea = measObj.measurementInfo(self.extra_settings)
 
-            print "--------------------Measurements OK--------------------------------"
+            print("--------------------Measurements OK--------------------------------")
 
             # Create json
             root = {
@@ -196,19 +196,19 @@ class WebReportUploader:
             clientIdExists = True
         else:
             clientIdExists = False
-            print "Error: Specify clientID in config.json"
+            print("Error: Specify clientID in config.json")
 
         if "baseUrl" in self.configData.keys():
             baseUrlExists = True
         else:
             baseUrlExists = False
-            print "Error: Specify baseUrl in config.json"
+            print("Error: Specify baseUrl in config.json")
 
         if "token" in self.configData.keys():
             tokenExists = True
         else:
             tokenExists = False
-            print "Error: Specify token in config.json"
+            print("Error: Specify token in config.json")
 
         # Upload
 
@@ -235,7 +235,7 @@ class WebReportUploader:
                     fileData = {'file_%i' % index: open(resource, 'rb')}
                     resourceReq = requests.post(
                         baseUrl + '/api/v2/report/' + newReportId + '/resource', files=fileData, headers=headers)
-                print "Report [%s] generated" % (str(newReportId))
+                print("Report [%s] generated" % (str(newReportId)))
                 webbrowser.open_new_tab(baseUrl + '/claim/' + newReportId)
             else:
-                print "Error: No c3d file found that has been processed with Plugin-Gait."
+                print("Error: No c3d file found that has been processed with Plugin-Gait.")

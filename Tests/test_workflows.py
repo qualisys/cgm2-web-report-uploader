@@ -1,5 +1,5 @@
 from qtmWebGaitReport.CGM_workflow_main import process_and_return_model
-from pathlib2 import Path
+from pathlib import Path
 import os
 from distutils.dir_util import copy_tree
 import pytest

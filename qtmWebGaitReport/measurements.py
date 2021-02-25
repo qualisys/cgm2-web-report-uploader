@@ -2,7 +2,7 @@
 
 import qtools
 import os
-from pathlib2 import Path
+from pathlib import Path
 import json
 from datetime import datetime
 import c3dValidation

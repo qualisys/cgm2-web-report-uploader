@@ -7,7 +7,7 @@ import yaml
 
 from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
-from pathlib2 import Path
+from pathlib import Path
 
 
 from pyCGM2.Apps.QtmApps.CGMi import CGM1_workflow
