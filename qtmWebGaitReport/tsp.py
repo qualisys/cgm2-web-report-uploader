@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import qtools
+from qtmWebGaitReport import qtools
 from os import path
 import numpy as np
-import c3dValidation
+from qtmWebGaitReport import c3dValidation
 from pyCGM2.Lib import analysis
 
 

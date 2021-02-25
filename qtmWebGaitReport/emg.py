@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import qtools
 from os import path
+
 import numpy as np
-import signalMapping
-import c3dValidation
+
+from qtmWebGaitReport import c3dValidation, qtools, signalMapping
 
 
 class EMG:
@@ -36,7 +36,7 @@ class EMG:
                 for filename in self.fileNames:
                     acq = qtools.fileOpen(filename)
                     measurementName = path.basename(filename)
-                    measurementName = measurementName.replace('.c3d', '')
+                    measurementName = measurementName.replace(".c3d", "")
 
                     signal = acq.GetAnalog(origSigName)
                     values = np.array(signal.GetValues()[:, 0])
@@ -55,8 +55,7 @@ class EMG:
                 sig[key][key2] = {}
 
                 # Highpass, cutoff 10, bidirect 1
-                sig[key][key2] = qtools.filterButter(
-                    value2, analogRate, hiBiPass, hiCutoff, 'highpass')
+                sig[key][key2] = qtools.filterButter(value2, analogRate, hiBiPass, hiCutoff, "highpass")
 
                 # RMS, window 100
                 sig[key][key2] = self.movingRMS(sig[key][key2], RMSwindow)
@@ -64,5 +63,5 @@ class EMG:
 
     def movingRMS(self, sig, windowSize):
         sig2 = np.power(sig, 2)
-        window = np.ones(windowSize)/float(windowSize)
-        return np.sqrt(np.convolve(sig2, window, 'valid'))
+        window = np.ones(windowSize) / float(windowSize)
+        return np.sqrt(np.convolve(sig2, window, "valid"))

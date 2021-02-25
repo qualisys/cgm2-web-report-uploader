@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import qtools
+from qtmWebGaitReport import qtools
 from os import path
 import numpy as np
-import signalMapping
+from qtmWebGaitReport import signalMapping
 from glob import glob
-import metadata
-import c3dValidation
+from qtmWebGaitReport import metadata
+from qtmWebGaitReport import c3dValidation
 
 
 def _getSectionFromMd(md):

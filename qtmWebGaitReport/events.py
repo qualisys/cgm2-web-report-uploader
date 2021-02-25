@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import qtools
-import signalMapping
+from qtmWebGaitReport import qtools
+from qtmWebGaitReport import signalMapping
 from os import path
-import c3dValidation
+from qtmWebGaitReport import c3dValidation
 import numpy as np
 
 

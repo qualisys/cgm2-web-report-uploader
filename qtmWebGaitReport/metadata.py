@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import qtools
+from qtmWebGaitReport import qtools
 import os
 from os import path
 from glob import glob
 import xml.etree.cElementTree as ET
 from datetime import datetime
-import c3dValidation
+from qtmWebGaitReport import c3dValidation
 
 
 def get_creation_date(file):

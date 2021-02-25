@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import btk
-import qtools
+from qtmWebGaitReport import qtools
 import numpy as np
 import segmentCS
-import c3dValidation
+from qtmWebGaitReport import c3dValidation
 import os
 import json
 from scipy.spatial import distance
-import metadata
+from qtmWebGaitReport from qtmWebGaitReport import metadata
 import scipy as sci
 
 workingDirectory = "E:\\Qualisys_repository\\Gait-Web-Importer\\Data\\Oxford\\"

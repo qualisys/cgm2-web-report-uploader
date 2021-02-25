@@ -16,6 +16,7 @@ def copy_folder_contents(src_dir,dst_dir):
 new_paf_fields_folder = str(
     Path("TestFiles", "WithNewPafFields").absolute())
 
+@pytest.mark.slow
 def test_new_paf_fields( model_type,tmp_path ):
     copy_folder_contents(new_paf_fields_folder,str(tmp_path))
     if Path.cwd() != tmp_path:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import qtools
+from qtmWebGaitReport import qtools
 from os import path
 
 

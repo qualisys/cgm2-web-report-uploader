@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-import qtools
-import timeseries
-import events
-import map2
-import emg
-import metadata
-import tsp
-import measurements
-from avi2mp4 import get_mp4_filepaths
-from avi2mp4 import get_parent_folder_absolute_path
+from qtmWebGaitReport import qtools
+from qtmWebGaitReport import timeseries
+from qtmWebGaitReport import events
+from qtmWebGaitReport import map2
+from qtmWebGaitReport import emg
+from qtmWebGaitReport import metadata
+from qtmWebGaitReport import tsp
+from qtmWebGaitReport import measurements
+from qtmWebGaitReport.avi2mp4 import get_mp4_filepaths
+from qtmWebGaitReport.avi2mp4 import get_parent_folder_absolute_path
 import requests
-import c3dValidation
-import json
-import os
+from qtmWebGaitReport import c3dValidation
 import webbrowser
 
 
