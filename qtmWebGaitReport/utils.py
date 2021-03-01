@@ -1,8 +1,9 @@
-from bs4 import BeautifulSoup
-from datetime import datetime
-
 import logging
 import os
+from datetime import datetime
+from xml.etree import ElementTree
+
+from bs4 import BeautifulSoup
 
 
 def to_bool(text):
@@ -24,9 +25,9 @@ def find_static(soup):
 
 
 def read_session_xml(path):
-    with open(path, "r") as f:
-        contents = f.read()
-        soup = BeautifulSoup(contents, "xml")
+    root = ElementTree.parse(path).getroot()
+    xml_string = ElementTree.tostring(root)
+    soup = BeautifulSoup(xml_string, "xml")
     return soup
 
 
