@@ -1,8 +1,6 @@
-import xmltodict
-import os
-import json
-import logging
 from collections import defaultdict
+
+import xmltodict
 
 
 def dict_to_xml(data_dict):
