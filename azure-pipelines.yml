@@ -22,7 +22,7 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements-dev.txt
-    pip uninstall enum34
+    pip uninstall enum34 --yes
   displayName: 'Install dependencies'
 - script: |
     python create_new_version_file.py --build-name $(Build.BuildNumber)
