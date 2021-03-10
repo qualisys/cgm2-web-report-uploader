@@ -17,8 +17,8 @@ name: $(BuildDefinitionName)_$(ProductVersionNumber)+$(GlobalBuildNumber)
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '2.7'
-    architecture: 'x86'
+    versionSpec: '3.7'
+    architecture: 'x64'
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements-dev.txt
