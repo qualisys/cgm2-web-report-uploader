@@ -29,7 +29,7 @@ class EMG:
             if "Moment" not in signalLabel and "Force" not in signalLabel:
                 origEMGNames.append(signal.GetLabel())
 
-        for origSigName, ourSigName in signalMapping.emgNameMap.iteritems():
+        for origSigName, ourSigName in signalMapping.emgNameMap.items():
             if origSigName in origEMGNames and ourSigName is not "":
                 emgData[ourSigName] = {}
 
@@ -49,9 +49,9 @@ class EMG:
     def calculateProcessedEMG(self, analogRate, hiBiPass, lowBiPass, hiCutoff, lowCutoff, RMSwindow):
         rawSigs = self.calculateRawEMG()
         sig = {}
-        for key, value in rawSigs.iteritems():
+        for key, value in rawSigs.items():
             sig[key] = {}
-            for key2, value2 in value.iteritems():
+            for key2, value2 in value.items():
                 sig[key][key2] = {}
 
                 # Highpass, cutoff 10, bidirect 1

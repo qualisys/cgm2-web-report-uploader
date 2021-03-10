@@ -18,7 +18,7 @@ class MAP:
         c3dValObj = c3dValidation.c3dValidation(workingDirectory)
         self.measurementNames = c3dValObj.getValidC3dList(True)
         self.fileNames = c3dValObj.getValidC3dList(False)
-        self.normative_dataset = normativeDatasets.Schwartz2008("Free")
+        self.normative_dataset = normativeDatasets.NormativeData("Schwartz2008", "Free")
         analysis_per_file = {
             path.basename(name).replace(".c3d", ""): analysis.makeAnalysis(
                 workingDirectory + "\\", [path.basename(name)]
@@ -54,7 +54,7 @@ class MAP:
                 for idx, component in component_idx_name:
                     gvs_pycgm2[sigName + "_" + component + "_gvs_ln_mean"] = {}
 
-                    for origSigName, ourSigName in signalMapping.sigNameMap.iteritems():
+                    for origSigName, ourSigName in signalMapping.sigNameMap.items():
                         if ourSigName == sigName:
                             pigSigName = origSigName
                             side = "Left" if "Left" in ourSigName else "Right"
@@ -106,7 +106,7 @@ class MAP:
         else:
             side = self.null
 
-        for k, v in gpsScoreData.iteritems():
+        for k, v in gpsScoreData.items():
             if np.all(np.isnan(v) == False):
                 gpsData.append({"measurement": k, "values": [v], "rate": self.null})
 

@@ -121,7 +121,7 @@ def timeBetweenEvents(measurementName, events, event1, event2):
 
 
 def signalValueAtEvent(eventList, signal, eventName):
-    for key, value in eventList.iteritems():
+    for key, value in eventList.items():
         if eventName in key:
             value2 = np.array(value)
             out = signal[value2]
