@@ -4,22 +4,22 @@ import warnings
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 import os
+from pathlib import Path
+
 import yaml
+from pyCGM2.Apps.QtmApps.CGMi import (
+    CGM1_workflow,
+    CGM11_workflow,
+    CGM21_workflow,
+    CGM22_workflow,
+    CGM23_workflow,
+    CGM24_workflow,
+)
+from pyCGM2.qtm import qtmTools
+from pyCGM2.Utils import files
 
 from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
-from pathlib import Path
-
-
-from pyCGM2.Apps.QtmApps.CGMi import CGM1_workflow
-from pyCGM2.Apps.QtmApps.CGMi import CGM11_workflow
-from pyCGM2.Apps.QtmApps.CGMi import CGM21_workflow
-from pyCGM2.Apps.QtmApps.CGMi import CGM22_workflow
-from pyCGM2.Apps.QtmApps.CGMi import CGM23_workflow
-from pyCGM2.Apps.QtmApps.CGMi import CGM24_workflow
-from pyCGM2.qtm import qtmTools
-
-from pyCGM2.Utils import files
 
 SESSION_XML_FILENAME = "session.xml"
 
@@ -74,22 +74,39 @@ def delete_c3d_files_in(folder_path):
 
 
 # ---- process with pyCGM2-----
-def process_and_return_model(model_type, generate_pdf_report=False):
-    if model_type == "CGM1.0":
-        model = CGM1_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-    elif model_type == "CGM1.1":
-        model = CGM11_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-    elif model_type == "CGM2.1-HJC":
-        model = CGM21_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-    elif model_type == "CGM2.2-IK":
-        model = CGM22_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-    elif model_type == "CGM2.3-skinClusters":
-        model = CGM23_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-    elif model_type == "CGM2.4-ForeFoot":
-        model = CGM24_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-    else:
-        raise Exception("The pyCMG processing type is not implemented, you selected %s" % model_type)
-    return model
+def process_and_return_model(model_type, generate_pdf_report=False, check_events_in_mokka=False):
+    if check_events_in_mokka == True:
+        if model_type == "CGM1.0":
+            model = CGM1_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
+        elif model_type == "CGM1.1":
+            model = CGM11_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
+        elif model_type == "CGM2.1-HJC":
+            model = CGM21_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
+        elif model_type == "CGM2.2-IK":
+            model = CGM22_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
+        elif model_type == "CGM2.3-skinClusters":
+            model = CGM23_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
+        elif model_type == "CGM2.4-ForeFoot":
+            model = CGM24_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
+        else:
+            raise Exception("The pyCMG processing type is not implemented, you selected %s" % model_type)
+        return model
+    elif check_events_in_mokka == False:
+        if model_type == "CGM1.0":
+            model = CGM1_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+        elif model_type == "CGM1.1":
+            model = CGM11_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+        elif model_type == "CGM2.1-HJC":
+            model = CGM21_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+        elif model_type == "CGM2.2-IK":
+            model = CGM22_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+        elif model_type == "CGM2.3-skinClusters":
+            model = CGM23_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+        elif model_type == "CGM2.4-ForeFoot":
+            model = CGM24_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+        else:
+            raise Exception("The pyCMG processing type is not implemented, you selected %s" % model_type)
+        return model
 
 
 def process_with_pycgm(work_folder, generate_pdf_report):

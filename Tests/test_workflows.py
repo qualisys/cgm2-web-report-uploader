@@ -24,6 +24,6 @@ def test_new_paf_fields(model_type, tmp_path):
     if Path.cwd() != tmp_path:
         os.chdir(str(tmp_path))
     try:
-        process_and_return_model(model_type)
+        process_and_return_model(model_type, check_events_in_mokka=False)
     except Exception as e:
         assert 0, "Unexpected error: {}".format(e)
