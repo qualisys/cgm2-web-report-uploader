@@ -72,6 +72,18 @@ def check_key_value_pairs(generated_json, loaded_json):
                     len(gen_result) == 1
                 ), f"Expected exactly one result in generated result with id {loaded_id}, but got {gen_result}"
                 assert gen_result[0] == loaded_result
+        elif key == "measurements":
+            # DOES NOT COMPARE creation date and time
+            assert len(loaded_json[key]) == len(
+                generated_json[key]
+            ), "Loaded and generated measurements entries have differing lenths"
+            for loaded, generated in zip(loaded_json[key], generated_json[key]):
+                loaded["fields"] = [x for x in loaded["fields"] if x["id"] not in ["Creation date", "Creation time"]]
+                generated["fields"] = [
+                    x for x in generated["fields"] if x["id"] not in ["Creation date", "Creation time"]
+                ]
+                assert loaded == generated
+
         else:
             assert val == loaded_json[key], f"value for entry under key = {key} differs from loaded vs generated"
 
