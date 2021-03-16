@@ -25,6 +25,19 @@ steps:
     pip uninstall enum34 --yes
   displayName: 'Install dependencies'
 - script: |
+    pytest Tests --basetemp=..\pytest_temp --doctest-modules --junitxml=junit/test-results.xml --cov=qtmWebGaitReport --cov-report=xml --cov-report=html
+  displayName: 'Test with pytest'
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/test-*.xml'
+    testRunTitle: 'Publish test results'
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+- script: |
     python create_new_version_file.py --build-name $(Build.BuildNumber)
     pyinstaller main.spec
   displayName: 'Create executable'
