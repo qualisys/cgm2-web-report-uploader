@@ -64,7 +64,16 @@ def update_test_data(savedDataFilePath, generatedReportJson):
 def check_key_value_pairs(generated_json, loaded_json):
     for key, val in generated_json.items():
         assert key in loaded_json.keys(), f"{key} not in loaded report json but exists in generated one"
-        assert val == loaded_json[key], f"value for entry under key = {key} differs from loaded vs generated"
+        if key == "results":
+            for loaded_result in loaded_json[key]:
+                loaded_id = loaded_result["id"]
+                gen_result = [x for x in loaded_json[key] if x["id"] == loaded_id]
+                assert (
+                    len(gen_result) == 1
+                ), f"Expected exactly one result in generated result with id {loaded_id}, but got {gen_result}"
+                assert gen_result[0] == loaded_result
+        else:
+            assert val == loaded_json[key], f"value for entry under key = {key} differs from loaded vs generated"
 
 
 def get_generated_and_loaded_json(folder_name):
