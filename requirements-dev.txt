@@ -38,7 +38,7 @@ pytest-xdist==2.2.1
 psutil==5.8.0
 pytz==2021.1
 pywin32-ctypes==0.2.0
-PyYAML==5.3.1
+PyYAML==5.4
 readme-renderer==24.0
 regex==2020.11.13
 requests==2.25.1
