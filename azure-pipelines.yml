@@ -12,17 +12,41 @@ pool:
 variables:
   GlobalBuildNumber: $[counter('', 74)]
   ProductVersionNumber: 1.0.0
-  
+  PIP_CACHE_DIR: $(Pipeline.Workspace)/.pip
+
+
 name: $(BuildDefinitionName)_$(ProductVersionNumber)+$(GlobalBuildNumber)
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '2.7'
-    architecture: 'x86'
+    versionSpec: '3.7'
+    architecture: 'x64'
+- task: Cache@2
+  inputs:
+    key: 'python | "$(Agent.OS)" | requirements-dev.txt'
+    restoreKeys: | 
+      python | "$(Agent.OS)"
+      python
+    path: $(PIP_CACHE_DIR)
+  displayName: Cache pip packages
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements-dev.txt
+    pip uninstall enum34 --yes
   displayName: 'Install dependencies'
+- script: |
+    pytest Tests --basetemp=..\pytest_temp --doctest-modules --junitxml=junit/test-results.xml --cov=qtmWebGaitReport --cov-report=xml --cov-report=html
+  displayName: 'Test with pytest'
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/test-*.xml'
+    testRunTitle: 'Publish test results'
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
 - script: |
     python create_new_version_file.py --build-name $(Build.BuildNumber)
     pyinstaller main.spec

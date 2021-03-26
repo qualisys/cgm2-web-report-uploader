@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import qtools
+from qtmWebGaitReport import qtools
 from os import path
 import numpy as np
-import signalMapping
+from qtmWebGaitReport import signalMapping
 from glob import glob
-import metadata
-import c3dValidation
+from qtmWebGaitReport import metadata
+from qtmWebGaitReport import c3dValidation
 
 
 def _getSectionFromMd(md):
@@ -23,16 +23,18 @@ class Timeseries:
         c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
         self.fileNames = c3dValObj.getValidC3dList(False)
 
-    def calculateTimeseries(self,bodyMass):
-        #metaObj = metadata.Metadata(self.workingDirectory)
+    def calculateTimeseries(self, bodyMass):
+        # metaObj = metadata.Metadata(self.workingDirectory)
         timeseries = dict()
-        components = {'X', 'Y', 'Z'}
+        components = {"X", "Y", "Z"}
         origLabelNames = list()
         origLabels = {}
 
-        for filename in self.fileNames:  # create list of signals. Make sure that missing signal in one of trial will not break it
+        for (
+            filename
+        ) in self.fileNames:  # create list of signals. Make sure that missing signal in one of trial will not break it
             measurementName = path.basename(filename)
-            measurementName = measurementName.replace('.c3d', '')
+            measurementName = measurementName.replace(".c3d", "")
             origLabels[measurementName] = {}
             origLabelNamesSelected = list()
 
@@ -50,29 +52,27 @@ class Timeseries:
 
             origLabels[measurementName] = origLabelNamesSelected
 
-
         signalsToIgnore = [
-            ("Left Elbow Angles","Y"),
-            ("Left Elbow Angles","Z"),
-            ("Right Elbow Angles","Y"),
-            ("Right Elbow Angles","Z")
+            ("Left Elbow Angles", "Y"),
+            ("Left Elbow Angles", "Z"),
+            ("Right Elbow Angles", "Y"),
+            ("Right Elbow Angles", "Z"),
         ]
 
         for origLabelNameSelected in origLabelNamesSelected:
             if signalMapping.sigNameMap.get(origLabelNameSelected) is not "":
-                ourSigName = signalMapping.sigNameMap.get(
-                    origLabelNameSelected)
+                ourSigName = signalMapping.sigNameMap.get(origLabelNameSelected)
 
                 for component in components:
                     timeseries[ourSigName + "_" + component] = {}
 
-                    if (ourSigName,component) in signalsToIgnore:
+                    if (ourSigName, component) in signalsToIgnore:
                         continue
-                    
+
                     for filename in self.fileNames:
                         acq = qtools.fileOpen(filename)
                         measurementName = path.basename(filename)
-                        measurementName = measurementName.replace('.c3d', '')
+                        measurementName = measurementName.replace(".c3d", "")
 
                         if component == "X":
                             i = 0
@@ -93,7 +93,7 @@ class Timeseries:
                             else:
                                 constant1 = bodyMass * 9.81
                         elif "Prog" in ourSigName and component == "X":
-                            constant1 = - 1
+                            constant1 = -1
                             constant2 = -90
                         else:
                             constant1 = 1
@@ -103,10 +103,7 @@ class Timeseries:
 
                         if origLabelNameSelected in origLabels[measurementName]:
                             marker = acq.GetPoint(origLabelNameSelected)
-                            values = (np.array(marker.GetValues()[
-                                      :, i]) / constant1) + constant2
-                            timeseries[ourSigName + "_" +
-                                       component][measurementName] = {}
-                            timeseries[ourSigName + "_" +
-                                       component][measurementName] = values
+                            values = (np.array(marker.GetValues()[:, i]) / constant1) + constant2
+                            timeseries[ourSigName + "_" + component][measurementName] = {}
+                            timeseries[ourSigName + "_" + component][measurementName] = values
         return timeseries

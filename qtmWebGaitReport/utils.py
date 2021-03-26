@@ -1,8 +1,9 @@
-from bs4 import BeautifulSoup
-from datetime import datetime
-
 import logging
 import os
+from datetime import datetime
+from xml.etree import ElementTree
+
+from bs4 import BeautifulSoup
 
 
 def to_bool(text):
@@ -16,8 +17,7 @@ def find_static(soup):
         if measurement.attrs["Type"] == "Static - CGM2" and to_bool(measurement.Used.text):
             all_selected_static_files.append(measurement)
         if len(all_selected_static_files) > 1:
-            raise Exception(
-                "You can t have 2 activated static c3d within your session")
+            raise Exception("You can t have 2 activated static c3d within your session")
     if all_selected_static_files == []:
         raise Exception("No static files selected")
     static_file = all_selected_static_files[0]
@@ -25,9 +25,9 @@ def find_static(soup):
 
 
 def read_session_xml(path):
-    with open(path, "r") as f:
-        contents = f.read()
-        soup = BeautifulSoup(contents, 'xml')
+    root = ElementTree.parse(path).getroot()
+    xml_string = ElementTree.tostring(root)
+    soup = BeautifulSoup(xml_string, "xml")
     return soup
 
 
@@ -36,9 +36,7 @@ def get_creation_date(session_xml):
     year, month, day = date_str.split("-")
     time_str = session_xml.Subject.Session.Creation_time.text
     hour, minute, second = time_str.split(":")
-    datetime_obj = datetime(
-        int(year), int(month), int(day),
-        int(hour), int(minute), int(second))
+    datetime_obj = datetime(int(year), int(month), int(day), int(hour), int(minute), int(second))
     return datetime_obj
 
 

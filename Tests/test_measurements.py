@@ -1,5 +1,5 @@
 from qtmWebGaitReport.measurements import Measurements
-from pathlib2 import Path
+from pathlib import Path
 
 working_directory = Path("TestFiles","ForMeasurementSectionTest","processed")
 

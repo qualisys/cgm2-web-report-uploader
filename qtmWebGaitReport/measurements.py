@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import qtools
+from qtmWebGaitReport import qtools
 import os
-from pathlib2 import Path
+from pathlib import Path
 import json
 from datetime import datetime
-import c3dValidation
+from qtmWebGaitReport import c3dValidation
 
 
 def get_creation_date(file):
@@ -24,14 +24,13 @@ def create_resources(video_filenames, extra_settings):
         all_video_serials = []
     resources = []
     for video_filename in video_filenames:
-        video_name = video_filename.replace('.mp4', '')
+        video_name = video_filename.replace(".mp4", "")
         cur_resource = {
             "type": "video",
             "name": video_name,
             "src": video_filename,
         }
-        current_serial = [
-            serial for serial in all_video_serials if str(serial) in video_name]
+        current_serial = [serial for serial in all_video_serials if str(serial) in video_name]
         if current_serial != []:
             current_serial = current_serial[0]
             if "Group" in extra_settings["Cameras"][current_serial].keys():
@@ -39,16 +38,16 @@ def create_resources(video_filenames, extra_settings):
         resources.append(cur_resource)
     return resources
 
-def get_current_measurement_mp4(measurement_name,video_meta):
+
+def get_current_measurement_mp4(measurement_name, video_meta):
     # type: (List) -> List
     measurement_videos = []
     for cur_video in video_meta:
         measurement_for_cur_video = str(Path(cur_video["measurement"]).stem)
         if measurement_name == measurement_for_cur_video:
-            measurement_videos.append(
-                Path(cur_video["outputPath"]).name
-            )
+            measurement_videos.append(Path(cur_video["outputPath"]).name)
     return measurement_videos
+
 
 def load_videos_json(session_folder):
     # type: (Path) -> List
@@ -56,9 +55,10 @@ def load_videos_json(session_folder):
     if video_json_path.is_file():
         with video_json_path.open("r") as f:
             video_meta = json.load(f)
-    else: 
+    else:
         video_meta = []
     return video_meta
+
 
 class Measurements:
     def __init__(self, workingDirectory):
@@ -89,36 +89,16 @@ class Measurements:
             bodyHeight = 0
             bodyWeight = 0
 
-            video_filenames = get_current_measurement_mp4(measurementName,video_meta)
+            video_filenames = get_current_measurement_mp4(measurementName, video_meta)
             resources = create_resources(video_filenames, extra_settings)
 
             fields = [
-                {
-                    "id": "Creation date",
-                    "value": creationDate,
-                    "type": "text"
-                },
-                {
-                    "id": "Creation time",
-                    "value": creationTime,
-                    "type": "text"},
-                {
-                    "id": "Diagnosis",
-                    "value": diagnosis,
-                    "type": "text"},
-                {
-                    "id": "Last name",
-                    "value": patientName,
-                    "type": "text"},
-                {
-                    "id": "Height",
-                    "value": bodyHeight,
-                    "type": "text"},
-                {
-                    "id": "Weight",
-                    "value": bodyWeight,
-                    "type": "text"
-                },
+                {"id": "Creation date", "value": creationDate, "type": "text"},
+                {"id": "Creation time", "value": creationTime, "type": "text"},
+                {"id": "Diagnosis", "value": diagnosis, "type": "text"},
+                {"id": "Last name", "value": patientName, "type": "text"},
+                {"id": "Height", "value": bodyHeight, "type": "text"},
+                {"id": "Weight", "value": bodyWeight, "type": "text"},
             ]
 
             info.append(
@@ -129,7 +109,7 @@ class Measurements:
                     "rate": frameRate,
                     "id": measurementName,
                     "fields": fields,
-                    "resources": resources
+                    "resources": resources,
                 }
             )
         return info

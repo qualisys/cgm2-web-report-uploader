@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import qtools
 from os import path
+
 import numpy as np
-import signalMapping
-import c3dValidation
+
+from qtmWebGaitReport import c3dValidation, qtools, signalMapping
 
 
 class EMG:
@@ -29,14 +29,14 @@ class EMG:
             if "Moment" not in signalLabel and "Force" not in signalLabel:
                 origEMGNames.append(signal.GetLabel())
 
-        for origSigName, ourSigName in signalMapping.emgNameMap.iteritems():
+        for origSigName, ourSigName in signalMapping.emgNameMap.items():
             if origSigName in origEMGNames and ourSigName is not "":
                 emgData[ourSigName] = {}
 
                 for filename in self.fileNames:
                     acq = qtools.fileOpen(filename)
                     measurementName = path.basename(filename)
-                    measurementName = measurementName.replace('.c3d', '')
+                    measurementName = measurementName.replace(".c3d", "")
 
                     signal = acq.GetAnalog(origSigName)
                     values = np.array(signal.GetValues()[:, 0])
@@ -49,14 +49,13 @@ class EMG:
     def calculateProcessedEMG(self, analogRate, hiBiPass, lowBiPass, hiCutoff, lowCutoff, RMSwindow):
         rawSigs = self.calculateRawEMG()
         sig = {}
-        for key, value in rawSigs.iteritems():
+        for key, value in rawSigs.items():
             sig[key] = {}
-            for key2, value2 in value.iteritems():
+            for key2, value2 in value.items():
                 sig[key][key2] = {}
 
                 # Highpass, cutoff 10, bidirect 1
-                sig[key][key2] = qtools.filterButter(
-                    value2, analogRate, hiBiPass, hiCutoff, 'highpass')
+                sig[key][key2] = qtools.filterButter(value2, analogRate, hiBiPass, hiCutoff, "highpass")
 
                 # RMS, window 100
                 sig[key][key2] = self.movingRMS(sig[key][key2], RMSwindow)
@@ -64,5 +63,5 @@ class EMG:
 
     def movingRMS(self, sig, windowSize):
         sig2 = np.power(sig, 2)
-        window = np.ones(windowSize)/float(windowSize)
-        return np.sqrt(np.convolve(sig2, window, 'valid'))
+        window = np.ones(windowSize) / float(windowSize)
+        return np.sqrt(np.convolve(sig2, window, "valid"))

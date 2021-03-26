@@ -34,9 +34,11 @@ pyCGM2_normative_path = os.path.join(pyCGM2_path,"pyCGM2\\Data\\normativeData")
 pyCGM2_normatives = Tree( pyCGM2_normative_path, prefix="pyCGM2\\Data\\normativeData",excludes=['*.pyx','*.py','*.pyc'])
 pyCGM2_settings_path = os.path.join(pyCGM2_path,"pyCGM2\\Settings")
 pyCGM2_settings = Tree(pyCGM2_settings_path,prefix="pyCGM2\\Settings",excludes=['*.pyx','*.py','*.pyc'])
+opensim = Tree(os.path.join(pyCGM2_path,"pyCGM2\\opensim4"),prefix="pyCGM2\\opensim4")
 
 a.datas += pyCGM2_normatives
 a.datas += pyCGM2_settings
+a.datas += opensim
 
 exe = EXE(pyz,
           a.scripts,

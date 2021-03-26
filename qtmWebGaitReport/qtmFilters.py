@@ -10,9 +10,8 @@ def loadConfigData(directoryPath=None):
     configData = {}
     configPathsToCheck = [
         os.path.join(directoryPath, "upload-token.json"),
-        os.path.join(os.path.abspath(os.path.join(directoryPath, os.pardir)),
-                     "upload-token.json"),
-        os.path.join(qtmWebGaitReport.PATH_TO_MAIN, 'config.json')
+        os.path.join(os.path.abspath(os.path.join(directoryPath, os.pardir)), "upload-token.json"),
+        os.path.join(qtmWebGaitReport.PATH_TO_MAIN, "config.json"),
     ]
     for configPath in configPathsToCheck:
         print("Checking path: " + configPath)
@@ -22,8 +21,9 @@ def loadConfigData(directoryPath=None):
             print("Config loaded from " + configPath)
             break
     if configData == {}:
-        raise Exception("Config file not found, file paths investigated: [\n{}\n]".format(
-            "\n".join(configPathsToCheck)))
+        raise Exception(
+            "Config file not found, file paths investigated: [\n{}\n]".format("\n".join(configPathsToCheck))
+        )
     return configData
 
 
@@ -32,13 +32,14 @@ class WebReportFilter(object):
         configData = loadConfigData(workingDirectory)
 
         self.reportGenerator = ReportJsonGenerator(
-            workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate, settings_from_php)
+            workingDirectory, configData["clientId"], modelledC3dfilenames, subjectInfo, sessionDate, settings_from_php
+        )
         self.reportData = self.reportGenerator.createReportJson()
 
         self.uploader = WebReportUploader(workingDirectory, configData)
 
     def exportJson(self):
-        with open("session_data.json", 'w') as outfile:
+        with open("session_data.json", "w") as outfile:
             json.dump(self.reportData, outfile, indent=4)
 
     def getReportData(self):

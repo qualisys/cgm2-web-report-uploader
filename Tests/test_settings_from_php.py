@@ -1,5 +1,5 @@
 from qtmWebGaitReport.CGM_workflow_main import __load_settings_from_php
-from pathlib2 import Path
+from pathlib import Path
 
 path_to_settings_php = Path("TestFiles") / "settings.php"
 
