@@ -5,7 +5,7 @@ This Python script uploads CGM2 gait data recorded and processed with the PAF Ga
 - Qualisys Track Manager with PAF Gait Module installed
 - Active Qualisys license.
 - Active Report Center token. Please contact support@qualisys.com for details.
-- Python 2.7 (32 bits)
+- Python 3.7 (64 bits)
 - Mokka 0.6.2 (https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/b-tk/Mokka-0.6.2_win64.zip)
 - pyCGM2 (https://github.com/pyCGM2/pyCGM2.git) > development branch
 
