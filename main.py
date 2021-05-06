@@ -7,6 +7,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--templates-path", default="", help="Give path to Templates directory")
 parser.add_argument("--web-report", action="store_true")
 parser.add_argument("--pdf-report", action="store_true")
+parser.add_argument(
+    "--skip-mokka", action="store_true", help="When arguement is given, mokka will not be opened for fixing events"
+)
 parser.add_argument("--change-cwd", default="")
 args = parser.parse_args()
 

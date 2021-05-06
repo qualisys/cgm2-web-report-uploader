@@ -74,7 +74,7 @@ def delete_c3d_files_in(folder_path):
 
 
 # ---- process with pyCGM2-----
-def process_and_return_model(model_type, generate_pdf_report=False, check_events_in_mokka=False):
+def process_and_return_model(model_type, generate_pdf_report=False, check_events_in_mokka=True):
     if check_events_in_mokka == True:
         if model_type == "CGM1.0":
             model = CGM1_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
@@ -109,11 +109,11 @@ def process_and_return_model(model_type, generate_pdf_report=False, check_events
         return model
 
 
-def process_with_pycgm(work_folder, generate_pdf_report):
+def process_with_pycgm(work_folder, generate_pdf_report, check_events_in_mokka=True):
     session_xml = files.readXml(work_folder + "\\", SESSION_XML_FILENAME)
     CGM2_Model = session_xml.Subsession.CGM2_Model.text
     logging.info("PROCESSING TYPE " + CGM2_Model)
-    model = process_and_return_model(CGM2_Model, generate_pdf_report)
+    model = process_and_return_model(CGM2_Model, generate_pdf_report, check_events_in_mokka=check_events_in_mokka)
     return model
 
 
@@ -159,7 +159,10 @@ def main(args):
     delete_c3d_files_in(processed_folder)
 
     # run and process pyCGM2
-    model = process_with_pycgm(work_folder, args.pdf_report)  # i keep  the model as output , just in case of futher use
+    check_events_in_mokka = True if args.skip_mokka == False else False
+    model = process_with_pycgm(
+        work_folder, args.pdf_report, check_events_in_mokka=check_events_in_mokka
+    )  # i keep  the model as output , just in case of futher use
 
     webReportFlag = args.web_report
     if webReportFlag:
