@@ -43,7 +43,7 @@ def prepare_parser(testDataPath):
             filename = qtmTools.getFilename(dynamicMeasurement)
             modelledTrials.append(filename)
 
-    subjectInfo = __create_subject_metadata(sessionXML, session_type)
+    subjectInfo = __create_subject_metadata(sessionXML)
     # initiate parser uploader
     processedDir = os.path.join(testDataPath, "processed")
     reportJsonGenerator = ReportJsonGenerator(

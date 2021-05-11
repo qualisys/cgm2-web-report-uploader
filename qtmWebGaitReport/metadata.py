@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from qtmWebGaitReport import qtools
 import os
-from os import path
-from glob import glob
 import xml.etree.cElementTree as ET
-from datetime import datetime
-from qtmWebGaitReport import c3dValidation
+from glob import glob
+from os import path
+
+from qtmWebGaitReport import c3dValidation, qtools
 
 
 def get_creation_date(file):
@@ -44,32 +43,16 @@ class Metadata:
             # self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
             version = "UNSPECIFIED"
 
-            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
-            creationDate = str(self.creationDate.date())
-            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
-            creationTime = str(self.creationDate.time())
-
-            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["DIAGNOSIS"]
-            diagnosis = "UNSPECIFIED"
-            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
-            patientName = "UNSPECIFIED"
-
             generatedBy = [{"type": "".join(generatedByType), "name": "".join(name), "version": "".join(version)}]
 
             fields = [
-                {"id": "Creation date", "value": creationDate, "type": "text"},
-                {"id": "Creation time", "value": creationTime, "type": "text"},
-                {"id": "Diagnosis", "value": self.subjectMetadata["diagnosis"], "type": "text"},
-                {"id": "Last name", "value": self.subjectMetadata["patientName"], "type": "text"},
-                {"id": "Height", "value": self.subjectMetadata["bodyHeight"], "type": "text"},
-                {"id": "Weight", "value": self.subjectMetadata["bodyWeight"], "type": "text"},
-                {"id": "Date of birth", "value": self.subjectMetadata["dob"], "type": "text"},
-                {"id": "Sex", "value": self.subjectMetadata["sex"], "type": "text"},
-                {"id": "Test condition", "value": self.subjectMetadata["testCondition"], "type": "text"},
-                {"id": "Functional Mobility Scale", "value": self.subjectMetadata["fms"], "type": "text"},
-                {"id": "Gross Motor Function Classification", "value": self.subjectMetadata["gmfcs"], "type": "text"},
-                {"id": "Patient ID", "value": self.subjectMetadata["patientID"], "type": "text"},
+                {"id": "Creation date", "value": str(self.creationDate.date()), "type": "text"},
+                {"id": "Creation time", "value": str(self.creationDate.time()), "type": "text"},
             ]
+
+            # add fields from subject metadata
+            for key, val in self.subjectMetadata.items():
+                fields.append({"id": key, "value": val, "type": "text"})
 
             info = {"isUsingStandardUnits": True, "generatedBy": generatedBy, "customFields": fields}
 
@@ -77,13 +60,13 @@ class Metadata:
 
     def subjectInfo(self):
         subject = {
-            "id": self.subjectMetadata["patientID"] + "_" + self.subjectMetadata["dob"],
-            "displayName": self.subjectMetadata["patientName"],
+            "id": self.subjectMetadata["Patient ID"] + "_" + self.subjectMetadata["Date of birth"],
+            "displayName": self.subjectMetadata["Display name"],
         }
         return subject
 
     def projectInfo(self):
-        project = {"type": "Gait", "subtype": self.subjectMetadata["subSessionType"]}
+        project = {"type": "Gait", "subtype": self.subjectMetadata["Sub Session Type"]}
         return project
 
     def getValueFromXMLSystem(self, defList, param):

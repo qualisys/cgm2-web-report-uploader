@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
-from qtmWebGaitReport import qtools
-from qtmWebGaitReport import timeseries
-from qtmWebGaitReport import events
-from qtmWebGaitReport import map2
-from qtmWebGaitReport import emg
-from qtmWebGaitReport import metadata
-from qtmWebGaitReport import tsp
-from qtmWebGaitReport import measurements
-from qtmWebGaitReport.avi2mp4 import get_mp4_filepaths
-from qtmWebGaitReport.avi2mp4 import get_parent_folder_absolute_path
-import requests
-from qtmWebGaitReport import c3dValidation
 import webbrowser
+
+import requests
+
+from qtmWebGaitReport import c3dValidation, emg, events, map2, measurements, metadata, qtools, timeseries, tsp
+from qtmWebGaitReport.avi2mp4 import get_mp4_filepaths, get_parent_folder_absolute_path
 
 
 def getFrameAndAnalogRateFromC3D(filePath):
@@ -43,7 +36,7 @@ class ReportJsonGenerator:
 
     def getTimeseriesResults(self):
         tsObj = timeseries.Timeseries(self.workingDirectory, self.modelledC3dfilenames)
-        mass = float(self.subjectMetadata["bodyWeight"])
+        mass = float(self.subjectMetadata["Weight"])
         timeSeriesData = tsObj.calculateTimeseries(mass)
         timeseriesResults = []
         for signalName, signalData in timeSeriesData.items():
@@ -85,7 +78,7 @@ class ReportJsonGenerator:
         eventsObj = events.Events(self.workingDirectory)
 
         forceThresholdNewton = get_force_threshold_in_newton(self.extra_settings)
-        forceThresholdNormalised = forceThresholdNewton / float(self.subjectMetadata["bodyWeight"])  # X Newton / BW kg
+        forceThresholdNormalised = forceThresholdNewton / float(self.subjectMetadata["Weight"])  # X Newton / BW kg
         eventData = eventsObj.calculateEvents(forceThresholdNormalised)[0]
         eventLabels = eventsObj.calculateEvents(forceThresholdNormalised)[1]
 

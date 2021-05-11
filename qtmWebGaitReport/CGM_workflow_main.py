@@ -106,20 +106,25 @@ def process_with_pycgm(work_folder, generate_pdf_report, check_events_in_mokka=T
 # ----web report---------
 
 
-def __create_subject_metadata(session_xml, measurement_type):
-    return {
-        "patientName": session_xml.find("First_name").text + " " + session_xml.find("Last_name").text,
-        "patientID": session_xml.find("Patient_ID").text,
-        "bodyHeight": session_xml.find("Height").text,
-        "bodyWeight": session_xml.find("Weight").text,
-        "diagnosis": session_xml.find("Diagnosis").text,
-        "dob": session_xml.find("Date_of_birth").text,
-        "sex": session_xml.find("Sex").text,
-        "testCondition": session_xml.find("Test_condition").text,
-        "subSessionType": session_xml.find("Subsession").get("Type"),
-        "gmfcs": session_xml.find("Gross_Motor_Function_Classification").text,
-        "fms": session_xml.find("Functional_Mobility_Scale").text,
+def __create_subject_metadata(session_xml):
+    result = {
+        "Display name": session_xml.find("First_name").text + " " + session_xml.find("Last_name").text,
+        "First name": session_xml.find("First_name").text,
+        "Last name": session_xml.find("Last_name").text,
+        "Patient ID": session_xml.find("Patient_ID").text,
+        "Height": session_xml.find("Height").text,
+        "Weight": session_xml.find("Weight").text,
+        "Diagnosis": session_xml.find("Diagnosis").text,
+        "Date of birth": session_xml.find("Date_of_birth").text,
+        "Sex": session_xml.find("Sex").text,
+        "Test condition": session_xml.find("Test_condition").text,
+        "Sub Session Type": session_xml.find("Subsession").get("Type"),
+        "Gross Motor Function Classification": session_xml.find("Gross_Motor_Function_Classification").text,
+        "Functional Mobility Scale": session_xml.find("Functional_Mobility_Scale").text,
     }
+    if session_xml.find("CGM2_Model") is not None:
+        result["CGM2 Model"] = session_xml.find("CGM2_Model").text
+    return result
 
 
 def create_web_report(session_xml, data_path, settings_from_php):
@@ -128,7 +133,7 @@ def create_web_report(session_xml, data_path, settings_from_php):
     for measurement_type in measurement_types:
 
         modelledTrials = qtmTools.get_modelled_trials(session_xml, measurement_type)
-        subjectMd = __create_subject_metadata(session_xml, measurement_type)
+        subjectMd = __create_subject_metadata(session_xml)
         sessionDate = qtmTools.get_creation_date(session_xml)
 
         report = qtmFilters.WebReportFilter(data_path, modelledTrials, subjectMd, sessionDate, settings_from_php)
