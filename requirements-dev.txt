@@ -28,7 +28,7 @@ pathspec==0.8.1
 Pillow==8.1.1
 pluggy==0.13.1
 py==1.10.0
-pyCGM2@git+https://github.com/pyCGM2/pyCGM2.git@version(4.1.0)
+pyCGM2@git+https://github.com/sremm/pyCGM2.git@818e355fc9dab7e5de59b51d3acfe52dd7e3a8e8
 pyparsing==2.4.7
 pytest==6.1.2
 pytest-mpl==0.12
