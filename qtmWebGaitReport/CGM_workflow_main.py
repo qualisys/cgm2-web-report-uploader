@@ -14,6 +14,8 @@ from pyCGM2.Apps.QtmApps.CGMi import (
     CGM22_workflow,
     CGM23_workflow,
     CGM24_workflow,
+    CGM25_workflow,
+    CGM26_workflow,
 )
 from pyCGM2.qtm import qtmTools
 from pyCGM2.Utils import files
@@ -73,40 +75,24 @@ def delete_c3d_files_in(folder_path):
         c3d_file_path.unlink()
 
 
+_cgm2_processing_functions = {
+    "CGM1.0": CGM1_workflow.main,
+    "CGM1.1": CGM11_workflow.main,
+    "CGM2.1-HJC": CGM21_workflow.main,
+    "CGM2.2-IK": CGM22_workflow.main,
+    "CGM2.3-skinClusters": CGM23_workflow.main,
+    "CGM2.4-ForeFoot": CGM24_workflow.main,
+    "CGM2.5-UpperLimb": CGM25_workflow.main,
+    "CGM2.6-FunctionalKnee": CGM26_workflow.main,
+}
 # ---- process with pyCGM2-----
 def process_and_return_model(model_type, generate_pdf_report=False, check_events_in_mokka=True):
-    if check_events_in_mokka == True:
-        if model_type == "CGM1.0":
-            model = CGM1_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-        elif model_type == "CGM1.1":
-            model = CGM11_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-        elif model_type == "CGM2.1-HJC":
-            model = CGM21_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-        elif model_type == "CGM2.2-IK":
-            model = CGM22_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-        elif model_type == "CGM2.3-skinClusters":
-            model = CGM23_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-        elif model_type == "CGM2.4-ForeFoot":
-            model = CGM24_workflow.main(SESSION_XML_FILENAME, generate_pdf_report)
-        else:
-            raise Exception("The pyCMG processing type is not implemented, you selected %s" % model_type)
-        return model
-    elif check_events_in_mokka == False:
-        if model_type == "CGM1.0":
-            model = CGM1_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
-        elif model_type == "CGM1.1":
-            model = CGM11_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
-        elif model_type == "CGM2.1-HJC":
-            model = CGM21_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
-        elif model_type == "CGM2.2-IK":
-            model = CGM22_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
-        elif model_type == "CGM2.3-skinClusters":
-            model = CGM23_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
-        elif model_type == "CGM2.4-ForeFoot":
-            model = CGM24_workflow.main(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
-        else:
-            raise Exception("The pyCMG processing type is not implemented, you selected %s" % model_type)
-        return model
+    if model_type in _cgm2_processing_functions.keys():
+        process = _cgm2_processing_functions[model_type]
+        model = process(SESSION_XML_FILENAME, generate_pdf_report, check_events_in_mokka)
+    else:
+        raise Exception("The pyCMG processing type is not implemented, you selected %s" % model_type)
+    return model
 
 
 def process_with_pycgm(work_folder, generate_pdf_report, check_events_in_mokka=True):

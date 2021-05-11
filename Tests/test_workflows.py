@@ -6,7 +6,18 @@ import pytest
 from qtmWebGaitReport.CGM_workflow_main import process_and_return_model
 
 
-@pytest.fixture(params=["CGM1.0", "CGM1.1", "CGM2.1-HJC", "CGM2.2-IK", "CGM2.3-skinClusters", "CGM2.4-ForeFoot"])
+@pytest.fixture(
+    params=[
+        "CGM1.0",
+        "CGM1.1",
+        "CGM2.1-HJC",
+        "CGM2.2-IK",
+        "CGM2.3-skinClusters",
+        "CGM2.4-ForeFoot",
+        "CGM2.5-UpperLimb",
+        "CGM2.6-FunctionalKnee",
+    ]
+)
 def model_type(request):
     return request.param
 
