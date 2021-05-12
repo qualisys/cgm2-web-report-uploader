@@ -81,27 +81,11 @@ class Measurements:
             startOffset = acq.GetFirstFrame() / acq.GetPointFrequency()
             frameRate = acq.GetPointFrequency()
             originalDuration = acq.GetDuration()
-            creation_date = datetime.fromtimestamp(get_creation_date(filename))
-            creationDate = str(creation_date.date())
-            creationTime = str(creation_date.time())
-
-            diagnosis = ""
-
-            patientName = "UNSPECIFIED"
-            bodyHeight = 0
-            bodyWeight = 0
 
             video_filenames = get_current_measurement_mp4(measurementName, video_meta)
             resources = create_resources(video_filenames, extra_settings)
             measurement_metadata = create_measurement_metadata(session_xml, measurementName)
-            fields = [
-                {"id": "Creation date", "value": creationDate, "type": "text"},
-                {"id": "Creation time", "value": creationTime, "type": "text"},
-                {"id": "Diagnosis", "value": diagnosis, "type": "text"},
-                {"id": "Last name", "value": patientName, "type": "text"},
-                {"id": "Height", "value": bodyHeight, "type": "text"},
-                {"id": "Weight", "value": bodyWeight, "type": "text"},
-            ]
+            fields = [{"id": key, "value": val, "type": "text"} for key, val in measurement_metadata.items()]
 
             info.append(
                 {
