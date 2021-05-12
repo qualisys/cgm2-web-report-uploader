@@ -52,7 +52,7 @@ def prepare_parser(testDataPath):
     return reportJsonGenerator
 
 
-resave_all_test_data = True
+resave_all_test_data = False
 
 
 def update_test_data(savedDataFilePath, generatedReportJson):
