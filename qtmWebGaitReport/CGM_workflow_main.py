@@ -22,8 +22,8 @@ from pyCGM2.Utils import files
 
 from qtmWebGaitReport import qtmFilters
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import save_session_data_xml_from
+from qtmWebGaitReport.session_xml import SESSION_XML_FILENAME, create_subject_metadata, load_session_xml_soup
 
-SESSION_XML_FILENAME = "session.xml"
 
 # ---- settings-----
 def __load_settings_from_php(file_path):
@@ -106,34 +106,13 @@ def process_with_pycgm(work_folder, generate_pdf_report, check_events_in_mokka=T
 # ----web report---------
 
 
-def __create_subject_metadata(session_xml):
-    result = {
-        "Display name": session_xml.find("First_name").text + " " + session_xml.find("Last_name").text,
-        "First name": session_xml.find("First_name").text,
-        "Last name": session_xml.find("Last_name").text,
-        "Patient ID": session_xml.find("Patient_ID").text,
-        "Height": session_xml.find("Height").text,
-        "Weight": session_xml.find("Weight").text,
-        "Diagnosis": session_xml.find("Diagnosis").text,
-        "Date of birth": session_xml.find("Date_of_birth").text,
-        "Sex": session_xml.find("Sex").text,
-        "Test condition": session_xml.find("Test_condition").text,
-        "Sub Session Type": session_xml.find("Subsession").get("Type"),
-        "Gross Motor Function Classification": session_xml.find("Gross_Motor_Function_Classification").text,
-        "Functional Mobility Scale": session_xml.find("Functional_Mobility_Scale").text,
-    }
-    if session_xml.find("CGM2_Model") is not None:
-        result["CGM2 Model"] = session_xml.find("CGM2_Model").text
-    return result
-
-
 def create_web_report(session_xml, data_path, settings_from_php):
 
     measurement_types = qtmTools.detectMeasurementType(session_xml)
     for measurement_type in measurement_types:
 
         modelledTrials = qtmTools.get_modelled_trials(session_xml, measurement_type)
-        subjectMd = __create_subject_metadata(session_xml)
+        subjectMd = create_subject_metadata(session_xml)
         sessionDate = qtmTools.get_creation_date(session_xml)
 
         report = qtmFilters.WebReportFilter(data_path, modelledTrials, subjectMd, sessionDate, settings_from_php)
@@ -159,5 +138,5 @@ def main(args):
     if webReportFlag:
 
         settings = load_extra_settings(args.templates_path)
-        session_xml = files.readXml(work_folder + "\\", SESSION_XML_FILENAME)
+        session_xml = load_session_xml_soup(Path(work_folder, SESSION_XML_FILENAME))
         create_web_report(session_xml, processed_folder, settings)

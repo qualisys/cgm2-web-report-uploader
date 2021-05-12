@@ -4,9 +4,9 @@ import os
 import pytest
 from pyCGM2.qtm import qtmTools
 from qtmWebGaitReport import utils
-from qtmWebGaitReport.CGM_workflow_main import __create_subject_metadata
 from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.qtmFilters import loadConfigData
+from qtmWebGaitReport.session_xml import create_subject_metadata, load_session_xml_soup
 
 
 def saveExampleOutputToJson(dataDict, filePath="jsonData.json"):
@@ -32,7 +32,7 @@ def get_paths(example_folder_name):
 def prepare_parser(testDataPath):
     # this code is mostly duplicate from the PAF modules template, possibly rework where the functionality goes
     session_xml_path = os.path.join(testDataPath, "session.xml")
-    sessionXML = utils.read_session_xml(session_xml_path)
+    sessionXML = load_session_xml_soup(session_xml_path)
     sessionDate = utils.get_creation_date(sessionXML)
     session_type = qtmTools.detectMeasurementType(sessionXML)[0]  # in this example there is only one
 
@@ -43,7 +43,7 @@ def prepare_parser(testDataPath):
             filename = qtmTools.getFilename(dynamicMeasurement)
             modelledTrials.append(filename)
 
-    subjectInfo = __create_subject_metadata(sessionXML)
+    subjectInfo = create_subject_metadata(sessionXML)
     # initiate parser uploader
     processedDir = os.path.join(testDataPath, "processed")
     reportJsonGenerator = ReportJsonGenerator(
