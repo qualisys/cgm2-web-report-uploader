@@ -45,7 +45,7 @@ def test_up_to_24(model_type, tmp_path):
     except Exception as e:
         assert 0, "Unexpected error: {}".format(e)
 
-@pytest.mark.parametrize("model_type",[
+ @pytest.mark.parametrize("model_type",[
         "CGM2.5-UpperLimb",
         "CGM2.6-FunctionalKnee",])
 def test_from_25(model_type, tmp_path):

@@ -1,13 +1,12 @@
 import json
 import os
-from collections import OrderedDict
+from pathlib import Path
 
 import pytest
-import xmltodict
 from qtmWebGaitReport.convert_report_json_to_regression_test_xml import dict_to_xml, get_xml_string_from
 
-report_json_path = os.path.join("TestFiles", "xml_test", "session_data.json")
-with open(report_json_path, "r") as f:
+report_json_path = Path("TestFiles", "xml_test", "session_data.json").absolute()
+with report_json_path.open("r") as f:
     report_json_data = json.load(f)
 
 resave_test_data = False
