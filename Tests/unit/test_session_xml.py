@@ -7,7 +7,7 @@ from qtmWebGaitReport.session_xml import (
     load_session_xml_soup,
 )
 
-session_xml_file = Path("TestFiles", "GaitWithFunctionalKnee", "session.xml")
+session_xml_file = Path("TestFiles", "GaitWithFunctionalKnee", "session.xml").absolute()
 
 
 class TestParsing:
