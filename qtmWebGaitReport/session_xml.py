@@ -23,10 +23,16 @@ def create_subject_metadata(session_xml: BeautifulSoup) -> Dict:
     subject_fields = {x.name.replace("_", " "): x.text for x in session_xml.find("Subject").find("Fields").find_all()}
     result = {**session_fields, **sub_session_fields, **subject_fields}
     result["Sub Session Type"] = session_xml.find("Subsession").get("Type")
+
+    for key_to_remove in ["Directory pattern", "Measurement pattern"]:
+        result.pop(key_to_remove, None)
     return result
 
 
 def create_measurement_metadata(session_xml: BeautifulSoup, measurement_name: str) -> Dict:
     measurement_entry = [x for x in session_xml.find_all("Measurement") if measurement_name in x.get("Filename")][0]
     result = {x.name.replace("_", " "): x.text for x in measurement_entry.find("Fields").find_all()}
+
+    for key_to_remove in ["Directory pattern", "Measurement pattern"]:
+        result.pop(key_to_remove, None)
     return result
