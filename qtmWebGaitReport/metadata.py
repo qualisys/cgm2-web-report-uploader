@@ -61,7 +61,7 @@ class Metadata:
     def subjectInfo(self):
         subject = {
             "id": self.subjectMetadata["Patient ID"] + "_" + self.subjectMetadata["Date of birth"],
-            "displayName": self.subjectMetadata["Display name"],
+            "displayName": self.subjectMetadata["First name"] + " " + self.subjectMetadata["Last name"],
         }
         return subject
 

@@ -16,21 +16,11 @@ def load_session_xml_soup(path: Union[Path, str]) -> BeautifulSoup:
 
 
 def create_subject_metadata(session_xml: BeautifulSoup) -> Dict:
-    result = {
-        "Display name": session_xml.find("First_name").text + " " + session_xml.find("Last_name").text,
-        "First name": session_xml.find("First_name").text,
-        "Last name": session_xml.find("Last_name").text,
-        "Patient ID": session_xml.find("Patient_ID").text,
-        "Height": session_xml.find("Height").text,
-        "Weight": session_xml.find("Weight").text,
-        "Diagnosis": session_xml.find("Diagnosis").text,
-        "Date of birth": session_xml.find("Date_of_birth").text,
-        "Sex": session_xml.find("Sex").text,
-        "Test condition": session_xml.find("Test_condition").text,
-        "Sub Session Type": session_xml.find("Subsession").get("Type"),
-        "Gross Motor Function Classification": session_xml.find("Gross_Motor_Function_Classification").text,
-        "Functional Mobility Scale": session_xml.find("Functional_Mobility_Scale").text,
+    session_fields = {x.name.replace("_", " "): x.text for x in session_xml.find("Session").find("Fields").find_all()}
+    sub_session_fields = {
+        x.name.replace("_", " "): x.text for x in session_xml.find("Subsession").find("Fields").find_all()
     }
-    if session_xml.find("CGM2_Model") is not None:
-        result["CGM2 Model"] = session_xml.find("CGM2_Model").text
+    subject_fields = {x.name.replace("_", " "): x.text for x in session_xml.find("Subject").find("Fields").find_all()}
+    result = {**session_fields, **sub_session_fields, **subject_fields}
+    result["Sub Session Type"] = session_xml.find("Subsession").get("Type")
     return result
