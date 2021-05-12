@@ -27,5 +27,6 @@ def create_subject_metadata(session_xml: BeautifulSoup) -> Dict:
 
 
 def create_measurement_metadata(session_xml: BeautifulSoup, measurement_name: str) -> Dict:
-    result = {}
+    measurement_entry = [x for x in session_xml.find_all("Measurement") if measurement_name in x.get("Filename")][0]
+    result = {x.name.replace("_", " "): x.text for x in measurement_entry.find("Fields").find_all()}
     return result
