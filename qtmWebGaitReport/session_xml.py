@@ -30,7 +30,10 @@ def create_subject_metadata(session_xml: BeautifulSoup) -> Dict:
 
 
 def create_measurement_metadata(session_xml: BeautifulSoup, measurement_name: str) -> Dict:
-    measurement_entry = [x for x in session_xml.find_all("Measurement") if measurement_name in x.get("Filename")][0]
+    measurement_entries = [x for x in session_xml.find_all("Measurement") if measurement_name in x.get("Filename")]
+    if len(measurement_entries) == 0:
+        return {}
+    measurement_entry = measurement_entries[0]
     result = {x.name.replace("_", " "): x.text for x in measurement_entry.find("Fields").find_all()}
 
     for key_to_remove in ["Directory pattern", "Measurement pattern"]:
