@@ -29,13 +29,11 @@ def copy_folder_contents(src_dir, dst_dir):
 new_paf_fields_folder = str(Path("TestFiles", "WithNewPafFields").absolute())
 with_functional_knee_folder = str(Path("TestFiles", "GaitWithFunctionalKnee").absolute())
 
+
 @pytest.mark.slow
-@pytest.mark.parametrize("model_type",["CGM1.0",
-        "CGM1.1",
-        "CGM2.1-HJC",
-        "CGM2.2-IK",
-        "CGM2.3-skinClusters",
-        "CGM2.4-ForeFoot",])
+@pytest.mark.parametrize(
+    "model_type", ["CGM1.0", "CGM1.1", "CGM2.1-HJC", "CGM2.2-IK", "CGM2.3-skinClusters", "CGM2.4-ForeFoot",]
+)
 def test_up_to_24(model_type, tmp_path):
     copy_folder_contents(new_paf_fields_folder, str(tmp_path))
     if Path.cwd() != tmp_path:
@@ -45,9 +43,8 @@ def test_up_to_24(model_type, tmp_path):
     except Exception as e:
         assert 0, "Unexpected error: {}".format(e)
 
- @pytest.mark.parametrize("model_type",[
-        "CGM2.5-UpperLimb",
-        "CGM2.6-FunctionalKnee",])
+
+@pytest.mark.parametrize("model_type", ["CGM2.5-UpperLimb", "CGM2.6-FunctionalKnee",])
 def test_from_25(model_type, tmp_path):
     copy_folder_contents(with_functional_knee_folder, str(tmp_path))
     if Path.cwd() != tmp_path:
