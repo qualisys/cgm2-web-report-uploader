@@ -39,3 +39,9 @@ def create_measurement_metadata(session_xml: BeautifulSoup, measurement_name: st
     for key_to_remove in ["Directory pattern", "Measurement pattern"]:
         result.pop(key_to_remove, None)
     return result
+
+
+def get_update_existing_report(session_xml: BeautifulSoup) -> bool:
+    result_str = session_xml.find("Update_existing_web_report").text
+    result = True if result_str == "True" else False
+    return result
