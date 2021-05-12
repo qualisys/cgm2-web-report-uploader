@@ -30,31 +30,23 @@ class Metadata:
             self.fileNames.append(str(path.join(self.workingDirectory, filename)))
 
     def medatadaInfo(self):
-        for filename in self.fileNames:
 
-            measurementName = path.basename(filename)
-            measurementName = measurementName.replace(".c3d", "")
-            info = []
+        generatedByType = "UNSPECIFIED"
+        name = "UNSPECIFIED"
+        version = "UNSPECIFIED"
 
-            # self.getMetaValue(measurementName,"MANUFACTURER","COMPANY")
-            generatedByType = "UNSPECIFIED"
-            # self.getMetaValue(measurementName,"MANUFACTURER","SOFTWARE")
-            name = "UNSPECIFIED"
-            # self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
-            version = "UNSPECIFIED"
+        generatedBy = [{"type": "".join(generatedByType), "name": "".join(name), "version": "".join(version)}]
 
-            generatedBy = [{"type": "".join(generatedByType), "name": "".join(name), "version": "".join(version)}]
+        fields = [
+            {"id": "Creation date", "value": str(self.creationDate.date()), "type": "text"},
+            {"id": "Creation time", "value": str(self.creationDate.time()), "type": "text"},
+        ]
 
-            fields = [
-                {"id": "Creation date", "value": str(self.creationDate.date()), "type": "text"},
-                {"id": "Creation time", "value": str(self.creationDate.time()), "type": "text"},
-            ]
+        # add fields from subject metadata
+        for key, val in self.subjectMetadata.items():
+            fields.append({"id": key, "value": val, "type": "text"})
 
-            # add fields from subject metadata
-            for key, val in self.subjectMetadata.items():
-                fields.append({"id": key, "value": val, "type": "text"})
-
-            info = {"isUsingStandardUnits": True, "generatedBy": generatedBy, "customFields": fields}
+        info = {"isUsingStandardUnits": True, "generatedBy": generatedBy, "customFields": fields}
 
         return info
 
