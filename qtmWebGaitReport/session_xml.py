@@ -24,3 +24,8 @@ def create_subject_metadata(session_xml: BeautifulSoup) -> Dict:
     result = {**session_fields, **sub_session_fields, **subject_fields}
     result["Sub Session Type"] = session_xml.find("Subsession").get("Type")
     return result
+
+
+def create_measurement_metadata(session_xml: BeautifulSoup, measurement_name: str) -> Dict:
+    result = {}
+    return result

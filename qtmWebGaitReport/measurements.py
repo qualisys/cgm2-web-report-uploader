@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from qtmWebGaitReport import qtools
-import os
-from pathlib import Path
 import json
+import os
 from datetime import datetime
-from qtmWebGaitReport import c3dValidation
+from pathlib import Path
+
+from qtmWebGaitReport import c3dValidation, qtools
+from qtmWebGaitReport.session_xml import SESSION_XML_FILENAME, create_measurement_metadata, load_session_xml_soup
 
 
 def get_creation_date(file):
@@ -70,6 +71,7 @@ class Measurements:
     def measurementInfo(self, extra_settings={}):
         info = []
         session_folder = Path(self.workingDirectory).absolute().parent
+        session_xml = load_session_xml_soup(session_folder) / SESSION_XML_FILENAME)
         video_meta = load_videos_json(session_folder)
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
@@ -91,7 +93,7 @@ class Measurements:
 
             video_filenames = get_current_measurement_mp4(measurementName, video_meta)
             resources = create_resources(video_filenames, extra_settings)
-
+            measurement_metadata = create_measurement_metadata(session_xml, measurementName)
             fields = [
                 {"id": "Creation date", "value": creationDate, "type": "text"},
                 {"id": "Creation time", "value": creationTime, "type": "text"},
