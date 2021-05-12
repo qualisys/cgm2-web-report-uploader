@@ -71,7 +71,7 @@ class Measurements:
     def measurementInfo(self, extra_settings={}):
         info = []
         session_folder = Path(self.workingDirectory).absolute().parent
-        session_xml = load_session_xml_soup(session_folder) / SESSION_XML_FILENAME)
+        session_xml = load_session_xml_soup(session_folder / SESSION_XML_FILENAME)
         video_meta = load_videos_json(session_folder)
         for filename in self.fileNames:
             acq = qtools.fileOpen(filename)
