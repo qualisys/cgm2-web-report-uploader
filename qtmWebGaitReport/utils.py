@@ -1,9 +1,6 @@
 import logging
 import os
 from datetime import datetime
-from xml.etree import ElementTree
-
-from bs4 import BeautifulSoup
 
 
 def to_bool(text):
@@ -22,13 +19,6 @@ def find_static(soup):
         raise Exception("No static files selected")
     static_file = all_selected_static_files[0]
     return static_file
-
-
-def read_session_xml(path):
-    root = ElementTree.parse(path).getroot()
-    xml_string = ElementTree.tostring(root)
-    soup = BeautifulSoup(xml_string, "xml")
-    return soup
 
 
 def get_creation_date(session_xml):

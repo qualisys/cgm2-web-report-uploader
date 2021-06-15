@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-from qtmWebGaitReport import qtools
-from qtmWebGaitReport import timeseries
-from qtmWebGaitReport import events
-from qtmWebGaitReport import map2
-from qtmWebGaitReport import emg
-from qtmWebGaitReport import metadata
-from qtmWebGaitReport import tsp
-from qtmWebGaitReport import measurements
-from qtmWebGaitReport.avi2mp4 import get_mp4_filepaths
-from qtmWebGaitReport.avi2mp4 import get_parent_folder_absolute_path
-import requests
-from qtmWebGaitReport import c3dValidation
+import json
 import webbrowser
+from pathlib import Path
+from typing import Dict
+
+import requests
+
+from qtmWebGaitReport import c3dValidation, emg, events, map2, measurements, metadata, qtools, timeseries, tsp
+from qtmWebGaitReport.avi2mp4 import get_mp4_filepaths, get_parent_folder_absolute_path
+from qtmWebGaitReport.session_xml import SESSION_XML_FILENAME, get_update_existing_report, load_session_xml_soup
 
 
 def getFrameAndAnalogRateFromC3D(filePath):
@@ -43,7 +40,7 @@ class ReportJsonGenerator:
 
     def getTimeseriesResults(self):
         tsObj = timeseries.Timeseries(self.workingDirectory, self.modelledC3dfilenames)
-        mass = float(self.subjectMetadata["bodyWeight"])
+        mass = float(self.subjectMetadata["Weight"])
         timeSeriesData = tsObj.calculateTimeseries(mass)
         timeseriesResults = []
         for signalName, signalData in timeSeriesData.items():
@@ -85,7 +82,7 @@ class ReportJsonGenerator:
         eventsObj = events.Events(self.workingDirectory)
 
         forceThresholdNewton = get_force_threshold_in_newton(self.extra_settings)
-        forceThresholdNormalised = forceThresholdNewton / float(self.subjectMetadata["bodyWeight"])  # X Newton / BW kg
+        forceThresholdNormalised = forceThresholdNewton / float(self.subjectMetadata["Weight"])  # X Newton / BW kg
         eventData = eventsObj.calculateEvents(forceThresholdNormalised)[0]
         eventLabels = eventsObj.calculateEvents(forceThresholdNormalised)[1]
 
@@ -183,9 +180,38 @@ class ReportJsonGenerator:
 
 
 class WebReportUploader:
-    def __init__(self, workingDirectory, configData):
-        self.workingDirectory = workingDirectory
+    _report_id_filename = "existing_report_id.json"
+
+    def __init__(self, workingDirectory: str, configData: Dict):
+        self.workingDirectory = workingDirectory  # expected to be the processed directory of pyCGM2
+        self.session_directory = Path(workingDirectory).parent
         self.configData = configData
+        self.session_xml = load_session_xml_soup(self.session_directory / SESSION_XML_FILENAME)
+
+    @property
+    def update_existing_report(self) -> bool:
+        """ Wether to update the existing report or not """
+        return get_update_existing_report(self.session_xml)
+
+    @property
+    def existing_report_id(self) -> str:
+        return self._load_existing_report_id()
+
+    @property
+    def _report_id_filepath(self) -> Path:
+        return self.session_directory / self._report_id_filename
+
+    def _load_existing_report_id(self) -> str:
+        if self._report_id_filepath.is_file() == False:
+            return ""
+        else:
+            with self._report_id_filepath.open("r") as f:
+                data = json.load(f)
+        return data["existing_report_id"]
+
+    def update_existing_report_id(self, new_report_id: str):
+        with self._report_id_filepath.open("w") as f:
+            json.dump({"existing_report_id": new_report_id}, f)
 
     def upload(self, reportData):
         pathToLookForMp4 = get_parent_folder_absolute_path(self.workingDirectory)
@@ -210,6 +236,9 @@ class WebReportUploader:
             print("Error: Specify token in config.json")
 
         # Upload
+
+        if self.update_existing_report and self.existing_report_id != "":
+            reportData["original"] = self.existing_report_id
 
         if clientIdExists and baseUrlExists and tokenExists:
             if reportData:
@@ -238,5 +267,8 @@ class WebReportUploader:
                     )
                 print("Report [%s] generated" % (str(newReportId)))
                 webbrowser.open_new_tab(baseUrl + "/claim/" + newReportId)
+
+                if self._report_id_filepath.is_file() == False or self.update_existing_report == False:
+                    self.update_existing_report_id(new_report_id=newReportId)
             else:
                 print("Error: No c3d file found that has been processed with Plugin-Gait.")

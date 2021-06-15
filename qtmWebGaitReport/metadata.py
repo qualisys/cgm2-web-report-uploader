@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from qtmWebGaitReport import qtools
 import os
 from os import path
-from glob import glob
-import xml.etree.cElementTree as ET
-from datetime import datetime
-from qtmWebGaitReport import c3dValidation
 
 
 def get_creation_date(file):
@@ -24,104 +19,38 @@ class Metadata:
         self.modelledC3dfilenames = modelledC3dfilenames
         self.creationDate = creationDate
 
-        c3dValObj = c3dValidation.c3dValidation(self.workingDirectory)
-        # self.fileNames = c3dValObj.getValidC3dList(False)
         self.fileNames = []
         for filename in self.modelledC3dfilenames:
             self.fileNames.append(str(path.join(self.workingDirectory, filename)))
 
     def medatadaInfo(self):
-        for filename in self.fileNames:
 
-            measurementName = path.basename(filename)
-            measurementName = measurementName.replace(".c3d", "")
-            info = []
+        generatedByType = "UNSPECIFIED"
+        name = "UNSPECIFIED"
+        version = "UNSPECIFIED"
 
-            # self.getMetaValue(measurementName,"MANUFACTURER","COMPANY")
-            generatedByType = "UNSPECIFIED"
-            # self.getMetaValue(measurementName,"MANUFACTURER","SOFTWARE")
-            name = "UNSPECIFIED"
-            # self.getMetaValue(measurementName,"MANUFACTURER","VERSION_LABEL")
-            version = "UNSPECIFIED"
+        generatedBy = [{"type": "".join(generatedByType), "name": "".join(name), "version": "".join(version)}]
 
-            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").date())
-            creationDate = str(self.creationDate.date())
-            # str(datetime.strptime(creationDateTimeStr,"%Y,%m,%d,%H,%M,%S").time())
-            creationTime = str(self.creationDate.time())
+        fields = [
+            {"id": "Creation date", "value": str(self.creationDate.date()), "type": "text"},
+            {"id": "Creation time", "value": str(self.creationDate.time()), "type": "text"},
+        ]
 
-            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["DIAGNOSIS"]
-            diagnosis = "UNSPECIFIED"
-            # self.getSettingsFromTextfile(glob(self.workingDirectory + "*Session.enf")[0])["NAME"]
-            patientName = "UNSPECIFIED"
+        # add fields from subject metadata
+        for key, val in self.subjectMetadata.items():
+            fields.append({"id": key, "value": val, "type": "text"})
 
-            generatedBy = [{"type": "".join(generatedByType), "name": "".join(name), "version": "".join(version)}]
-
-            fields = [
-                {"id": "Creation date", "value": creationDate, "type": "text"},
-                {"id": "Creation time", "value": creationTime, "type": "text"},
-                {"id": "Diagnosis", "value": self.subjectMetadata["diagnosis"], "type": "text"},
-                {"id": "Last name", "value": self.subjectMetadata["patientName"], "type": "text"},
-                {"id": "Height", "value": self.subjectMetadata["bodyHeight"], "type": "text"},
-                {"id": "Weight", "value": self.subjectMetadata["bodyWeight"], "type": "text"},
-                {"id": "Date of birth", "value": self.subjectMetadata["dob"], "type": "text"},
-                {"id": "Sex", "value": self.subjectMetadata["sex"], "type": "text"},
-                {"id": "Test condition", "value": self.subjectMetadata["testCondition"], "type": "text"},
-                {"id": "Functional Mobility Scale", "value": self.subjectMetadata["fms"], "type": "text"},
-                {"id": "Gross Motor Function Classification", "value": self.subjectMetadata["gmfcs"], "type": "text"},
-                {"id": "Patient ID", "value": self.subjectMetadata["patientID"], "type": "text"},
-            ]
-
-            info = {"isUsingStandardUnits": True, "generatedBy": generatedBy, "customFields": fields}
+        info = {"isUsingStandardUnits": True, "generatedBy": generatedBy, "customFields": fields}
 
         return info
 
     def subjectInfo(self):
         subject = {
-            "id": self.subjectMetadata["patientID"] + "_" + self.subjectMetadata["dob"],
-            "displayName": self.subjectMetadata["patientName"],
+            "id": self.subjectMetadata["Patient ID"] + "_" + self.subjectMetadata["Date of birth"],
+            "displayName": self.subjectMetadata["First name"] + " " + self.subjectMetadata["Last name"],
         }
         return subject
 
     def projectInfo(self):
-        project = {"type": "Gait", "subtype": self.subjectMetadata["subSessionType"]}
+        project = {"type": "Gait", "subtype": self.subjectMetadata["Sub Session Type"]}
         return project
-
-    def getValueFromXMLSystem(self, defList, param):
-        filename = glob(self.workingDirectory + "*.system")[0]
-        tree = ET.parse(filename)
-        xmlRoot = tree.getroot()
-
-        for child in xmlRoot:
-            if defList in child.attrib["name"]:
-                for kid in child[0][0]:
-                    if param in kid.attrib["name"]:
-                        val = float(kid.attrib["value"])
-        return val
-
-    def getSettingsFromTextfile(self, filename):
-        file = open(filename, "r")
-        content = file.read()
-        lines = content.split("\n")
-        settings = {}
-
-        for line in lines:
-            parts = line.split("=")
-            if len(parts) == 2:
-                key = str.strip(parts[0])
-                value = str.strip(parts[1])
-                settings[key] = value
-        return settings
-
-    def getMetaValue(self, measurementName, groupLabelName, scalarName):
-        acq = qtools.fileOpen(self.workingDirectory + measurementName + ".c3d")
-        md = acq.GetMetaData()
-        fieldFormat = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().GetFormatAsString()
-        scalarValue = list()
-
-        if fieldFormat == "Char":
-            sValue = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().ToString()
-            sValue = list(sValue)
-            scalarValue = [i.rstrip() for i in sValue]
-        else:
-            scalarValue = md.FindChild(groupLabelName).value().FindChild(scalarName).value().GetInfo().ToDouble()
-        return scalarValue
