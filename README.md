@@ -12,3 +12,7 @@ This Python script uploads CGM2 gait data recorded and processed with the PAF Ga
 # Data processing and upload
 - Use your qualisys.com credentials to log in to Report Center (https://report.qualisys.com)
 - Claim the report
+
+# Development Info
+
+For some development information about this repository see [Development Info](development-info.md).
