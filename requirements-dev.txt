@@ -1,4 +1,4 @@
-pyCGM2@git+https://github.com/pyCGM2/pyCGM2.git@a8e045c30abbd6a89c888441d9084f3a753277fc
+pyCGM2@git+https://github.com/pyCGM2/pyCGM2.git@version(4.2.0-beta)
 appdirs==1.4.4
 atomicwrites==1.4.0
 attrs==20.3.0
