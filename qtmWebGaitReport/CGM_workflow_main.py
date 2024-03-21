@@ -109,6 +109,7 @@ def main(args):
     # seems to be related to checking events in qtm, but it is not clear if it works and how it works
     # NOTE there is now a new argument called anomalyException, that is fetched from session.xml
     # need to decide if we want to be able to change it from qtm or just keep it on or off
+    # NOTE CGM2.6-FunctionalKnee -> CGM2.6-Knee Calibration
     cgm2_args = argparse.Namespace(debug=False, sessionFile=SESSION_XML_FILENAME)
     process_with_cgm2(cgm2_args, work_folder)
 
