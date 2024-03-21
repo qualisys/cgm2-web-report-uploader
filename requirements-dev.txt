@@ -1,5 +1,5 @@
 # TODO lock dependencies !!!
-pyCGM2@git+https://github.com/qualisys/pyCGM2.git@7b43dc6f694109065f86b3c0f53c218ec3325767
+pyCGM2@https://github.com/qualisys/pyCGM2/archive/compatibility-cgm2-uploader.zip
 requests
 pytest
 pytest-cov
