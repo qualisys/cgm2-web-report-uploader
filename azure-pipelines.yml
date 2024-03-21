@@ -31,10 +31,10 @@ steps:
   displayName: Cache pip packages
 - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
   displayName: Add conda to PATH
-- script: |
+- powershell: |
     conda env create -f environment_py311_from_cgm2.yml --yes --quiet
   displayName: Create Anaconda environment
-- script: |
+- powershell: |
     conda init
     conda activate cgm2
     python -m pip install --upgrade pip
@@ -43,7 +43,9 @@ steps:
     conda install -c opensim-org opensim
     pip uninstall enum34 --yes
   displayName: 'Install dependencies'
-- script: |
+- powershell: |
+    conda init
+    conda activate cgm2
     pytest Tests --basetemp=..\pytest_temp --doctest-modules --junitxml=junit/test-results.xml --cov=qtmWebGaitReport --cov-report=xml --cov-report=html
   displayName: 'Test with pytest'
 - task: PublishTestResults@2
@@ -56,7 +58,9 @@ steps:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
     reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
-- script: |
+- powershell: |
+    conda init
+    conda activate cgm2
     python create_new_version_file.py --build-name $(Build.BuildNumber)
     pyinstaller main.spec
   displayName: 'Create executable'
