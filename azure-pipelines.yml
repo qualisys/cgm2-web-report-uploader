@@ -29,9 +29,16 @@ steps:
       python
     path: $(PIP_CACHE_DIR)
   displayName: Cache pip packages
+- powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+  displayName: Add conda to PATH
+- script: conda create --yes --quiet --name cgm2
+  displayName: Create Anaconda environment
 - script: |
+    conda activate cgm2
     python -m pip install --upgrade pip
     pip install -r requirements-dev.txt
+    conda install -c conda-forge btk
+    conda install -c opensim-org opensim
     pip uninstall enum34 --yes
   displayName: 'Install dependencies'
 - script: |
