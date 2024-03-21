@@ -32,10 +32,10 @@ steps:
 - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
   displayName: Add conda to PATH
 - script: |
-    conda create --yes --quiet --name cgm2
-    conda init
+    conda env create -f environment_py311_from_cgm2.yml --yes --quiet
   displayName: Create Anaconda environment
 - script: |
+    conda init
     conda activate cgm2
     python -m pip install --upgrade pip
     pip install -r requirements-dev.txt
