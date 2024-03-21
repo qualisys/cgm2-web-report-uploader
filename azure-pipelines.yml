@@ -31,7 +31,9 @@ steps:
   displayName: Cache pip packages
 - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
   displayName: Add conda to PATH
-- script: conda create --yes --quiet --name cgm2
+- script: |
+    conda create --yes --quiet --name cgm2
+    conda init
   displayName: Create Anaconda environment
 - script: |
     conda activate cgm2
