@@ -4,7 +4,8 @@ from os import path
 
 import numpy as np
 from pyCGM2.Lib import analysis
-from pyCGM2.Processing import scores
+
+# from pyCGM2.Processing import scores
 from pyCGM2.Report import normativeDatasets
 
 from qtmWebGaitReport import c3dValidation, signalMapping

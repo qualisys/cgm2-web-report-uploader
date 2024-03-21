@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyCGM2 import btk
+import btk
 from qtmWebGaitReport import signalMapping
 from os import listdir, path
 import numpy as np

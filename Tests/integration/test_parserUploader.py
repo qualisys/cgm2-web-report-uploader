@@ -1,8 +1,7 @@
 import json
 import os
 
-import pytest
-from pyCGM2.qtm import qtmTools
+from pyCGM2.QTM import qtmTools
 from qtmWebGaitReport import utils
 from qtmWebGaitReport.parserUploader import ReportJsonGenerator
 from qtmWebGaitReport.qtmFilters import loadConfigData
@@ -115,4 +114,3 @@ class TestGenerateReportJson:
         generatedReportJson, loadedReportJson = get_generated_and_loaded_json("WithNewPafFields")
 
         check_key_value_pairs(generatedReportJson, loadedReportJson)
-
