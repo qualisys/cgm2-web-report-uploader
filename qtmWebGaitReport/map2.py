@@ -5,7 +5,7 @@ from os import path
 import numpy as np
 from pyCGM2.Lib import analysis
 
-# from pyCGM2.Processing import scores
+from pyCGM2.Processing.Scores import scoreFilters, scoreProcedures
 from pyCGM2.Report import normativeDatasets
 
 from qtmWebGaitReport import c3dValidation, signalMapping
@@ -28,8 +28,8 @@ class MAP:
         }
         self.scores = {}
         for filename, analysis_obj in analysis_per_file.items():
-            gps = scores.CGM1_GPS(pointSuffix=None)
-            scf = scores.ScoreFilter(gps, analysis_obj, self.normative_dataset)
+            gps = scoreProcedures.CGM1_GPS(pointSuffix=None)
+            scf = scoreFilters.ScoreFilter(gps, analysis_obj, self.normative_dataset)
             scf.compute()
             self.scores[filename] = analysis_obj
 
